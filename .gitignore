@@ -132,3 +132,5 @@ dmypy.json
 media/
 subjects/*
 dataset/
+models/eye_tracking/raw
+models/in_blink_out/raw
