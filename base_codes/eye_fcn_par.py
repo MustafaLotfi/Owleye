@@ -222,7 +222,6 @@ def get_model_inputs(
             is_right_eye=True,
             focal_length=focal_length,
         )
-        print(right_eye_frame_low.shape)
 
         features.append(left_iris_landmarks_respect_face[0, :2])
         features.append(right_iris_landmarks_respect_face[0, :2])

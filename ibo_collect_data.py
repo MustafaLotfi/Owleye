@@ -1,7 +1,7 @@
 import mediapipe as mp
 import numpy as np
 import cv2
-import eye_fcn_par as efp
+from base_codes import eye_fcn_par as efp
 import tuning_parameters as tp
 import pickle
 import winsound

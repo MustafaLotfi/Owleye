@@ -128,6 +128,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# pycharm
+.idea/
+
 # Eye-Tracker
 media/
 subjects/*

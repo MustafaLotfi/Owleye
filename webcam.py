@@ -1,6 +1,6 @@
 import cv2
 import time
-import eye_fcn_par as efp
+from base_codes import eye_fcn_par as efp
 
 cap = efp.get_camera()
 

@@ -1,7 +1,7 @@
 import cv2
 import time
 import mediapipe as mp
-import eye_fcn_par as efp
+from base_codes import eye_fcn_par as efp
 
 # Seeing features
 i = 0

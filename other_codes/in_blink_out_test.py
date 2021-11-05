@@ -3,7 +3,7 @@ from tensorflow.keras.models import load_model
 import numpy as np
 import cv2
 import tuning_parameters as tp
-import eye_fcn_par as efp
+from base_codes import eye_fcn_par as efp
 from joblib import load as jload
 
 
