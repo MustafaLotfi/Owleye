@@ -1,8 +1,7 @@
 import cv2
 import pickle
 from screeninfo import get_monitors
-import tuning_parameters as tp
-
+from codes import tuning_parameters as tp
 
 # If you want to run this code, move it to root folder
 

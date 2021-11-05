@@ -3,9 +3,9 @@ import cv2
 import pickle
 from sklearn.utils import shuffle
 from screeninfo import get_monitors
-from base_codes.face_geometry import PCF, procrustes_landmark_basis, get_metric_landmarks
+from codes.base_codes import PCF, procrustes_landmark_basis, get_metric_landmarks
 import tuning_parameters as tp
-from base_codes.iris_lm_depth import from_landmarks_to_depth as fl2d
+from codes.base_codes import from_landmarks_to_depth as fl2d
 
 
 LEFT_EYE_LANDMARKS_IDS = [33, 133]

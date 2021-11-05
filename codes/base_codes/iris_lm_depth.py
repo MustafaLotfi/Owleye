@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-
 from base_codes.core import (  # isort:skip
     detections_to_rect,
     landmarks_to_detections,
@@ -8,6 +7,9 @@ from base_codes.core import (  # isort:skip
     tflite_inference,
     transform_rect,
 )
+
+
+PATH2ROOT = "../"
 
 
 def from_landmarks_to_depth(
@@ -45,8 +47,16 @@ def from_landmarks_to_depth(
     iris_landmarks[:, 1] = iris_landmarks[:, 1] / frame_rgb.shape[0]
 
     depth, iris_size = calculate_iris_depth(iris_landmarks, image_size, focal_length)
+    crop_area_width = int(image_size[0] / 145)
+    crop_area_height = int(image_size[1] / 45)
+    eye_frame_low_crop = eye_frame_low[crop_area_height:-crop_area_height, crop_area_width:-crop_area_width]
+    eye_width_new = 44
+    eye_height_new = 24
+    eye_frame_low_resize = cv2.resize(
+        eye_frame_low_crop, (eye_width_new, eye_height_new), interpolation=cv2.INTER_AREA
+    )
 
-    return depth, iris_size, iris_landmarks, eye_contours, iris_landmarks_respect, eye_frame_low
+    return depth, iris_size, iris_landmarks, eye_contours, iris_landmarks_respect, eye_frame_low_resize
 
 
 def detect_iris(eye_frame, is_right_eye=False):
@@ -55,7 +65,7 @@ def detect_iris(eye_frame, is_right_eye=False):
         eye_frame, (side_low, side_low), interpolation=cv2.INTER_AREA
     )
 
-    model_path = "models/iris_landmark.tflite"
+    model_path = PATH2ROOT + "models/iris/iris_landmark.tflite"
 
     if is_right_eye:
         eye_frame_low = np.fliplr(eye_frame_low)

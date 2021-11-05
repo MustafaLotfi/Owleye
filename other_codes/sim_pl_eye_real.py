@@ -4,8 +4,8 @@ import numpy as np
 import cv2
 import time
 import mediapipe as mp
-from base_codes import eye_fcn_par as bpf
-import tuning_parameters as tp
+from codes.base_codes import eye_fcn_par as bpf
+from codes import tuning_parameters as tp
 import pickle
 from screeninfo import get_monitors
 

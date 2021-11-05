@@ -12,7 +12,7 @@ while True:
         i += 1
         cv2.imshow("Image", frame)
         q = cv2.waitKey(1)
-        if q == ord('q'):
+        if q == ord('q') or q == ord('Q'):
             break
 
 cv2.destroyAllWindows()

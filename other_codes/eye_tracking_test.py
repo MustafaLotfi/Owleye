@@ -4,9 +4,8 @@ import numpy as np
 import cv2
 import time
 import mediapipe as mp
-from base_codes import eye_fcn_par as efp
-import tuning_parameters as tp
-
+from codes.base_codes import eye_fcn_par as efp
+from codes import tuning_parameters as tp
 
 FONT_SIZE = 3
 FONT_COLOR = (0, 0, 0)

@@ -9,8 +9,7 @@ import matplotlib.pyplot as plt
 from joblib import dump as jdump
 import time
 import cv2
-import tuning_parameters as tp
-
+from codes import tuning_parameters as tp
 
 R_TRAIN = 0.9
 SHOW_DATA = True

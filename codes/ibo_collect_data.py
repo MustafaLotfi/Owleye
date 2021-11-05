@@ -11,11 +11,11 @@ from datetime import datetime
 
 
 # Collecting 'in_blink_out' data
-
 N_CLASS = 3
 eyes_data_gray = []
 vector_inputs = []
 output_class = []
+SUBJECTS_DIR = "../subjects/"
 
 
 def save_data(x1, x2, y):
@@ -23,7 +23,9 @@ def save_data(x1, x2, y):
     x2 = np.array(x2)
     y = np.array(y)
 
-    subject_dir = tp.SUBJECTS_DIR + f"{tp.NUMBER}/"
+    if not os.path.exists(SUBJECTS_DIR):
+        os.mkdir(SUBJECTS_DIR)
+    subject_dir = SUBJECTS_DIR + f"{tp.NUMBER}/"
     if not os.path.exists(subject_dir):
         os.mkdir(subject_dir)
     subject_ibo_dir = subject_dir + "in_blink_out data/"
@@ -36,7 +38,8 @@ def save_data(x1, x2, y):
         pickle.dump(x2, f)
     with open(subject_ibo_dir + "y.pickle", "wb") as f:
         pickle.dump(y, f)
-    f = open(tp.SUBJECTS_DIR + f"{tp.NUMBER}/Information.txt", "w+")
+
+    f = open(subject_dir + f"Information.txt", "w+")
     f.write(tp.NAME + "\n" + tp.GENDER + "\n" + str(tp.AGE) + "\n" + str(datetime.now())[:16] + "\n")
     f.close()
 

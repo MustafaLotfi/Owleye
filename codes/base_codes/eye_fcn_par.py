@@ -7,79 +7,24 @@ from base_codes.face_geometry import PCF, procrustes_landmark_basis, get_metric_
 import tuning_parameters as tp
 from base_codes.iris_lm_depth import from_landmarks_to_depth as fl2d
 
+
 LEFT_EYE_LANDMARKS_IDS = [33, 133]
 RIGHT_EYE_LANDMARKS_IDS = [362, 263]
 JAW_LANDMARKS_IDS = [61, 291, 199]
 BASE_LANDMARKS_IDS = [205, 425]
 
 
-def get_calibration_win():
-    calibration_win_rows = tp.CALIBRATION_WIN_ROWS
-    calibration_win_cols = tp.CALIBRATION_WIN_COLS
-
+def get_clb_win_prp():
     for m in get_monitors():
-        screen_width = m.width
-        screen_height = m.height
+        screen_w = m.width
+        screen_h = m.height
 
-    calibration_win_width = screen_width - tp.CALIBRATION_WIN_WIDTH_ALIGN
-    calibration_win_height = screen_height - tp.CALIBRATION_WIN_HEIGHT_ALIGN
-    calibration_win_size = (calibration_win_width, calibration_win_height)
-    red_point_diameter = calibration_win_width // 90
-    n_calibration_points = calibration_win_rows * calibration_win_cols
+    clb_win_w = screen_w - tp.CLB_WIN_W_ALIGN
+    clb_win_h = screen_h - tp.CLB_WIN_H_ALIGN
+    clb_win_size = (clb_win_w, clb_win_h)
+    clb_pnt_d = clb_win_w // 90
 
-    if tp.NEW_ARRANGE_XY is True:
-        dy = (calibration_win_height - calibration_win_rows * red_point_diameter) // (calibration_win_rows - 1) - 1
-        dx = (calibration_win_width - calibration_win_cols * red_point_diameter) // (calibration_win_cols - 1) - 1
-
-        calibration_points_x = []
-        calibration_points_y = []
-
-        for i in range(calibration_win_cols):
-            calibration_points_x.append(i * (red_point_diameter + dx) + red_point_diameter // 2)
-
-        for j in range(calibration_win_rows):
-            calibration_points_y.append(j * (red_point_diameter + dy) + red_point_diameter // 2)
-
-        calibration_points_xy = []
-        for xp in calibration_points_x:
-            for yp in calibration_points_y:
-                calibration_points_xy.append([xp, yp])
-        calibration_points_xy = shuffle(calibration_points_xy)
-
-        with open(f"files/calibration_points_xy_{n_calibration_points}.pickle", 'wb') as f:
-            pickle.dump(calibration_points_xy, f)
-    else:
-        with open(f"files/calibration_points_xy_{n_calibration_points}.pickle", 'rb') as f:
-            calibration_points_xy = pickle.load(f)
-
-    return (
-        calibration_points_xy,
-        calibration_win_size,
-        red_point_diameter
-    )
-
-
-def get_calibration_win1():
-    x_smp = tp.ROW_TIME * tp.FRAME_RATE
-    y_smp = tp.Y_SMP
-    for m in get_monitors():
-        screen_width = m.width
-        screen_height = m.height
-
-    calibration_win_width = screen_width - tp.CALIBRATION_WIN_WIDTH_ALIGN
-    calibration_win_height = screen_height - tp.CALIBRATION_WIN_HEIGHT_ALIGN
-    calibration_win_size = (calibration_win_width, calibration_win_height)
-    red_point_diameter = calibration_win_width // 90
-
-    dx = (calibration_win_width - red_point_diameter) // x_smp
-    dy = (calibration_win_height - red_point_diameter) // y_smp
-    d = (dx, dy)
-
-    return (
-        calibration_win_size,
-        red_point_diameter,
-        d
-    )
+    return clb_win_size, clb_pnt_d
 
 
 def get_some_landmarks_ids():

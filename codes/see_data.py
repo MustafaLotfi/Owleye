@@ -3,11 +3,11 @@ import pickle
 import tuning_parameters as tp
 
 
-# One of the folders in 'subject' folder
+SUBJECTS_DIR = "../subjects/"
 target_folder = "eye_tracking data-calibration/"
 # target_folder = "in_blink_out data/"
 
-subject_dir = tp.SUBJECTS_DIR + f"{tp.NUMBER}/" + target_folder
+subject_dir = SUBJECTS_DIR + f"{tp.NUMBER}/" + target_folder
 
 with open(subject_dir + "x1.pickle", 'rb') as f:
     x1 = pickle.load(f)
@@ -22,7 +22,7 @@ i = 0
 for img in x1:
     print(f"{i}, {y[i]}")
     cv2.imshow("Eyes Image", img)
-    q = cv2.waitKey(1)
+    q = cv2.waitKey(500)
     if q == ord('q'):
         break
     i += 1

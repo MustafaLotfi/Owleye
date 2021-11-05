@@ -5,7 +5,7 @@ from base_codes import eye_fcn_par as efp
 import numpy as np
 
 
-subject_dir = tp.SUBJECTS_DIR + f"{tp.NUMBER}/" + "sampling data-pixels/"
+subject_dir = "../subjects/" + f"{tp.NUMBER}/" + "sampling data-pixels/"
 
 with open(subject_dir + "t.pickle", 'rb') as f:
     time_series = pickle.load(f)
@@ -28,6 +28,5 @@ for (t, px) in zip(time_series, pixels):
     cv2.moveWindow("Pixels", tp.CALIBRATION_WIN_X, tp.CALIBRATION_WIN_Y)
     cv2.imshow("Pixels", show_img)
     q = cv2.waitKey(1)
-    if q == ord('q'):
+    if q == ord('q') or q == ord('Q'):
         break
-
