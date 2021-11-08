@@ -140,4 +140,4 @@ models/in_blink_out/raw
 codes/p1.py
 codes/.ipynb_checkpoints/
 codes/__pycache__/
-backup_codes/
+codes/backup_codes/
