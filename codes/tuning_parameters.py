@@ -1,5 +1,5 @@
 # Subject Information
-NUMBER = 7
+NUMBER = 1
 NAME = "Mostafa Lotfi"
 GENDER = "Male"
 AGE = 25

@@ -22,7 +22,7 @@ i = 0
 for img in x1:
     print(f"{i}, {y[i]}")
     cv2.imshow("Eyes Image", img)
-    q = cv2.waitKey(500)
+    q = cv2.waitKey(100)
     if q == ord('q'):
         break
     i += 1

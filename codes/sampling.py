@@ -8,10 +8,6 @@ import pickle
 import os
 
 
-i = 0
-time_col = []
-eyes_data_gray = []
-vector_inputs = []
 SUBJECTS_DIR = "../subjects/"
 
 
@@ -56,8 +52,11 @@ time.sleep(2)
 cap = efp.get_camera()
 
 print("Sampling started...")
+i = 0
+t_vec = []
+eyes_data_gray = []
+vector_inputs = []
 t1 = time.time()
-
 while True:
     frame_success, frame, frame_rgb = efp.get_frame(cap)
     if frame_success:
@@ -79,7 +78,7 @@ while True:
             False
         )
         if features_success:
-            time_col.append(int((time.time() - t1) * 100) / 100.0)
+            t_vec.append(int((time.time() - t1) * 100) / 100.0)
             eyes_data_gray.append(eyes_frame_gray)
             vector_inputs.append(features_vector)
 
@@ -99,6 +98,5 @@ fps = i / elapsed_time
 print(f"FPS: {fps}")
 
 print("\nSaving data...")
-save_data(time_col, eyes_data_gray, vector_inputs)
-time.sleep(2)
+save_data(t_vec, eyes_data_gray, vector_inputs)
 print("Sampling finished!!")

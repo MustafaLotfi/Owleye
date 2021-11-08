@@ -1,14 +1,18 @@
 import pickle
 
 
-METHOD = 0
 POINT_RATIO = 0.012
+# parameters of get_clb_points function
+POINTS_CLB_WIN_ROW = 3
+POINTS_CLB_WIN_COL = 3
+POINTS_N_SMP_IN_PNT = 20
+# parameters of get_clb_lines function
+LINE_CLB_WIN_ROW = 10
+LINE_TIME = 5
+LINE_FRAME_RATE = 30
 
 
-def get_clb_points():
-    clb_win_col = 7
-    clb_win_row = 5
-    n_smp_in_pnt = 10
+def get_clb_points(clb_win_row, clb_win_col, n_smp_in_pnt):
     points = []
     dy = (1 - clb_win_row * POINT_RATIO) / (clb_win_row - 1)
     dx = (1 - clb_win_col * POINT_RATIO) / (clb_win_col - 1)
@@ -27,11 +31,8 @@ def get_clb_points():
     return 0
 
 
-def get_clb_lines():
-    line_time = 2
-    frame_rate = 10
+def get_clb_lines(clb_win_row, line_time, frame_rate):
     clb_win_col = line_time * frame_rate
-    clb_win_row = 3
     points = []
     dy = (1 - clb_win_row * POINT_RATIO) / (clb_win_row - 1)
     dx = (1 - clb_win_col * POINT_RATIO) / (clb_win_col - 1)
@@ -49,7 +50,5 @@ def get_clb_lines():
     return 0
 
 
-if METHOD == 0:
-    calibration_points = get_clb_points()
-else:
-    calibration_points = get_clb_lines()
+get_clb_points(POINTS_CLB_WIN_ROW, POINTS_CLB_WIN_COL, POINTS_N_SMP_IN_PNT)
+get_clb_lines(LINE_CLB_WIN_ROW, LINE_TIME, LINE_FRAME_RATE)

@@ -11,6 +11,8 @@ from datetime import datetime
 
 # Calibration to Collect 'eye_tracking' data
 SUBJECTS_DIR = "../subjects/"
+CLB_FILE_PNT = "calibration_points_5x7x10.pickle"
+CLB_FILE_LINE = "calibration_points_10x150x1.pickle"
 
 
 def save_data(x1, x2, y):
@@ -40,9 +42,9 @@ def save_data(x1, x2, y):
 
 
 if tp.CLB_METHOD == 0:
-    clb_pnt_file = "calibration_points_3x3x10.pickle"
+    clb_pnt_file = CLB_FILE_PNT
 else:
-    clb_pnt_file = "calibration_points_3x20x1.pickle"
+    clb_pnt_file = CLB_FILE_LINE
 with open("../files/" + clb_pnt_file, 'rb') as f1:
     clb_points = pickle.load(f1)
 
