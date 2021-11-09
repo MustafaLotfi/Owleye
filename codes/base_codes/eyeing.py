@@ -219,7 +219,7 @@ def get_model_inputs(
     return success, image, eyes_frame_gray, features_vector
 
 
-def get_time(i, t, print_time):
+def get_time(i, t, print_time=False):
     el_t = time.time() - t
     fps = i / el_t
     if print_time:
@@ -243,9 +243,9 @@ def save(data, fol_dir, data_name):
             pickle.dump(d, f)
 
 
-def pass_frames(cap, npf, camera_id):
+def pass_frames(cap, camera_id):
     if camera_id == 2:
-        for _ in range(npf):
+        for _ in range(40):
             get_frame(cap)
 
 

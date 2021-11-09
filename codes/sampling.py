@@ -2,13 +2,13 @@ import numpy as np
 import cv2
 import time
 import mediapipe as mp
-from base_codes import eyeing as efp
+from base_codes import eyeing as ey
 import tuning_parameters as tp
 import pickle
 import os
 
 
-SUBJECTS_DIR = "../subjects/"
+path2root = "../"
 
 
 def save_data(t, x1, x2):
@@ -16,29 +16,22 @@ def save_data(t, x1, x2):
     x1 = np.array(x1)
     x2 = np.array(x2)
 
-    subject_smp_dir = SUBJECTS_DIR + f"{tp.NUMBER}/sampling data/"
+    subject_smp_dir = path2root + f"subjects/{tp.NUMBER}/sampling data/"
     if not os.path.exists(subject_smp_dir):
         os.mkdir(subject_smp_dir)
 
-    with open(subject_smp_dir + "t.pickle", "wb") as f:
-        pickle.dump(t, f)
-    with open(subject_smp_dir + "x1.pickle", "wb") as f:
-        pickle.dump(x1, f)
-    with open(subject_smp_dir + "x2.pickle", "wb") as f:
-        pickle.dump(x2, f)
+    ey.save([t, x1, x2], subject_smp_dir, ['t', 'x1', 'x2'])
 
 
-some_landmarks_ids = efp.get_some_landmarks_ids()
+some_landmarks_ids = ey.get_some_landmarks_ids()
 
-print("Getting camera properties...")
 (
     frame_size,
     center,
     camera_matrix,
-    dist_coeffs,
+    dst_cof,
     pcf
-) = efp.get_camera_properties()
-time.sleep(2)
+) = ey.get_camera_properties()
 
 frame_width, frame_height = frame_size
 
@@ -47,9 +40,8 @@ face_mesh = mp.solutions.face_mesh.FaceMesh(
     static_image_mode=False,
     min_tracking_confidence=0.5,
     min_detection_confidence=0.5)
-time.sleep(2)
 
-cap = efp.get_camera()
+cap = ey.get_camera()
 
 print("Sampling started...")
 i = 0
@@ -58,7 +50,7 @@ eyes_data_gray = []
 vector_inputs = []
 t1 = time.time()
 while True:
-    frame_success, frame, frame_rgb = efp.get_frame(cap)
+    frame_success, frame, frame_rgb = ey.get_frame(cap)
     if frame_success:
         results = face_mesh.process(frame_rgb)
         (
@@ -66,14 +58,14 @@ while True:
             _,
             eyes_frame_gray,
             features_vector
-        ) = efp.get_model_inputs(
+        ) = ey.get_model_inputs(
             frame,
             frame_rgb,
             results,
             camera_matrix,
             pcf,
             frame_size,
-            dist_coeffs,
+            dst_cof,
             some_landmarks_ids,
             False
         )

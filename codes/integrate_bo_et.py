@@ -2,11 +2,13 @@ import pickle
 import numpy as np
 import tuning_parameters as tp
 from sklearn.utils import shuffle
+from base_codes import eyeing as ey
 
 
-PATH2ROOT = "../"
 subject_bo_dir = PATH2ROOT + f"subjects/{tp.NUMBER}/blink_out data/"
-subject_et_dir = PATH2ROOT + f"subjects/{tp.NUMBER}/eye_tracking data-calibration/"
 
 
-# with open(subject_bo_dir + "x1.pickle", 'rb') as f:
+x1_et, x2_et = ey.load(subject_et_dir, ['x1', 'x2'])
+x1_bo, x2_bo = ey.load(subject_bo_dir, ['x1', 'x2'])
+
+print(x1_bo.shape)

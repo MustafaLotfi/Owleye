@@ -10,12 +10,13 @@ from datetime import datetime
 
 
 # Calibration to Collect 'eye_tracking' data
-n_frame_pass = 40
-PATH2ROOT = "../"
-SUBJECTS_FOL = "subjects/"
-CLB_FILE_PNT = "calibration_points_5x7x10"
-# CLB_FILE_LINE = "calibration_points_10x150x1"
-CLB_FILE_LINE = "calibration_points_3x20x1"
+path2root = "../"
+subjects_fol = "subjects/"
+et_fol = "eye_tracking data-calibration/"
+files_fol = "files/"
+clb_file_pnt = "calibration_points_5x7x10"
+# clb_file_line = "calibration_points_10x150x1"
+clb_file_line = "calibration_points_3x20x1"
 
 
 def save_data(x1, x2, y):
@@ -23,13 +24,13 @@ def save_data(x1, x2, y):
     x2 = np.array(x2)
     y = np.array(y)
 
-    subjects_dir = PATH2ROOT + SUBJECTS_FOL
+    subjects_dir = path2root + subjects_fol
     if not os.path.exists(subjects_dir):
         os.mkdir(subjects_dir)
     subject_dir = subjects_dir + f"{tp.NUMBER}/"
     if not os.path.exists(subject_dir):
         os.mkdir(subject_dir)
-    subject_et_clb_dir = subject_dir + f"eye_tracking data-calibration/"
+    subject_et_clb_dir = subject_dir + et_fol
     if not os.path.exists(subject_et_clb_dir):
         os.mkdir(subject_et_clb_dir)
 
@@ -41,10 +42,10 @@ def save_data(x1, x2, y):
 
 
 if tp.CLB_METHOD == 0:
-    clb_pnt_file = CLB_FILE_PNT
+    clb_pnt_file = clb_file_pnt
 else:
-    clb_pnt_file = CLB_FILE_LINE
-clb_points = ey.load(PATH2ROOT + "files/", [clb_pnt_file])[0]
+    clb_pnt_file = clb_file_line
+clb_points = ey.load(path2root + files_fol, [clb_pnt_file])[0]
 
 (clb_win_size, clb_pnt_d) = ey.get_clb_win_prp()
 clb_win_w, clb_win_h = clb_win_size
@@ -76,7 +77,7 @@ t0 = time.time()
 clb_win_name = "Calibration"
 for item in clb_points:
     cap = ey.get_camera()
-    ey.pass_frames(cap, n_frame_pass, tp.CAMERA_ID)
+    ey.pass_frames(cap, tp.CAMERA_ID)
 
     pnt = item[0]
     pnt_pxl = (np.array(pnt) * np.array(clb_win_size)).astype(np.uint32)
@@ -120,7 +121,7 @@ for item in clb_points:
                         vector_inputs.append(features_vector)
                         points_loc.append(pnt_pxl)
                         break
-        fps_vec.append(ey.get_time(s, t1, False))
+        fps_vec.append(ey.get_time(s, t1))
     cap.release()
     cv2.destroyWindow(clb_win_name)
     p += 1

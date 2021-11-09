@@ -14,13 +14,9 @@ elif os.name == "posix":
 
 
 # Collecting 'in_blink_out' data
-n_frame_pass = 40
-N_CLASS = 2
-eyes_data_gray = []
-vector_inputs = []
-output_class = []
-PATH2ROOT = "../"
-SUBJECTS_DIR = PATH2ROOT + "subjects/"
+path2root = "../"
+subjects_dir = path2root + "subjects/"
+subject_et_dir = path2root + f"subjects/{tp.NUMBER}/eye_tracking data-calibration/"
 
 
 def save_data(x1, x2, y):
@@ -28,9 +24,9 @@ def save_data(x1, x2, y):
     x2 = np.array(x2)
     y = np.array(y)
 
-    if not os.path.exists(SUBJECTS_DIR):
-        os.mkdir(SUBJECTS_DIR)
-    subject_dir = SUBJECTS_DIR + f"{tp.NUMBER}/"
+    if not os.path.exists(subjects_dir):
+        os.mkdir(subjects_dir)
+    subject_dir = subjects_dir + f"{tp.NUMBER}/"
     if not os.path.exists(subject_dir):
         os.mkdir(subject_dir)
     subject_bo_dir = subject_dir + "in_blink_out data/"
@@ -58,10 +54,13 @@ face_mesh = mp.solutions.face_mesh.FaceMesh(
     min_detection_confidence=0.5)
 
 t0 = time.time()
+eyes_data_gray = []
+vector_inputs = []
+output_class = []
 fps_vec = []
-for j in range(N_CLASS):
+for j in range(2):
     cap = ey.get_camera()
-    ey.pass_frames(cap, n_frame_pass, tp.CAMERA_ID)
+    ey.pass_frames(cap, tp.CAMERA_ID)
     i = 0
     if j == 0:
         button = input("Close your eyes then press ENTER: ")
@@ -97,7 +96,7 @@ for j in range(N_CLASS):
                 i += 1
                 if i == tp.N_SMP_PER_CLASS:
                     break
-    fps_vec.append(ey.get_time(i, t1, False))
+    fps_vec.append(ey.get_time(i, t1))
     if os.name == "nt":
         winsound.PlaySound("SystemExit", winsound.SND_ALIAS)
     cap.release()
