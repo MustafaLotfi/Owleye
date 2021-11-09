@@ -1,20 +1,17 @@
 import cv2
 import pickle
 import tuning_parameters as tp
+from base_codes import eyeing as ey
 
 
-SUBJECTS_DIR = "../subjects/"
-target_folder = "eye_tracking data-calibration/"
+PATH2ROOT = "../"
+SUBJECTS_FOL = "subjects/"
+target_fol = "eye_tracking data-calibration/"
 # target_folder = "in_blink_out data/"
 
-subject_dir = SUBJECTS_DIR + f"{tp.NUMBER}/" + target_folder
+subject_dir = PATH2ROOT + SUBJECTS_FOL + f"{tp.NUMBER}/" + target_fol
 
-with open(subject_dir + "x1.pickle", 'rb') as f:
-    x1 = pickle.load(f)
-with open(subject_dir + "x2.pickle", 'rb') as f:
-    x2 = pickle.load(f)
-with open(subject_dir + "y.pickle", 'rb') as f:
-    y = pickle.load(f)
+x1, x2, y = ey.load(subject_dir, ["x1", "x2", "y"])
 
 print(x1.shape, x2.shape, y.shape)
 

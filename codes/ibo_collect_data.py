@@ -1,24 +1,29 @@
 import mediapipe as mp
 import numpy as np
 import cv2
-from base_codes import eye_fcn_par as efp
+from base_codes import eyeing as efp
 import tuning_parameters as tp
 import pickle
-import winsound
 import os
 import time
 from datetime import datetime
+if os.name == "nt":
+    import winsound
+elif os.name == "posix":
+    pass
 
 
 # Collecting 'in_blink_out' data
-N_CLASS = 3
+N_CLASS = 2
 eyes_data_gray = []
 vector_inputs = []
 output_class = []
-SUBJECTS_DIR = "../subjects/"
+PATH2ROOT = "../"
+SUBJECTS_DIR = PATH2ROOT + "subjects/"
 
 
 def save_data(x1, x2, y):
+    print("\nSaving data...")
     x1 = np.array(x1)
     x2 = np.array(x2)
     y = np.array(y)
@@ -46,7 +51,6 @@ def save_data(x1, x2, y):
 
 some_landmarks_ids = efp.get_some_landmarks_ids()
 
-print("Getting camera properties...")
 (
     frame_size,
     center,
@@ -54,8 +58,6 @@ print("Getting camera properties...")
     dist_cof,
     pcf
 ) = efp.get_camera_properties()
-time.sleep(2)
-
 frame_width, frame_height = frame_size
 
 print("Configuring face detection model...")
@@ -63,19 +65,21 @@ face_mesh = mp.solutions.face_mesh.FaceMesh(
     static_image_mode=False,
     min_tracking_confidence=0.5,
     min_detection_confidence=0.5)
-time.sleep(2)
 
 t1 = time.time()
 for j in range(N_CLASS):
     cap = efp.get_camera()
-    i = 0
+    if tp.CAMERA_ID == 2:
+        PASS_FRAMES = 40
+        for k in range(PASS_FRAMES):
+            efp.get_frame(cap)
 
+    i = 0
     if j == 0:
-        button = input("press ENTER and look everywhere 'in' screen: ")
-    elif j == 1:
         button = input("Close your eyes then press ENTER: ")
-    else:
-        button = input("Press ENTER and look everywhere 'out' of screen: ")
+    elif j == 1:
+        button = input("Look everywhere 'out' of screen and press ENTER: ")
+
     while True:
         frame_success, frame, frame_rgb = efp.get_frame(cap)
         if frame_success:
@@ -105,16 +109,11 @@ for j in range(N_CLASS):
                 i += 1
                 if i == tp.N_SMP_PER_CLASS:
                     break
-    winsound.PlaySound("SystemExit", winsound.SND_ALIAS)
+    if os.name == "nt":
+        winsound.PlaySound("SystemExit", winsound.SND_ALIAS)
     cap.release()
 
 cv2.destroyAllWindows()
-
-t2 = time.time()
-elapsed_time = t2 - t1
-print(f"\nElapsed time : {elapsed_time / 60} min")
-
-print("\nSaving data...")
+efp.get_fps(i, t1)
 save_data(eyes_data_gray, vector_inputs, output_class)
-time.sleep(2)
 print("\nData collection finished!!")

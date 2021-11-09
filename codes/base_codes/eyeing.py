@@ -6,12 +6,8 @@ from screeninfo import get_monitors
 from base_codes.face_geometry import PCF, procrustes_landmark_basis, get_metric_landmarks
 import tuning_parameters as tp
 from base_codes.iris_lm_depth import from_landmarks_to_depth as fl2d
-
-
-LEFT_EYE_LANDMARKS_IDS = [33, 133]
-RIGHT_EYE_LANDMARKS_IDS = [362, 263]
-JAW_LANDMARKS_IDS = [61, 291, 199]
-BASE_LANDMARKS_IDS = [205, 425]
+import time
+import os
 
 
 def get_clb_win_prp():
@@ -28,7 +24,8 @@ def get_clb_win_prp():
 
 
 def get_some_landmarks_ids():
-    some_landmarks_ids = JAW_LANDMARKS_IDS + [
+    jaw_landmarks_ids = [61, 291, 199]
+    some_landmarks_ids = jaw_landmarks_ids + [
         key for key, _ in procrustes_landmark_basis
     ]
     some_landmarks_ids.sort()
@@ -36,8 +33,9 @@ def get_some_landmarks_ids():
 
 
 def get_camera_properties():
+    print("Getting camera properties...")
     fr_w, fr_h = tp.FRAME_SIZE
-    cap = cv2.VideoCapture(tp.CAMERA_ID)
+    cap = cv2.VideoCapture(tp.CAMERA_ID)  # (tp.CAMERA_ID, cv2.CAP_DSHOW)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, fr_w)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, fr_h)
 
@@ -108,6 +106,9 @@ def get_model_inputs(
         some_landmarks_ids,
         show_features
 ):
+    left_eye_landmarks_ids = [33, 133]
+    right_eye_landmarks_ids = [362, 263]
+    jaw_landmarks_ids = [61, 291, 199]
     focal_length = camera_matrix[0, 0]
 
     mfl = face_mesh.multi_face_landmarks
@@ -147,7 +148,7 @@ def get_model_inputs(
             left_eye_frame_low
         ) = fl2d(
             image_rgb,
-            all_landmarks[LEFT_EYE_LANDMARKS_IDS, :].T,
+            all_landmarks[left_eye_landmarks_ids, :].T,
             image_size,
             is_right_eye=False,
             focal_length=focal_length,
@@ -162,7 +163,7 @@ def get_model_inputs(
             right_eye_frame_low
         ) = fl2d(
             image_rgb,
-            all_landmarks[RIGHT_EYE_LANDMARKS_IDS, :].T,
+            all_landmarks[right_eye_landmarks_ids, :].T,
             image_size,
             is_right_eye=True,
             focal_length=focal_length,
@@ -181,11 +182,11 @@ def get_model_inputs(
 
         if show_features:
             all_landmarks_pixels = np.array(all_landmarks[:, :2] * image_size, np.uint32)
-            for pix in all_landmarks_pixels[JAW_LANDMARKS_IDS]:
+            for pix in all_landmarks_pixels[jaw_landmarks_ids]:
                 cv2.circle(image, pix, 2, (0, 255, 255), cv2.FILLED)
-            for pix in all_landmarks_pixels[LEFT_EYE_LANDMARKS_IDS]:
+            for pix in all_landmarks_pixels[left_eye_landmarks_ids]:
                 cv2.circle(image, pix, 2, (255, 0, 255), cv2.FILLED)
-            for pix in all_landmarks_pixels[RIGHT_EYE_LANDMARKS_IDS]:
+            for pix in all_landmarks_pixels[right_eye_landmarks_ids]:
                 cv2.circle(image, pix, 2, (255, 0, 255), cv2.FILLED)
 
             left_iris_pixel = np.array(
@@ -216,5 +217,46 @@ def get_model_inputs(
     return success, image, eyes_frame_gray, features_vector
 
 
+def get_time(i, t, print_time):
+    el_t = time.time() - t
+    fps = i / el_t
+    if print_time:
+        print(f"\nElapsed time : {el_t / 60.0} min")
+    return fps
 
 
+def load(fol_dir, data_name):
+    print("\nLoading data...")
+    data = []
+    for dn in data_name:
+        with open(fol_dir + dn + ".pickle", 'rb') as f:
+            data.append(pickle.load(f))
+    return data
+
+
+def save(data, fol_dir, data_name):
+    print("\nSaving data...")
+    for (d, dn) in zip(data, data_name):
+        with open(fol_dir + dn + ".pickle", 'wb') as f:
+            pickle.dump(d, f)
+
+
+def pass_frames(cap, npf, camera_id):
+    if camera_id == 2:
+        for _ in range(npf):
+            get_frame(cap)
+
+
+def show_clb_win(pnt_pxl, win_size, pnt_d, win_origin, p, px_hat=None):
+    win_w, win_h = win_size
+    win_x, win_y = win_origin
+    win_name = "calibration"
+    clb_img = (np.ones((win_h, win_w, 3)) * 255)
+    cv2.circle(clb_img, pnt_pxl, pnt_d, (0, 0, 255), cv2.FILLED)
+    if px_hat:
+        pass
+    cv2.putText(clb_img, f"{p}", (int(pnt_pxl[0] - pnt_d // 1.5), int(pnt_pxl[1] + pnt_d // 2.7)),
+                cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 3)
+    cv2.namedWindow(win_name)
+    cv2.moveWindow(win_name, win_x, win_y)
+    cv2.imshow(win_name, clb_img)

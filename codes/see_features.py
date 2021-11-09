@@ -1,20 +1,18 @@
 import cv2
 import time
 import mediapipe as mp
-from base_codes import eye_fcn_par as efp
+from base_codes import eyeing as ey
 
 # Seeing features
-i = 0
-some_landmarks_ids = efp.get_some_landmarks_ids()
+some_landmarks_ids = ey.get_some_landmarks_ids()
 
-print("Getting camera properties...")
 (
     frame_size,
     center,
     camera_matrix,
-    dist_coeffs,
+    dst_cof,
     pcf
-) = efp.get_camera_properties()
+) = ey.get_camera_properties()
 time.sleep(2)
 
 frame_width, frame_height = frame_size
@@ -24,12 +22,12 @@ face_mesh = mp.solutions.face_mesh.FaceMesh(
     static_image_mode=False,
     min_tracking_confidence=0.5,
     min_detection_confidence=0.5)
-time.sleep(2)
-cap = efp.get_camera()
-t1 = time.time()
 
+cap = ey.get_camera()
+t0 = time.time()
+i = 0
 while True:
-    frame_success, frame, frame_rgb = efp.get_frame(cap)
+    frame_success, frame, frame_rgb = ey.get_frame(cap)
     if frame_success:
         results = face_mesh.process(frame_rgb)
         (
@@ -37,14 +35,14 @@ while True:
             frame,
             eyes_frame_gray,
             features_vector
-        ) = efp.get_model_inputs(
+        ) = ey.get_model_inputs(
             frame,
             frame_rgb,
             results,
             camera_matrix,
             pcf,
             frame_size,
-            dist_coeffs,
+            dst_cof,
             some_landmarks_ids,
             True
         )
@@ -56,10 +54,7 @@ while True:
                 break
 
 cap.release()
-t2 = time.time()
 cv2.destroyAllWindows()
 
-elapsed_time = (t2 - t1)
-print(f"\nElapsed Time: {elapsed_time / 60} min")
-fps = i / elapsed_time
-print(f"FPS: {fps}")
+fps = ey.get_time(i, t0, True)
+print(f"FPS : {fps}")

@@ -1,7 +1,7 @@
 import cv2
 import pickle
 import tuning_parameters as tp
-from base_codes import eye_fcn_par as efp
+from base_codes import eyeing as efp
 import numpy as np
 
 

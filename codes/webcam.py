@@ -1,13 +1,17 @@
 import cv2
 import time
-from base_codes import eye_fcn_par as efp
+from base_codes import eyeing as ey
+import tuning_parameters as tp
 
-cap = efp.get_camera()
+
+n_frame_pass = 40
+cap = ey.get_camera()
+ey.pass_frames(cap, n_frame_pass, tp.CAMERA_ID)
 
 i = 0
-t1 = time.time()
+t0 = time.time()
 while True:
-    frame_success, frame, _ = efp.get_frame(cap)
+    frame_success, frame, _ = ey.get_frame(cap)
     if frame_success:
         i += 1
         cv2.imshow("Image", frame)
@@ -17,6 +21,5 @@ while True:
 
 cv2.destroyAllWindows()
 
-t2 = time.time()
-fps = i / (t2 - t1)
-print(f"FPS: {fps}")
+fps = ey.get_time(i, t0, True)
+print(f"FPS : {fps}")

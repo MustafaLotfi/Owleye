@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import time
 import mediapipe as mp
-from base_codes import eye_fcn_par as efp
+from base_codes import eyeing as efp
 import tuning_parameters as tp
 import pickle
 import os

@@ -1,11 +1,11 @@
 # Subject Information
-NUMBER = 1
+NUMBER = 2
 NAME = "Mostafa Lotfi"
 GENDER = "Male"
 AGE = 25
 
 # identity_confirmation
-TARGET_FOLDER = "subjects"  # "dataset" or "subjects"
+TARGET_FOLDER = "subjects/"  # "dataset" or "subjects"
 SUBJECT_IMAGE_PATH = "../media/lotfi1.png"
 
 # in_blink_out
