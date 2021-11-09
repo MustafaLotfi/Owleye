@@ -67,13 +67,13 @@ face_mesh = mp.solutions.face_mesh.FaceMesh(
     min_tracking_confidence=0.5,
     min_detection_confidence=0.5)
 
-i = 0
 p = 1
 fps_vec = []
 eyes_data_gray = []
 vector_inputs = []
 points_loc = []
 t0 = time.time()
+clb_win_name = "Calibration"
 for item in clb_points:
     cap = ey.get_camera()
     ey.pass_frames(cap, n_frame_pass, tp.CAMERA_ID)
@@ -81,7 +81,7 @@ for item in clb_points:
     pnt = item[0]
     pnt_pxl = (np.array(pnt) * np.array(clb_win_size)).astype(np.uint32)
 
-    ey.show_clb_win(pnt_pxl, clb_win_size, clb_pnt_d, [tp.CLB_WIN_X, tp.CLB_WIN_Y], p)
+    ey.show_clb_win(pnt_pxl, clb_win_size, clb_pnt_d, [tp.CLB_WIN_X, tp.CLB_WIN_Y], p, clb_win_name)
     button = cv2.waitKey(0)
     if button == 27:
         break
@@ -91,7 +91,7 @@ for item in clb_points:
         for pnt in item:
             pnt_pxl = (np.array(pnt) * np.array(clb_win_size)).astype(np.uint32)
 
-            ey.show_clb_win(pnt_pxl, clb_win_size, clb_pnt_d, [tp.CLB_WIN_X, tp.CLB_WIN_Y], p)
+            ey.show_clb_win(pnt_pxl, clb_win_size, clb_pnt_d, [tp.CLB_WIN_X, tp.CLB_WIN_Y], p, clb_win_name)
             button = cv2.waitKey(1)
             if button == 27:
                 break
@@ -119,17 +119,15 @@ for item in clb_points:
                         eyes_data_gray.append(eyes_frame_gray)
                         vector_inputs.append(features_vector)
                         points_loc.append(pnt_pxl)
-                        i += 1
                         break
         fps_vec.append(ey.get_time(s, t1, False))
     cap.release()
-    cv2.destroyAllWindows()
+    cv2.destroyWindow(clb_win_name)
     p += 1
 
 cv2.destroyAllWindows()
 
-ey.get_time(i, t0, True)
-print(fps_vec)
+ey.get_time(0, t0, True)
 print(f"\nMean FPS : {np.array(fps_vec).mean()}")
 
 save_data(eyes_data_gray, vector_inputs, points_loc)

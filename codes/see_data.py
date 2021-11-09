@@ -6,8 +6,8 @@ from base_codes import eyeing as ey
 
 PATH2ROOT = "../"
 SUBJECTS_FOL = "subjects/"
-target_fol = "eye_tracking data-calibration/"
-# target_folder = "in_blink_out data/"
+# target_fol = "eye_tracking data-calibration/"
+target_fol = "in_blink_out data/"
 
 subject_dir = PATH2ROOT + SUBJECTS_FOL + f"{tp.NUMBER}/" + target_fol
 

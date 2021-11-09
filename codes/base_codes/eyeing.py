@@ -11,6 +11,8 @@ import os
 
 
 def get_clb_win_prp():
+    screen_w = None
+    screen_h = None
     for m in get_monitors():
         screen_w = m.width
         screen_h = m.height
@@ -247,10 +249,9 @@ def pass_frames(cap, npf, camera_id):
             get_frame(cap)
 
 
-def show_clb_win(pnt_pxl, win_size, pnt_d, win_origin, p, px_hat=None):
+def show_clb_win(pnt_pxl, win_size, pnt_d, win_origin, p, win_name, px_hat=None):
     win_w, win_h = win_size
     win_x, win_y = win_origin
-    win_name = "calibration"
     clb_img = (np.ones((win_h, win_w, 3)) * 255)
     cv2.circle(clb_img, pnt_pxl, pnt_d, (0, 0, 255), cv2.FILLED)
     if px_hat:
