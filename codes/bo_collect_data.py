@@ -14,8 +14,7 @@ elif os.name == "posix":
 
 
 # Collecting 'in_blink_out' data
-path2root = "../"
-subjects_fol = "subjects/"
+subjects_dir = "../subjects/"
 ibo_fol = "blink_out data/"
 
 
@@ -24,7 +23,6 @@ def save_data(x1, x2, y):
     x2 = np.array(x2)
     y = np.array(y)
 
-    subjects_dir = path2root + subjects_fol
     if not os.path.exists(subjects_dir):
         os.mkdir(subjects_dir)
     subject_dir = subjects_dir + f"{tp.NUMBER}/"

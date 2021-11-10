@@ -8,7 +8,8 @@ import pickle
 import os
 
 
-path2root = "../"
+subjects_dir = "../subjects/"
+smp_fol = "sampling data/"
 
 
 def save_data(t, x1, x2):
@@ -16,11 +17,11 @@ def save_data(t, x1, x2):
     x1 = np.array(x1)
     x2 = np.array(x2)
 
-    subject_smp_dir = path2root + f"subjects/{tp.NUMBER}/sampling data/"
-    if not os.path.exists(subject_smp_dir):
-        os.mkdir(subject_smp_dir)
+    smp_dir = subjects_dir + f"{tp.NUMBER}/" + smp_fol
+    if not os.path.exists(smp_dir):
+        os.mkdir(smp_dir)
 
-    ey.save([t, x1, x2], subject_smp_dir, ['t', 'x1', 'x2'])
+    ey.save([t, x1, x2], smp_dir, ['t', 'x1', 'x2'])
 
 
 some_landmarks_ids = ey.get_some_landmarks_ids()
@@ -42,13 +43,14 @@ face_mesh = mp.solutions.face_mesh.FaceMesh(
     min_detection_confidence=0.5)
 
 cap = ey.get_camera()
+ey.pass_frames(cap, tp.CAMERA_ID)
 
 print("Sampling started...")
 i = 0
 t_vec = []
 eyes_data_gray = []
 vector_inputs = []
-t1 = time.time()
+t0 = time.time()
 while True:
     frame_success, frame, frame_rgb = ey.get_frame(cap)
     if frame_success:
@@ -70,7 +72,7 @@ while True:
             False
         )
         if features_success:
-            t_vec.append(int((time.time() - t1) * 100) / 100.0)
+            t_vec.append(int((time.time() - t0) * 100) / 100.0)
             eyes_data_gray.append(eyes_frame_gray)
             vector_inputs.append(features_vector)
 
@@ -80,15 +82,11 @@ while True:
             if q == ord('q') or q == ord('Q'):
                 break
 
-t2 = time.time()
+fps = ey.get_time(i, t0, True)
+print(f"FPS: {fps}")
+
 cv2.destroyAllWindows()
 cap.release()
 
-elapsed_time = (t2 - t1)
-print(f"\nElapsed Time: {elapsed_time / 60} min")
-fps = i / elapsed_time
-print(f"FPS: {fps}")
-
-print("\nSaving data...")
 save_data(t_vec, eyes_data_gray, vector_inputs)
 print("Sampling finished!!")

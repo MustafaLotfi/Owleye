@@ -221,9 +221,9 @@ def get_model_inputs(
 
 def get_time(i, t, print_time=False):
     el_t = time.time() - t
-    fps = i / el_t
+    fps = int((i / el_t) * 100) / 100
     if print_time:
-        print(f"\nElapsed time : {el_t / 60.0} min")
+        print(f"\nElapsed time: {int(el_t / 60)}:{int(el_t % 60)}")
     return fps
 
 
