@@ -81,8 +81,8 @@ for item in clb_points:
 
     pnt = item[0]
     pnt_pxl = (np.array(pnt) * np.array(clb_win_size)).astype(np.uint32)
-
     ey.show_clb_win(pnt_pxl, clb_win_size, clb_pnt_d, [tp.CLB_WIN_X, tp.CLB_WIN_Y], p, clb_win_name)
+
     button = cv2.waitKey(0)
     if button == 27:
         break
@@ -91,7 +91,6 @@ for item in clb_points:
         s = len(item)
         for pnt in item:
             pnt_pxl = (np.array(pnt) * np.array(clb_win_size)).astype(np.uint32)
-
             ey.show_clb_win(pnt_pxl, clb_win_size, clb_pnt_d, [tp.CLB_WIN_X, tp.CLB_WIN_Y], p, clb_win_name)
             button = cv2.waitKey(1)
             if button == 27:

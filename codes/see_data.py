@@ -5,8 +5,8 @@ from base_codes import eyeing as ey
 
 
 subjects_dir = "../subjects/"
-# target_fol = "eye_tracking data-calibration/"
-target_fol = "in_blink_out data/"
+target_fol = "eye_tracking data-calibration/"
+# target_fol = "in_blink_out data/"
 
 subject_dir = subjects_dir + f"{tp.NUMBER}/" + target_fol
 
@@ -18,7 +18,7 @@ i = 0
 for img in x1:
     print(f"{i}, {y[i]}")
     cv2.imshow("Eyes Image", img)
-    q = cv2.waitKey(500)
+    q = cv2.waitKey(200)
     if q == ord('q'):
         break
     i += 1

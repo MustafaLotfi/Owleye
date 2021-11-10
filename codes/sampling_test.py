@@ -31,7 +31,7 @@ def save_data(t, x1, x2, y):
     ey.save([t, x1, x2, y], smp_dir, ['t', 'x1', 'x2', 'y'])
 
 
-clb_points = ey.load(path2root + files_fol, [clb_points_file])
+clb_points = ey.load(path2root + files_fol, [clb_points_file])[0]
 
 (clb_win_size, clb_pnt_d) = ey.get_clb_win_prp()
 clb_win_w, clb_win_h = clb_win_size
@@ -69,7 +69,6 @@ for item in clb_points:
 
     pnt = item[0]
     pnt_pxl = (np.array(pnt) * np.array(clb_win_size)).astype(np.uint32)
-
     ey.show_clb_win(pnt_pxl, clb_win_size, clb_pnt_d, [tp.CLB_WIN_X, tp.CLB_WIN_Y], p, clb_win_name)
 
     button = cv2.waitKey(0)
@@ -111,20 +110,15 @@ for item in clb_points:
                         points_loc.append(pnt_pxl)
                         i += 1
                         break
-
+        fps_vec.append(ey.get_time(s, t1))
     cap.release()
-    cv2.destroyWindow("Sampling-Test")
+    cv2.destroyWindow(clb_win_name)
     p += 1
 
-t2 = time.time()
 cv2.destroyAllWindows()
 
-elapsed_time = (t2 - t1)
-print(f"\nElapsed Time: {elapsed_time / 60} min")
-fps = i / elapsed_time
-print(f"FPS: {fps}")
+ey.get_time(0, t0, True)
+print(f"\nMean FPS : {np.array(fps_vec).mean()}")
 
-print("\nSaving data...")
 save_data(t_vec, eyes_data_gray, vector_inputs, points_loc)
-time.sleep(2)
 print("Calibration finished!!")

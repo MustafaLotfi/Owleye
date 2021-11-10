@@ -1,5 +1,5 @@
 # Subject Information
-NUMBER = 1
+NUMBER = 3
 NAME = "Mostafa Lotfi"
 GENDER = "Male"
 AGE = 25
@@ -13,7 +13,7 @@ N_SMP_PER_CLASS = 20
 IN_BLINK_OUT_MODEL_NUMBER = 2
 
 # calibration_collect_dataset
-CAMERA_ID = 2
+CAMERA_ID = 0
 FRAME_SIZE = 1280, 720
 CLB_WIN_W_ALIGN = 0  # 140
 CLB_WIN_H_ALIGN = 160
