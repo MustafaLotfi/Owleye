@@ -15,8 +15,8 @@ elif os.name == "posix":
 
 # Collecting 'in_blink_out' data
 path2root = "../"
-subjects_dir = path2root + "subjects/"
-subject_et_dir = path2root + f"subjects/{tp.NUMBER}/eye_tracking data-calibration/"
+subjects_fol = "subjects/"
+ibo_fol = "blink_out data/"
 
 
 def save_data(x1, x2, y):
@@ -24,16 +24,17 @@ def save_data(x1, x2, y):
     x2 = np.array(x2)
     y = np.array(y)
 
+    subjects_dir = path2root + subjects_fol
     if not os.path.exists(subjects_dir):
         os.mkdir(subjects_dir)
     subject_dir = subjects_dir + f"{tp.NUMBER}/"
     if not os.path.exists(subject_dir):
         os.mkdir(subject_dir)
-    subject_bo_dir = subject_dir + "in_blink_out data/"
-    if not os.path.exists(subject_bo_dir):
-        os.mkdir(subject_bo_dir)
+    subject_ibo_dir = subject_dir + ibo_fol
+    if not os.path.exists(subject_ibo_dir):
+        os.mkdir(subject_ibo_dir)
 
-    ey.save([x1, x2, y], subject_bo_dir, ['x1', 'x2', 'y'])
+    ey.save([x1, x2, y], subject_ibo_dir, ['x1', 'x2', 'y'])
 
 
 some_landmarks_ids = ey.get_some_landmarks_ids()

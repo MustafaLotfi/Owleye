@@ -261,3 +261,10 @@ def show_clb_win(pnt_pxl, win_size, pnt_d, win_origin, p, win_name, px_hat=None)
     cv2.namedWindow(win_name)
     cv2.moveWindow(win_name, win_x, win_y)
     cv2.imshow(win_name, clb_img)
+
+
+def remove(fol_dir, data_name):
+    for dn in data_name:
+        os.remove(fol_dir + dn + ".pickle")
+
+    os.rmdir(fol_dir)

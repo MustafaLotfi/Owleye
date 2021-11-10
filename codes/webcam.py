@@ -4,9 +4,8 @@ from base_codes import eyeing as ey
 import tuning_parameters as tp
 
 
-n_frame_pass = 40
 cap = ey.get_camera()
-ey.pass_frames(cap, n_frame_pass, tp.CAMERA_ID)
+ey.pass_frames(cap, tp.CAMERA_ID)
 
 i = 0
 t0 = time.time()
