@@ -134,9 +134,8 @@ dmypy.json
 # Eye-Tracker
 media/
 subjects/
-dataset/
-models/eye_tracking/raw
-models/in_blink_out/raw
+models/et/raw
+models/ibo/raw
 codes/p1.py
 codes/.ipynb_checkpoints/
 codes/__pycache__/
