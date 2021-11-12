@@ -19,6 +19,13 @@ clb_file_pnt = "calibration_points_5x7x10"
 clb_file_line = "calibration_points_3x20x1"
 
 
+sub_dir = path2root + subjects_fol + f"{tp.NUMBER}/"
+if os.path.exists(sub_dir):
+    inp = input(f"\nThere is a subject in {sub_dir} folder. do you want to remove it (y/n)? ")
+    if inp == 'n' or inp == 'N':
+        quit()
+
+
 def save_data(x1, x2, y):
     x1 = np.array(x1)
     x2 = np.array(x2)
@@ -42,10 +49,9 @@ def save_data(x1, x2, y):
 
 
 if tp.CLB_METHOD == 0:
-    clb_pnt_file = clb_file_pnt
+    clb_points = ey.load(path2root + files_fol, [clb_file_pnt])[0]
 else:
-    clb_pnt_file = clb_file_line
-clb_points = ey.load(path2root + files_fol, [clb_pnt_file])[0]
+    clb_points = ey.load(path2root + files_fol, [clb_file_line])[0]
 
 (clb_win_size, clb_pnt_d) = ey.get_clb_win_prp()
 clb_win_w, clb_win_h = clb_win_size

@@ -16,6 +16,8 @@ elif os.name == "posix":
 # Collecting 'in_blink_out' data
 subjects_dir = "../subjects/"
 ibo_fol = "blink_out data/"
+n_class = 2
+n_smp_in_cls = 20
 
 
 def save_data(x1, x2, y):
@@ -57,7 +59,7 @@ eyes_data_gray = []
 vector_inputs = []
 output_class = []
 fps_vec = []
-for j in range(2):
+for j in range(n_class):
     cap = ey.get_camera()
     ey.pass_frames(cap, tp.CAMERA_ID)
     i = 0
@@ -93,7 +95,7 @@ for j in range(2):
                 output_class.append(j)
 
                 i += 1
-                if i == tp.N_SMP_PER_CLASS:
+                if i == n_smp_in_cls:
                     break
     fps_vec.append(ey.get_time(i, t1))
     if os.name == "nt":

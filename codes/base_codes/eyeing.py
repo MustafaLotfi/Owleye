@@ -228,7 +228,7 @@ def get_time(i, t, print_time=False):
 
 
 def load(fol_dir, data_name):
-    print("\nLoading data...")
+    print("\nLoading data from" + fol_dir)
     data = []
     for dn in data_name:
         with open(fol_dir + dn + ".pickle", 'rb') as f:
