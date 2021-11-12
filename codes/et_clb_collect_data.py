@@ -12,16 +12,17 @@ from datetime import datetime
 # Calibration to Collect 'eye_tracking' data
 path2root = "../"
 subjects_fol = "subjects/"
-et_fol = "eye_tracking data-calibration/"
+et_fol = "data-et-clb/"
 files_fol = "files/"
-clb_file_pnt = "calibration_points_5x7x10"
-# clb_file_line = "calibration_points_10x150x1"
-clb_file_line = "calibration_points_3x20x1"
+clb_points_fol = "clb_points/"
+clb_file_pnt = "5x7x10"
+# clb_file_line = "10x150x1"
+clb_file_line = "3x20x1"
 
 
-sub_dir = path2root + subjects_fol + f"{tp.NUMBER}/"
-if os.path.exists(sub_dir):
-    inp = input(f"\nThere is a subject in {sub_dir} folder. do you want to remove it (y/n)? ")
+sbj_dir = path2root + subjects_fol + f"{tp.NUMBER}/"
+if os.path.exists(sbj_dir):
+    inp = input(f"\nThere is a subject in {sbj_dir} folder. do you want to remove it (y/n)? ")
     if inp == 'n' or inp == 'N':
         quit()
 
@@ -34,45 +35,41 @@ def save_data(x1, x2, y):
     subjects_dir = path2root + subjects_fol
     if not os.path.exists(subjects_dir):
         os.mkdir(subjects_dir)
-    subject_dir = subjects_dir + f"{tp.NUMBER}/"
-    if not os.path.exists(subject_dir):
-        os.mkdir(subject_dir)
-    subject_et_clb_dir = subject_dir + et_fol
-    if not os.path.exists(subject_et_clb_dir):
-        os.mkdir(subject_et_clb_dir)
+    if not os.path.exists(sbj_dir):
+        os.mkdir(sbj_dir)
+    et_dir = sbj_dir + et_fol
+    if not os.path.exists(et_dir):
+        os.mkdir(et_dir)
 
-    ey.save([x1, x2, y], subject_et_clb_dir, ["x1", "x2", "y"])
+    ey.save([x1, x2, y], et_dir, ["x1", "x2", "y"])
 
-    f = open(subject_dir + f"Information.txt", "w+")
+    f = open(sbj_dir + f"Information.txt", "w+")
     f.write(tp.NAME + "\n" + tp.GENDER + "\n" + str(tp.AGE) + "\n" + str(datetime.now())[:16] + "\n")
     f.close()
 
 
+clb_points_dir = path2root + files_fol + clb_points_fol
 if tp.CLB_METHOD == 0:
-    clb_points = ey.load(path2root + files_fol, [clb_file_pnt])[0]
+    clb_points = ey.load(clb_points_dir, [clb_file_pnt])[0]
 else:
-    clb_points = ey.load(path2root + files_fol, [clb_file_line])[0]
+    clb_points = ey.load(clb_points_dir, [clb_file_line])[0]
 
 (clb_win_size, clb_pnt_d) = ey.get_clb_win_prp()
-clb_win_w, clb_win_h = clb_win_size
 
 some_landmarks_ids = ey.get_some_landmarks_ids()
 
 (
     frame_size,
-    center,
     camera_matrix,
     dst_cof,
     pcf
 ) = ey.get_camera_properties()
 
-frame_w, frame_h = frame_size
-
 print("Configuring face detection model...")
 face_mesh = mp.solutions.face_mesh.FaceMesh(
-    static_image_mode=False,
-    min_tracking_confidence=0.5,
-    min_detection_confidence=0.5)
+    static_image_mode=ey.STATIC_IMAGE_MODE,
+    min_tracking_confidence=ey.MIN_TRACKING_CONFIDENCE,
+    min_detection_confidence=ey.MIN_DETECTION_CONFIDENCE)
 
 p = 1
 fps_vec = []

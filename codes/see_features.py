@@ -8,20 +8,16 @@ some_landmarks_ids = ey.get_some_landmarks_ids()
 
 (
     frame_size,
-    center,
     camera_matrix,
     dst_cof,
     pcf
 ) = ey.get_camera_properties()
-time.sleep(2)
-
-frame_width, frame_height = frame_size
 
 print("Configuring face detection model...")
 face_mesh = mp.solutions.face_mesh.FaceMesh(
-    static_image_mode=False,
-    min_tracking_confidence=0.5,
-    min_detection_confidence=0.5)
+    static_image_mode=ey.STATIC_IMAGE_MODE,
+    min_tracking_confidence=ey.MIN_TRACKING_CONFIDENCE,
+    min_detection_confidence=ey.MIN_DETECTION_CONFIDENCE)
 
 cap = ey.get_camera()
 t0 = time.time()
@@ -33,8 +29,8 @@ while True:
         (
             features_success,
             frame,
-            eyes_frame_gray,
-            features_vector
+            _,
+            _
         ) = ey.get_model_inputs(
             frame,
             frame_rgb,

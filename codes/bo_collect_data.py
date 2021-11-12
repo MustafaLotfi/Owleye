@@ -15,7 +15,7 @@ elif os.name == "posix":
 
 # Collecting 'in_blink_out' data
 subjects_dir = "../subjects/"
-ibo_fol = "blink_out data/"
+bo_fol = "data-bo/"
 n_class = 2
 n_smp_in_cls = 20
 
@@ -27,32 +27,30 @@ def save_data(x1, x2, y):
 
     if not os.path.exists(subjects_dir):
         os.mkdir(subjects_dir)
-    subject_dir = subjects_dir + f"{tp.NUMBER}/"
-    if not os.path.exists(subject_dir):
-        os.mkdir(subject_dir)
-    subject_ibo_dir = subject_dir + ibo_fol
-    if not os.path.exists(subject_ibo_dir):
-        os.mkdir(subject_ibo_dir)
+    sbj_dir = subjects_dir + f"{tp.NUMBER}/"
+    if not os.path.exists(sbj_dir):
+        os.mkdir(sbj_dir)
+    bo_dir = sbj_dir + bo_fol
+    if not os.path.exists(bo_dir):
+        os.mkdir(bo_dir)
 
-    ey.save([x1, x2, y], subject_ibo_dir, ['x1', 'x2', 'y'])
+    ey.save([x1, x2, y], bo_dir, ['x1', 'x2', 'y'])
 
 
 some_landmarks_ids = ey.get_some_landmarks_ids()
 
 (
     frame_size,
-    center,
     camera_matrix,
     dst_cof,
     pcf
 ) = ey.get_camera_properties()
-frame_width, frame_height = frame_size
 
 print("Configuring face detection model...")
 face_mesh = mp.solutions.face_mesh.FaceMesh(
-    static_image_mode=False,
-    min_tracking_confidence=0.5,
-    min_detection_confidence=0.5)
+    static_image_mode=ey.STATIC_IMAGE_MODE,
+    min_tracking_confidence=ey.MIN_TRACKING_CONFIDENCE,
+    min_detection_confidence=ey.MIN_DETECTION_CONFIDENCE)
 
 t0 = time.time()
 eyes_data_gray = []

@@ -7,13 +7,15 @@ import os
 
 
 subjects_dir = "../subjects/"
-ibo_fol = "in_blink_out data/"
-et_fol = "eye_tracking data-calibration/"
-bo_fol = "blink_out data/"
+ibo_fol = "data-ibo/"
+et_fol = "data-et-clb/"
+bo_fol = "data-bo/"
+
+sbj_dir = subjects_dir + f"{tp.NUMBER}/"
 
 
 def save_ibo():
-    ibo_dir = subjects_dir + f"{tp.NUMBER}/" + ibo_fol
+    ibo_dir = sbj_dir + ibo_fol
     if not os.path.exists(ibo_dir):
         os.mkdir(ibo_dir)
 
@@ -21,8 +23,8 @@ def save_ibo():
     ey.remove(bo_dir, ['x1', 'x2', 'y'])
 
 
-et_dir = subjects_dir + f"{tp.NUMBER}/" + et_fol
-bo_dir = subjects_dir + f"{tp.NUMBER}/" + bo_fol
+et_dir = sbj_dir + et_fol
+bo_dir = sbj_dir + bo_fol
 
 x1_et, x2_et = ey.load(et_dir, ['x1', 'x2'])
 x1_bo, x2_bo, y_bo = ey.load(bo_dir, ['x1', 'x2', 'y'])

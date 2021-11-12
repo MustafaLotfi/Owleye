@@ -10,6 +10,11 @@ import time
 import os
 
 
+STATIC_IMAGE_MODE = False
+MIN_TRACKING_CONFIDENCE = 0.5
+MIN_DETECTION_CONFIDENCE = 0.5
+
+
 def get_clb_win_prp():
     screen_w = None
     screen_h = None
@@ -45,42 +50,28 @@ def get_camera_properties():
     new_fr_h = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
     cap.release()
     new_fr_size = new_fr_w, new_fr_h
-    if tp.KNOWING_CAMERA_PROPERTIES:
-        fx = tp.FX
-        fy = tp.FY
-        fr_center = tp.FRAME_CENTER
-        dist_coeffs = tp.CAMERA_DISTORTION_COEFFICIENTS
-        camera_matrix = np.array([
-            [fx, 0, fr_center[0]],
-            [0, fy, fr_center[1]],
-            [0, 0, 1]], dtype="double")
-        pcf = PCF(
-            frame_height=fr_h,
-            frame_width=fr_w,
-            fy=fy)
 
-    else:
-        fr_center = (new_fr_w // 2, new_fr_h // 2)
-        focal_length = new_fr_w
-        camera_matrix = np.array([
-            [focal_length, 0, fr_center[0]],
-            [0, focal_length, fr_center[1]],
-            [0, 0, 1]], dtype="double")
-        dist_coeffs = np.zeros((4, 1))
+    fr_center = (new_fr_w // 2, new_fr_h // 2)
+    focal_length = new_fr_w
+    camera_matrix = np.array([
+        [focal_length, 0, fr_center[0]],
+        [0, focal_length, fr_center[1]],
+        [0, 0, 1]], dtype="double")
+    dst_cof = np.zeros((4, 1))
 
-        pcf = PCF(
-            frame_height=fr_h,
-            frame_width=fr_w,
-            fy=fr_w)
+    pcf = PCF(
+        frame_height=fr_h,
+        frame_width=fr_w,
+        fy=fr_w)
 
-    return new_fr_size, fr_center, camera_matrix, dist_coeffs, pcf
+    return new_fr_size, camera_matrix, dst_cof, pcf
 
 
 def get_camera():
-    frame_width, frame_height = tp.FRAME_SIZE
+    frame_w, frame_h = tp.FRAME_SIZE
     cap = cv2.VideoCapture(tp.CAMERA_ID)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_width)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_height)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_w)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_h)
     return cap
 
 
@@ -104,7 +95,7 @@ def get_model_inputs(
         camera_matrix,
         pcf,
         image_size,
-        dist_coeffs,
+        dst_cof,
         some_landmarks_ids,
         show_features
 ):
@@ -135,7 +126,7 @@ def get_model_inputs(
             some_landmarks_model,
             some_landmarks_image,
             camera_matrix,
-            dist_coeffs,
+            dst_cof,
             flags=cv2.SOLVEPNP_ITERATIVE
         )
         features.append(rotation_vector.reshape((3,)))
@@ -204,7 +195,7 @@ def get_model_inputs(
                 rotation_vector,
                 translation_vector,
                 camera_matrix,
-                dist_coeffs,
+                dst_cof,
             )
 
             p1 = (int(some_landmarks_image[0][0]), int(some_landmarks_image[0][1]))
@@ -228,7 +219,7 @@ def get_time(i, t, print_time=False):
 
 
 def load(fol_dir, data_name):
-    print("\nLoading data from" + fol_dir)
+    print("\nLoading data from " + fol_dir)
     data = []
     for dn in data_name:
         with open(fol_dir + dn + ".pickle", 'rb') as f:
@@ -237,7 +228,7 @@ def load(fol_dir, data_name):
 
 
 def save(data, fol_dir, data_name):
-    print("\nSaving data...")
+    print("\nSaving data in " + fol_dir)
     for (d, dn) in zip(data, data_name):
         with open(fol_dir + dn + ".pickle", 'wb') as f:
             pickle.dump(d, f)

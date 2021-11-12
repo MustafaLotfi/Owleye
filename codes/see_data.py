@@ -5,12 +5,12 @@ from base_codes import eyeing as ey
 
 
 subjects_dir = "../subjects/"
-target_fol = "eye_tracking data-calibration/"
-# target_fol = "in_blink_out data/"
+# target_fol = "data-et-clb/"
+target_fol = "data-ibo/"
 
-subject_dir = subjects_dir + f"{tp.NUMBER}/" + target_fol
+target_dir = subjects_dir + f"{tp.NUMBER}/" + target_fol
 
-x1, x2, y = ey.load(subject_dir, ["x1", "x2", "y"])
+x1, x2, y = ey.load(target_dir, ["x1", "x2", "y"])
 
 print(x1.shape, x2.shape, y.shape)
 
