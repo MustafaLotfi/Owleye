@@ -3,9 +3,8 @@ import cv2
 import pickle
 from sklearn.utils import shuffle
 from screeninfo import get_monitors
-from base.face_geometry import PCF, procrustes_landmark_basis, get_metric_landmarks
-import tuning_parameters as tp
-from base.iris_lm_depth import from_landmarks_to_depth as fl2d
+from codes.base.face_geometry import PCF, procrustes_landmark_basis, get_metric_landmarks
+from codes.base.iris_lm_depth import from_landmarks_to_depth as fl2d
 import time
 import os
 
@@ -16,15 +15,15 @@ MIN_DETECTION_CONFIDENCE = 0.5
 CHOSEN_INPUTS = [0, 1, 2, 6, 7, 8, 9]
 
 
-def get_clb_win_prp():
+def get_clb_win_prp(clb_win_w_align, clb_win_h_align):
     screen_w = None
     screen_h = None
     for m in get_monitors():
         screen_w = m.width
         screen_h = m.height
 
-    clb_win_w = screen_w - tp.CLB_WIN_W_ALIGN
-    clb_win_h = screen_h - tp.CLB_WIN_H_ALIGN
+    clb_win_w = screen_w - clb_win_w_align
+    clb_win_h = screen_h - clb_win_h_align
     clb_win_size = (clb_win_w, clb_win_h)
     clb_pnt_d = clb_win_w // 90
 
@@ -40,10 +39,10 @@ def get_some_landmarks_ids():
     return some_landmarks_ids
 
 
-def get_camera_properties():
+def get_camera_properties(camera_id, frame_size):
     print("Getting camera properties...")
-    fr_w, fr_h = tp.FRAME_SIZE
-    cap = cv2.VideoCapture(tp.CAMERA_ID)  # (tp.CAMERA_ID, cv2.CAP_DSHOW)
+    fr_w, fr_h = frame_size
+    cap = cv2.VideoCapture(camera_id)  # (tp.CAMERA_ID, cv2.CAP_DSHOW)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, fr_w)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, fr_h)
 
@@ -68,9 +67,9 @@ def get_camera_properties():
     return new_fr_size, camera_matrix, dst_cof, pcf
 
 
-def get_camera():
-    frame_w, frame_h = tp.FRAME_SIZE
-    cap = cv2.VideoCapture(tp.CAMERA_ID)
+def get_camera(camera_id, frame_size):
+    frame_w, frame_h = frame_size
+    cap = cv2.VideoCapture(camera_id)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_w)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_h)
     return cap

@@ -1,15 +1,12 @@
 import cv2
 import numpy as np
-from base.core import (
+from codes.base.core import (
     detections_to_rect,
     landmarks_to_detections,
     slice_from_roi,
     tflite_inference,
     transform_rect,
 )
-
-
-PATH2ROOT = "../"
 
 
 def from_landmarks_to_depth(
@@ -65,7 +62,7 @@ def detect_iris(eye_frame, is_right_eye=False):
         eye_frame, (side_low, side_low), interpolation=cv2.INTER_AREA
     )
 
-    model_path = PATH2ROOT + "models/iris/iris_landmark.tflite"
+    model_path = "../models/iris/iris_landmark.tflite"
 
     if is_right_eye:
         eye_frame_low = np.fliplr(eye_frame_low)

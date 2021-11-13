@@ -1,13 +1,12 @@
 import cv2
 import time
 import mediapipe as mp
-from base import eyeing as ey
-import tuning_parameters as tp
+from codes.base import eyeing as ey
 
 
-def webcam():
-    cap = ey.get_camera()
-    ey.pass_frames(cap, tp.CAMERA_ID)
+def webcam(camera_id, frame_size):
+    cap = ey.get_camera(camera_id, frame_size)
+    ey.pass_frames(cap, camera_id)
 
     i = 0
     t0 = time.time()
@@ -26,7 +25,7 @@ def webcam():
     print(f"FPS : {fps}")
 
 
-def features():
+def features(camera_id, frame_size):
     # Seeing features
     some_landmarks_ids = ey.get_some_landmarks_ids()
 
@@ -35,7 +34,7 @@ def features():
         camera_matrix,
         dst_cof,
         pcf
-    ) = ey.get_camera_properties()
+    ) = ey.get_camera_properties(camera_id, frame_size)
 
     print("Configuring face detection model...")
     face_mesh = mp.solutions.face_mesh.FaceMesh(
@@ -43,7 +42,7 @@ def features():
         min_tracking_confidence=ey.MIN_TRACKING_CONFIDENCE,
         min_detection_confidence=ey.MIN_DETECTION_CONFIDENCE)
 
-    cap = ey.get_camera()
+    cap = ey.get_camera(camera_id, frame_size)
     t0 = time.time()
     i = 0
     while True:
