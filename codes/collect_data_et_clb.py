@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import time
 import mediapipe as mp
-from base_codes import eyeing as ey
+from base import eyeing as ey
 import tuning_parameters as tp
 import pickle
 import os
@@ -13,8 +13,7 @@ from datetime import datetime
 path2root = "../"
 subjects_fol = "subjects/"
 et_fol = "data-et-clb/"
-files_fol = "files/"
-clb_points_fol = "clb_points/"
+clb_points_fol = "files/clb_points/"
 clb_file_pnt = "5x7x10"
 # clb_file_line = "10x150x1"
 clb_file_line = "3x20x1"
@@ -48,7 +47,7 @@ def save_data(x1, x2, y):
     f.close()
 
 
-clb_points_dir = path2root + files_fol + clb_points_fol
+clb_points_dir = path2root + clb_points_fol
 if tp.CLB_METHOD == 0:
     clb_points = ey.load(clb_points_dir, [clb_file_pnt])[0]
 else:
@@ -84,7 +83,7 @@ for item in clb_points:
 
     pnt = item[0]
     pnt_pxl = (np.array(pnt) * np.array(clb_win_size)).astype(np.uint32)
-    ey.show_clb_win(pnt_pxl, clb_win_size, clb_pnt_d, [tp.CLB_WIN_X, tp.CLB_WIN_Y], p, clb_win_name)
+    ey.show_clb_win(clb_win_size, clb_pnt_d, [tp.CLB_WIN_X, tp.CLB_WIN_Y], p, clb_win_name, pnt_pxl)
 
     button = cv2.waitKey(0)
     if button == 27:
@@ -94,7 +93,7 @@ for item in clb_points:
         s = len(item)
         for pnt in item:
             pnt_pxl = (np.array(pnt) * np.array(clb_win_size)).astype(np.uint32)
-            ey.show_clb_win(pnt_pxl, clb_win_size, clb_pnt_d, [tp.CLB_WIN_X, tp.CLB_WIN_Y], p, clb_win_name)
+            ey.show_clb_win(clb_win_size, clb_pnt_d, [tp.CLB_WIN_X, tp.CLB_WIN_Y], p, clb_win_name, pnt_pxl)
             button = cv2.waitKey(1)
             if button == 27:
                 break

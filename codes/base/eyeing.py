@@ -3,9 +3,9 @@ import cv2
 import pickle
 from sklearn.utils import shuffle
 from screeninfo import get_monitors
-from base_codes.face_geometry import PCF, procrustes_landmark_basis, get_metric_landmarks
+from base.face_geometry import PCF, procrustes_landmark_basis, get_metric_landmarks
 import tuning_parameters as tp
-from base_codes.iris_lm_depth import from_landmarks_to_depth as fl2d
+from base.iris_lm_depth import from_landmarks_to_depth as fl2d
 import time
 import os
 
@@ -13,6 +13,7 @@ import os
 STATIC_IMAGE_MODE = False
 MIN_TRACKING_CONFIDENCE = 0.5
 MIN_DETECTION_CONFIDENCE = 0.5
+CHOSEN_INPUTS = [0, 1, 2, 6, 7, 8, 9]
 
 
 def get_clb_win_prp():
@@ -240,15 +241,18 @@ def pass_frames(cap, camera_id):
             get_frame(cap)
 
 
-def show_clb_win(pnt_pxl, win_size, pnt_d, win_origin, p, win_name, px_hat=None):
+def show_clb_win(win_size, pnt_d, win_origin, p, win_name, px=None, px_hat=None, t=None):
     win_w, win_h = win_size
     win_x, win_y = win_origin
     clb_img = (np.ones((win_h, win_w, 3)) * 255)
-    cv2.circle(clb_img, pnt_pxl, pnt_d, (0, 0, 255), cv2.FILLED)
-    if px_hat:
-        pass
-    cv2.putText(clb_img, f"{p}", (int(pnt_pxl[0] - pnt_d // 1.5), int(pnt_pxl[1] + pnt_d // 2.7)),
-                cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 3)
+    if np.array(px).any():
+        cv2.circle(clb_img, px, pnt_d, (0, 0, 255), cv2.FILLED)
+        cv2.putText(clb_img, f"{p}", (int(px[0] - pnt_d // 1.5), int(px[1] + pnt_d // 2.7)),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 3)
+    if np.array(px_hat).any():
+        cv2.circle(clb_img, px_hat, int(pnt_d/2), (200, 0, 50), cv2.FILLED)
+    if np.array(t).any():
+        cv2.putText(clb_img, f"{t} sec", (50, 70), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255, 0, 0), 3)
     cv2.namedWindow(win_name)
     cv2.moveWindow(win_name, win_x, win_y)
     cv2.imshow(win_name, clb_img)

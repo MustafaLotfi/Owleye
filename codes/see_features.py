@@ -1,7 +1,7 @@
 import cv2
 import time
 import mediapipe as mp
-from base_codes import eyeing as ey
+from base import eyeing as ey
 
 # Seeing features
 some_landmarks_ids = ey.get_some_landmarks_ids()

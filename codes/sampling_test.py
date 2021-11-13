@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import time
 import mediapipe as mp
-from base_codes import eyeing as ey
+from base import eyeing as ey
 import tuning_parameters as tp
 import pickle
 import os
@@ -12,10 +12,11 @@ from datetime import datetime
 # Calibration to Collect 'eye_tracking' data
 path2root = "../"
 subjects_fol = "subjects/"
-smp_tst_fol = "sampling_test data/"
-files_fol = "files/"
+smp_tst_fol = "sampling-test/"
+clb_points_fol = "files/clb_points/"
 # POINTS_FILE_NAME = "calibration_points_3x3x10"
-clb_points_file = "calibration_points_3x3x20"
+# clb_points_file = "3x3x20"
+clb_points_file = "3x20x1"
 
 
 def save_data(t, x1, x2, y):
@@ -28,10 +29,10 @@ def save_data(t, x1, x2, y):
     if not os.path.exists(smp_dir):
         os.mkdir(smp_dir)
 
-    ey.save([t, x1, x2, y], smp_dir, ['t', 'x1', 'x2', 'y'])
+    ey.save([t, x1, x2, y], smp_dir, ['t', 'x1', 'x2', 'y-et'])
 
 
-clb_points = ey.load(path2root + files_fol, [clb_points_file])[0]
+clb_points = ey.load(path2root + clb_points_fol, [clb_points_file])[0]
 
 (clb_win_size, clb_pnt_d) = ey.get_clb_win_prp()
 clb_win_w, clb_win_h = clb_win_size
@@ -40,13 +41,10 @@ some_landmarks_ids = ey.get_some_landmarks_ids()
 
 (
     frame_size,
-    center,
     camera_matrix,
     dst_cof,
     pcf
 ) = ey.get_camera_properties()
-
-frame_w, frame_h = frame_size
 
 print("Configuring face detection model...")
 face_mesh = mp.solutions.face_mesh.FaceMesh(
@@ -69,7 +67,7 @@ for item in clb_points:
 
     pnt = item[0]
     pnt_pxl = (np.array(pnt) * np.array(clb_win_size)).astype(np.uint32)
-    ey.show_clb_win(pnt_pxl, clb_win_size, clb_pnt_d, [tp.CLB_WIN_X, tp.CLB_WIN_Y], p, clb_win_name)
+    ey.show_clb_win(clb_win_size, clb_pnt_d, [tp.CLB_WIN_X, tp.CLB_WIN_Y], p, clb_win_name, pnt_pxl)
 
     button = cv2.waitKey(0)
     if button == 27:

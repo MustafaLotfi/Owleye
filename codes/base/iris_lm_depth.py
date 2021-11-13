@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from base_codes.core import (  # isort:skip
+from base.core import (
     detections_to_rect,
     landmarks_to_detections,
     slice_from_roi,

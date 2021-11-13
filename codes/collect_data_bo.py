@@ -1,7 +1,7 @@
 import mediapipe as mp
 import numpy as np
 import cv2
-from base_codes import eyeing as ey
+from base import eyeing as ey
 import tuning_parameters as tp
 import pickle
 import os

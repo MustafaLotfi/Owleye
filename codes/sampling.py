@@ -2,14 +2,14 @@ import numpy as np
 import cv2
 import time
 import mediapipe as mp
-from base_codes import eyeing as ey
+from base import eyeing as ey
 import tuning_parameters as tp
 import pickle
 import os
 
 
 subjects_dir = "../subjects/"
-smp_fol = "sampling data/"
+smp_fol = "sampling/"
 
 
 def save_data(t, x1, x2):
@@ -28,13 +28,10 @@ some_landmarks_ids = ey.get_some_landmarks_ids()
 
 (
     frame_size,
-    center,
     camera_matrix,
     dst_cof,
     pcf
 ) = ey.get_camera_properties()
-
-frame_width, frame_height = frame_size
 
 print("Configuring face detection model...")
 face_mesh = mp.solutions.face_mesh.FaceMesh(

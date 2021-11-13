@@ -2,12 +2,12 @@ import pickle
 import numpy as np
 import tuning_parameters as tp
 from sklearn.utils import shuffle
-from base_codes import eyeing as ey
+from base import eyeing as ey
 import os
 
 
 subjects_dir = "../subjects/"
-ibo_fol = "data-ibo/"
+boi_fol = "data-boi/"
 et_fol = "data-et-clb/"
 bo_fol = "data-bo/"
 
@@ -15,11 +15,11 @@ sbj_dir = subjects_dir + f"{tp.NUMBER}/"
 
 
 def save_ibo():
-    ibo_dir = sbj_dir + ibo_fol
-    if not os.path.exists(ibo_dir):
-        os.mkdir(ibo_dir)
+    boi_dir = sbj_dir + boi_fol
+    if not os.path.exists(boi_dir):
+        os.mkdir(boi_dir)
 
-    ey.save([x1_ibo, x2_ibo, y_ibo], ibo_dir, ['x1', 'x2', 'y'])
+    ey.save([x1_boi, x2_boi, y_boi], boi_dir, ['x1', 'x2', 'y'])
     ey.remove(bo_dir, ['x1', 'x2', 'y'])
 
 
@@ -36,8 +36,8 @@ x1_et_shf, x2_et_shf = shuffle(x1_et, x2_et)
 x1_in, x2_in = x1_et_shf[:smp_in_cls], x2_et_shf[:smp_in_cls]
 y_in = np.ones((smp_in_cls,)) * 2
 
-x1_ibo = np.concatenate((x1_in, x1_bo))
-x2_ibo = np.concatenate((x2_in, x2_bo))
-y_ibo = np.concatenate((y_in, y_bo))
+x1_boi = np.concatenate((x1_in, x1_bo))
+x2_boi = np.concatenate((x2_in, x2_bo))
+y_boi = np.concatenate((y_in, y_bo))
 
 save_ibo()
