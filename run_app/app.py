@@ -22,7 +22,7 @@ CALIBRATION_WINDOW_ORIGIN = 0, 0  # x & y # 140, 0
 CALIBRATION_METHOD = 1  # 0 for points and 1 for lines
 
 # ----------- FUNCTIONS ------------
-show.webcam(CAMERA_ID, FRAME_SIZE)
+# show.webcam(CAMERA_ID, FRAME_SIZE)
 # show.features(CAMERA_ID, FRAME_SIZE)
 
 # calibration.track_eye(
@@ -39,11 +39,11 @@ show.webcam(CAMERA_ID, FRAME_SIZE)
 # calibration.get_blink_out(CAMERA_ID, FRAME_SIZE, NUMBER)
 # calibration.create_blink_out_in(NUMBER)
 
-modeling.create_empty_model_boi()
-# modeling.create_empty_model_et()
-# modeling.train_boi(1, 5)
-# modeling.train_et(1, 5)
+# modeling.create_empty_model_boi()
+modeling.create_empty_model_et()
+# modeling.train_boi(n_subjects=4, n_epochs=2, patience=1)
+# modeling.train_et(n_subjects=4, n_epochs=2, patience=1)
 
-# tune_model_pars.boi(MODEL_BLINK_OUT_IN_NUMBER, NUMBER)
-# tune_model_pars.et(MODEL_EYE_TRACKING_NUMBER, NUMBER)
+# tune_model_pars.boi(NUMBER, n_epochs=10, patience=5)
+# tune_model_pars.et(NUMBER, n_epochs=2, patience=1)
 

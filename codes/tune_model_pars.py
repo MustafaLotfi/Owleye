@@ -9,7 +9,7 @@ import numpy as np
 import os
 
 
-def boi(mdl_boi_num, sbj_num):
+def boi(sbj_num, selected_model_num=1, n_epochs=50, patience=10):
     path2root = "../"
     subjects_fol = "subjects/"
     models_fol = "models/"
@@ -17,14 +17,12 @@ def boi(mdl_boi_num, sbj_num):
     trained_fol = "trained/"
     data_boi_fol = "data-boi/"
     r_train = 0.85
-    n_epochs = 2
-    patience = 1
     trainable_layers = 1
     chosen_inputs = [0, 1, 2, 6, 7, 8, 9]
 
     trained_dir = path2root + models_fol + models_boi_fol + trained_fol
-    public_model_dir = trained_dir + f"model{mdl_boi_num}"
-    public_scalers_dir = trained_dir + f"scalers{mdl_boi_num}.bin"
+    public_model_dir = trained_dir + f"model{selected_model_num}"
+    public_scalers_dir = trained_dir + f"scalers{selected_model_num}.bin"
     sbj_dir = path2root + subjects_fol + f"{sbj_num}/"
 
     print("\nLoading subject data in in_blink_out folder...")
@@ -86,7 +84,7 @@ def boi(mdl_boi_num, sbj_num):
     model.save(sbj_dir + "model-boi")
 
 
-def et(mdl_et_num, sbj_num):
+def et(sbj_num, selected_model_num=1, n_epochs=50, patience=10):
     path2root = "../"
     models_fol = "models/"
     models_et_fol = "et/"
@@ -96,8 +94,6 @@ def et(mdl_et_num, sbj_num):
     sbj_scalers_boi_fol = "scalers-boi.bin"
     sbj_model_boi_fol = "model-boi"
     r_train = 0.85
-    n_epochs = 5
-    patience = 2
     trainable_layers = 1
     chosen_inputs = [0, 1, 2, 6, 7, 8, 9]
 
@@ -155,7 +151,7 @@ def et(mdl_et_num, sbj_num):
     # ### Preparing modified calibration data to feeding in eye_tracking model
 
     print("\nNormalizing modified calibration data to feeding in eye_tracking model...")
-    public_scalers_et_dir = trained_dir + f"scalers{mdl_et_num}.bin"
+    public_scalers_et_dir = trained_dir + f"scalers{selected_model_num}.bin"
     x2_chs_inp_new = x2_new[:, chosen_inputs]
     scalers_et = j_load(public_scalers_et_dir)
     x1_scaler_et, x2_scaler_et, _ = scalers_et
@@ -188,7 +184,7 @@ def et(mdl_et_num, sbj_num):
     cb = EarlyStopping(patience=patience, verbose=1, restore_best_weights=True)
 
     print("Loading public eye_tracking models...")
-    public_model_et_dir = trained_dir + f"model{mdl_et_num}"
+    public_model_et_dir = trained_dir + f"model{selected_model_num}"
     model_hrz = load_model(public_model_et_dir + "-hrz")
     model_vrt = load_model(public_model_et_dir + "-vrt")
 

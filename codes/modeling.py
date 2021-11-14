@@ -94,6 +94,7 @@ def create_empty_model_boi():
         max_num = 0
 
     model.save(raw_dir + f"model{max_num + 1}")
+    print("\nEmpty blink_out_in model created and saved to " + raw_dir + f"model{max_num + 1}")
 
 
 def create_empty_model_et():
@@ -172,11 +173,15 @@ def create_empty_model_et():
     else:
         max_num = 0
 
-    model.save(raw_dir + f"model{max_num + 1}-hrz")
-    model.save(raw_dir + f"model{max_num + 1}-vrt")
+    max_num += 1
+    model.save(raw_dir + f"model{max_num}-hrz")
+    model.save(raw_dir + f"model{max_num}-vrt")
+
+    print("\nEmpty horizontally eye_tracking model created and saved to " + raw_dir + f"model{max_num}-hrz")
+    print("\nEmpty vertically eye_tracking model created and saved to " + raw_dir + f"model{max_num}-vrt")
 
 
-def train_boi(selected_model_num, n_subjects):
+def train_boi(n_subjects=5, selected_model_num=1, n_epochs=100, patience=15):
     path2root = "../"
     models_fol = "models/"
     models_boi_fol = "boi/"
@@ -185,8 +190,6 @@ def train_boi(selected_model_num, n_subjects):
     subjects_fol = "subjects/"
     data_boi_fol = "data-boi/"
     r_train = 0.85
-    n_epochs = 2
-    patience = 1
     min_brightness_ratio = 0.6
     max_brightness_ratio = 1.6
 
@@ -215,9 +218,8 @@ def train_boi(selected_model_num, n_subjects):
     x2_load = np.array(x2_load)
     y_load = np.array(y_load)
 
-    n_smp, frame_h, frame_w = x1_load.shape[:-1]
-
-    print(n_smp, frame_h, frame_w)
+    n_smp = x1_load.shape[0]
+    print(f"\nNumber of samples : {n_smp}")
 
     x2_chs_inp = x2_load[:, chosen_inputs]
 
@@ -235,8 +237,6 @@ def train_boi(selected_model_num, n_subjects):
 
     scalers = [x1_scaler, x2_scaler]
 
-    # In[11]:
-
     x1_shf, x2_shf, y_shf = shuffle(x1, x2, y_load)
 
     n_train = int(r_train * n_smp)
@@ -244,7 +244,7 @@ def train_boi(selected_model_num, n_subjects):
     x1_test, x2_test = x1_shf[n_train:], x2_shf[n_train:]
     y_train = y_shf[:n_train]
     y_test = y_shf[n_train:]
-
+    print("\nTrain and test data shape:")
     print(x1_train.shape, x1_test.shape, x2_train.shape, x2_test.shape,
           y_train.shape, y_test.shape)
 
@@ -258,9 +258,11 @@ def train_boi(selected_model_num, n_subjects):
 
     raw_model_dir = path2root + models_fol + models_boi_fol + raw_fol + f"model{selected_model_num}"
 
+    print("\nLoading blink_in_out model from " + raw_model_dir)
     model = load_model(raw_model_dir)
     print(model.summary())
 
+    print("\n--------horizontally eye_tracking model-------")
     model.fit(x_train_list,
               y_train_ctg,
               validation_data=(x_test_list, y_test_ctg),
@@ -282,12 +284,14 @@ def train_boi(selected_model_num, n_subjects):
     else:
         max_num = 0
 
-    model.save(trained_dir + f"model{max_num + 1}")
-    scalers_dir = path2root + models_fol + models_boi_fol + trained_fol + f"scalers{max_num + 1}.bin"
+    max_num += 1
+    model.save(trained_dir + f"model{max_num}")
+    print("\nSaving blink_out_in model in " + trained_dir + f"model{max_num}")
+    scalers_dir = path2root + models_fol + models_boi_fol + trained_fol + f"scalers{max_num}.bin"
     j_dump(scalers, scalers_dir)
 
 
-def train_et(selected_model_num, n_subjects):
+def train_et(n_subjects=5, selected_model_num=1, n_epochs=100, patience=15):
     path2root = "../"
     models_fol = "models/"
     models_et_fol = "et/"
@@ -298,8 +302,6 @@ def train_et(selected_model_num, n_subjects):
     sbj_model_boi_name = "model-boi"
     data_et_fol = "data-et-clb/"
     r_train = 0.85
-    n_epochs = 2
-    patience = 1
     min_brightness_ratio = 0.6
     max_brightness_ratio = 1.6
 
@@ -343,8 +345,8 @@ def train_et(selected_model_num, n_subjects):
     x2_load = np.array(x2_load)
     y_load = np.array(y_load)
 
-    n_smp, frame_h, frame_w = x1_load.shape[:-1]
-    print(n_smp, frame_h, frame_w)
+    n_smp = x1_load.shape[0]
+    print(f"\nNumber of samples : {n_smp}")
 
     x1_chg_bri = x1_load.copy()
     for (i, _) in enumerate(x1_chg_bri):
@@ -359,7 +361,7 @@ def train_et(selected_model_num, n_subjects):
     x2_scaler = StandardScaler()
     x2 = x2_scaler.fit_transform(x2_chs_inp)
 
-    y_scalers = y_load.max(0)
+    y_scalers = np.max(y_load, 0)
     y = y_load / y_scalers
 
     scalers = [x1_scaler, x2_scaler, y_scalers]
@@ -367,7 +369,6 @@ def train_et(selected_model_num, n_subjects):
     x1_shf, x2_shf, y_hrz_shf, y_vrt_shf = shuffle(x1, x2, y[:, 0], y[:, 1])
 
     n_train = int(r_train * n_smp)
-    n_test = n_smp - n_train
     x1_train, x2_train = x1_shf[:n_train], x2_shf[:n_train]
     x1_test, x2_test = x1_shf[n_train:], x2_shf[n_train:]
     y_hrz_train, y_vrt_train = y_hrz_shf[:n_train], y_vrt_shf[:n_train]
@@ -376,22 +377,27 @@ def train_et(selected_model_num, n_subjects):
     x_train_list = [x1_train, x2_train]
     x_test_list = [x1_test, x2_test]
 
-    print(x1_train.shape, x1_test.shape, y_hrz_train.shape, y_hrz_test.shape,
-          x2_train.shape, x2_test.shape, y_vrt_train.shape, y_vrt_test.shape)
+    print("\nTrain and test data shape:")
+    print(x1_train.shape, x1_test.shape, x2_train.shape, x2_test.shape,
+          y_hrz_train.shape, y_hrz_test.shape, y_vrt_train.shape, y_vrt_test.shape)
 
     cb = EarlyStopping(patience=patience, verbose=1, restore_best_weights=True)
 
     raw_models_dir = path2root + models_fol + models_et_fol + raw_fol
+    print("\nLoading horizontally eye_tracking model from " + raw_models_dir + f"model{selected_model_num}-hrz")
+    print("Loading vertically eye_tracking model from " + raw_models_dir + f"model{selected_model_num}-vrt")
     model_hrz = load_model(raw_models_dir + f"model{selected_model_num}-hrz")
     model_vrt = load_model(raw_models_dir + f"model{selected_model_num}-vrt")
     print(model_hrz.summary())
 
+    print("\n--------horizontally eye_tracking model-------")
     model_hrz.fit(x_train_list,
                   y_hrz_train,
                   validation_data=(x_test_list, y_hrz_test),
                   epochs=n_epochs,
                   callbacks=cb)
 
+    print("\n--------vertically eye_tracking model-------")
     model_vrt.fit(x_train_list,
                   y_vrt_train,
                   validation_data=(x_test_list, y_vrt_test),
@@ -413,8 +419,13 @@ def train_et(selected_model_num, n_subjects):
     else:
         max_num = 0
 
-    model_hrz.save(trained_dir + f"model{max_num + 1}-hrz")
-    model_vrt.save(trained_dir + f"model{max_num + 1}-vrt")
+    max_num += 1
 
-    scalers_dir = path2root + models_fol + models_et_fol + trained_fol + f"scalers{max_num + 1}.bin"
+    print("\nSaving horizontally eye_tracking model in " + trained_dir + f"model{max_num}-hrz")
+    print("Saving vertically eye_tracking model in " + trained_dir + f"model{max_num}-vrt")
+
+    model_hrz.save(trained_dir + f"model{max_num}-hrz")
+    model_vrt.save(trained_dir + f"model{max_num}-vrt")
+
+    scalers_dir = path2root + models_fol + models_et_fol + trained_fol + f"scalers{max_num}.bin"
     j_dump(scalers, scalers_dir)
