@@ -40,9 +40,9 @@ CALIBRATION_METHOD = 1  # 0 for points and 1 for lines
 # calibration.create_blink_out_in(NUMBER)
 
 # modeling.create_empty_model_boi()
-modeling.create_empty_model_et()
-# modeling.train_boi(n_subjects=4, n_epochs=2, patience=1)
-# modeling.train_et(n_subjects=4, n_epochs=2, patience=1)
+# modeling.create_empty_model_et()
+modeling.train_boi(n_subjects=4, n_epochs=2, patience=1)
+modeling.train_et(n_subjects=4, n_epochs=2, patience=1)
 
 # tune_model_pars.boi(NUMBER, n_epochs=10, patience=5)
 # tune_model_pars.et(NUMBER, n_epochs=2, patience=1)
