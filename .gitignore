@@ -151,10 +151,14 @@ codes/backup_codes/
 #!*/models/et/trained/model1-vrt/
 #!*/models/et/trained/scalers1.bin
 #!*/models/iris
-models/
-!models/iris/
+#models/*
+#!models/iris/
 #models/boi/*
 #!models/boi/trained/
-#models/boi/trained/*
+models/boi/trained/*
 !models/boi/trained/model1/
 !models/boi/trained/scalers1.bin
+models/et/trained/*
+!models/et/trained/model1-hrz/
+!models/et/trained/model1-vrt/
+!models/et/trained/scalers1.bin
