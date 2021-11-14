@@ -15,7 +15,8 @@ MIN_DETECTION_CONFIDENCE = 0.5
 CHOSEN_INPUTS = [0, 1, 2, 6, 7, 8, 9]
 
 
-def get_clb_win_prp(clb_win_w_align, clb_win_h_align):
+def get_clb_win_prp(clb_win_align):
+    clb_win_w_align, clb_win_h_align = clb_win_align
     screen_w = None
     screen_h = None
     for m in get_monitors():
