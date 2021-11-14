@@ -13,7 +13,49 @@ elif os.name == "posix":
 from sklearn.utils import shuffle
 
 
-def track_eye(
+def create_clb_points(grid):
+    clb_win_row = grid[0]
+    clb_win_col = grid[1]
+    smp_in_pnt = grid[2]
+    point_ratio = 0.012
+    points = []
+    dy = (1 - clb_win_row * point_ratio) / (clb_win_row - 1)
+    dx = (1 - clb_win_col * point_ratio) / (clb_win_col - 1)
+
+    for j in range(clb_win_row):
+        p_y = j * (point_ratio + dy) + point_ratio / 2
+        for i in range(clb_win_col):
+            p_x = i * (point_ratio + dx) + point_ratio / 2
+            smp_in_p = []
+            for k in range(smp_in_pnt):
+                smp_in_p.append([p_x, p_y])
+            points.append(smp_in_p)
+
+    with open(f"../files/{clb_win_row}x{clb_win_col}x{smp_in_pnt}.pickle", 'wb') as f:
+        pickle.dump(points, f)
+
+
+def create_clb_lines(grid):
+    clb_win_row = grid[0]
+    clb_win_col = grid[1]
+    point_ratio = 0.012
+    points = []
+    dy = (1 - clb_win_row * point_ratio) / (clb_win_row - 1)
+    dx = (1 - clb_win_col * point_ratio) / (clb_win_col - 1)
+
+    for j in range(clb_win_row):
+        p_y = j * (point_ratio + dy) + point_ratio / 2
+        smp_in_p = []
+        for i in range(clb_win_col):
+            p_x = i * (point_ratio + dx) + point_ratio / 2
+            smp_in_p.append([p_x, p_y])
+        points.append(smp_in_p)
+
+    with open(f"../files/{clb_win_row}x{clb_win_col}x1.pickle", 'wb') as f:
+        pickle.dump(points, f)
+
+
+def et(
         sbj_name,
         sbj_num,
         sbj_gender,
@@ -22,16 +64,14 @@ def track_eye(
         clb_win_origin,
         tuned_frame_size,
         clb_win_align,
-        clb_method
+        grid
 ):
     # Calibration to Collect 'eye_tracking' data
     path2root = "../"
     subjects_fol = "subjects/"
     et_fol = "data-et-clb/"
     clb_points_fol = "files/clb_points/"
-    clb_file_pnt = "5x7x10"
-    # clb_file_line = "10x150x1"
-    clb_file_line = "3x20x1"
+    clb_file_pnt = f"{grid[0]}x{grid[0]}x{grid[0]}"
 
     sbj_dir = path2root + subjects_fol + f"{sbj_num}/"
     if os.path.exists(sbj_dir):
@@ -39,11 +79,8 @@ def track_eye(
         if inp == 'n' or inp == 'N':
             quit()
 
-    clb_points_dir = path2root + clb_points_fol
-    if clb_method == 0:
-        clb_points = ey.load(clb_points_dir, [clb_file_pnt])[0]
-    else:
-        clb_points = ey.load(clb_points_dir, [clb_file_line])[0]
+    clb_file_dir = path2root + clb_points_fol + clb_file_pnt
+    clb_points = ey.load(clb_file_dir, [clb_file_pnt])[0]
 
     (clb_win_size, clb_pnt_d) = ey.get_clb_win_prp(clb_win_align)
 
@@ -145,7 +182,7 @@ def track_eye(
     print("Calibration finished!!")
 
 
-def get_blink_out(camera_id, tuned_frame_size, sbj_num):
+def bo(camera_id, tuned_frame_size, sbj_num):
     subjects_dir = "../subjects/"
     bo_fol = "data-bo/"
     n_class = 2
@@ -235,7 +272,7 @@ def get_blink_out(camera_id, tuned_frame_size, sbj_num):
     print("\nData collection finished!!")
 
 
-def create_blink_out_in(sbj_num):
+def boi(sbj_num):
     subjects_dir = "../subjects/"
     boi_fol = "data-boi/"
     et_fol = "data-et-clb/"
@@ -266,3 +303,6 @@ def create_blink_out_in(sbj_num):
 
     ey.save([x1_boi, x2_boi, y_boi], boi_dir, ['x1', 'x2', 'y'])
     ey.remove(bo_dir, ['x1', 'x2', 'y'])
+
+
+

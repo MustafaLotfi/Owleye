@@ -19,13 +19,16 @@ CAMERA_ID = 2
 FRAME_SIZE = 1280, 720  # width & height
 CALIBRATION_WINDOW_ALIGN = 0, 160  # width & height # 140, 160
 CALIBRATION_WINDOW_ORIGIN = 0, 0  # x & y # 140, 0
-CALIBRATION_METHOD = 1  # 0 for points and 1 for lines
+CALIBRATION_GRID = 4, 4, 12  # points in height, points in width, samples in points
 
 # ----------- FUNCTIONS ------------
 # show.webcam(CAMERA_ID, FRAME_SIZE)
 # show.features(CAMERA_ID, FRAME_SIZE)
 
-# calibration.track_eye(
+calibration.create_clb_points(CALIBRATION_GRID)
+calibration.create_clb_lines(CALIBRATION_GRID)
+
+# calibration.et(
 #     NAME,
 #     NUMBER,
 #     GENDER,
@@ -34,9 +37,9 @@ CALIBRATION_METHOD = 1  # 0 for points and 1 for lines
 #     CALIBRATION_WINDOW_ORIGIN,
 #     FRAME_SIZE,
 #     CALIBRATION_WINDOW_ALIGN,
-#     CALIBRATION_METHOD
+#     CALIBRATION_GRID
 # )
-# calibration.get_blink_out(CAMERA_ID, FRAME_SIZE, NUMBER)
+# calibration.get_bo(CAMERA_ID, FRAME_SIZE, NUMBER)
 # calibration.create_blink_out_in(NUMBER)
 
 # modeling.create_empty_model_boi()

@@ -16,6 +16,7 @@ from codes.base import eyeing as ey
 
 
 def create_empty_model_boi():
+    print("Starting to create an empty blink_out_in model...")
     path2root = "../"
     subjects_fol = "subjects/"
     data_boi_fol = "data-boi/"
@@ -98,6 +99,7 @@ def create_empty_model_boi():
 
 
 def create_empty_model_et():
+    print("Starting to create empty eye_tracking models...")
     path2root = "../"
     subjects_fol = "subjects/"
     data_et_fol = "data-et-clb/"
@@ -182,6 +184,7 @@ def create_empty_model_et():
 
 
 def train_boi(n_subjects=5, selected_model_num=1, n_epochs=100, patience=15):
+    print("Starting to train blink_out_in model...")
     path2root = "../"
     models_fol = "models/"
     models_boi_fol = "boi/"
@@ -262,7 +265,7 @@ def train_boi(n_subjects=5, selected_model_num=1, n_epochs=100, patience=15):
     model = load_model(raw_model_dir)
     print(model.summary())
 
-    print("\n--------horizontally eye_tracking model-------")
+    print("\n--------blink_out_in model-------")
     model.fit(x_train_list,
               y_train_ctg,
               validation_data=(x_test_list, y_test_ctg),
@@ -292,6 +295,7 @@ def train_boi(n_subjects=5, selected_model_num=1, n_epochs=100, patience=15):
 
 
 def train_et(n_subjects=5, selected_model_num=1, n_epochs=100, patience=15):
+    print("Starting to train eye_tracking models...")
     path2root = "../"
     models_fol = "models/"
     models_et_fol = "et/"

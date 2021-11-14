@@ -9,7 +9,8 @@ import numpy as np
 import os
 
 
-def boi(sbj_num, selected_model_num=1, n_epochs=50, patience=10):
+def boi(sbj_num, selected_model_num=1, n_epochs=50, patience=10, trainable_layers=1):
+    print("Starting to retrain blink_out_in model...")
     path2root = "../"
     subjects_fol = "subjects/"
     models_fol = "models/"
@@ -17,7 +18,6 @@ def boi(sbj_num, selected_model_num=1, n_epochs=50, patience=10):
     trained_fol = "trained/"
     data_boi_fol = "data-boi/"
     r_train = 0.85
-    trainable_layers = 1
     chosen_inputs = [0, 1, 2, 6, 7, 8, 9]
 
     trained_dir = path2root + models_fol + models_boi_fol + trained_fol
@@ -73,7 +73,7 @@ def boi(sbj_num, selected_model_num=1, n_epochs=50, patience=10):
     print("\nModel summary:")
     print(model.summary())
 
-    print("\nRetraining the model...")
+    print("\n--------blink_out_in model-------")
     model.fit(x_train,
               y_train_ctg,
               validation_data=(x_test, y_test_ctg),
@@ -84,7 +84,8 @@ def boi(sbj_num, selected_model_num=1, n_epochs=50, patience=10):
     model.save(sbj_dir + "model-boi")
 
 
-def et(sbj_num, selected_model_num=1, n_epochs=50, patience=10):
+def et(sbj_num, selected_model_num=1, n_epochs=50, patience=10, trainable_layers=1):
+    print("Starting to retrain eye_tracking model...")
     path2root = "../"
     models_fol = "models/"
     models_et_fol = "et/"
@@ -94,7 +95,6 @@ def et(sbj_num, selected_model_num=1, n_epochs=50, patience=10):
     sbj_scalers_boi_fol = "scalers-boi.bin"
     sbj_model_boi_fol = "model-boi"
     r_train = 0.85
-    trainable_layers = 1
     chosen_inputs = [0, 1, 2, 6, 7, 8, 9]
 
     sbj_dir = path2root + subjects_dir + f"{sbj_num}/"
@@ -194,7 +194,7 @@ def et(sbj_num, selected_model_num=1, n_epochs=50, patience=10):
 
     print(model_hrz.summary())
 
-    print("\nStart of training for model 1 (x-pixels)")
+    print("\n--------horizontally eye_tracking model-------")
     model_hrz.fit(x_train,
                   y_hrz_train,
                   validation_data=(x_test, y_hrz_test),
@@ -202,7 +202,7 @@ def et(sbj_num, selected_model_num=1, n_epochs=50, patience=10):
                   callbacks=cb)
     print("End of training")
 
-    print("\nStart of training for model 2 (y-pixels)")
+    print("\n--------vertically eye_tracking model-------")
     model_vrt.fit(x_train,
                   y_vrt_train,
                   validation_data=(x_test, y_vrt_test),
