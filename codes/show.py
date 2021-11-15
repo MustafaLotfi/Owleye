@@ -4,8 +4,8 @@ import mediapipe as mp
 from codes.base import eyeing as ey
 
 
-def webcam(camera_id, frame_size):
-    cap = ey.get_camera(camera_id, frame_size)
+def webcam(camera_id=0, tuned_frame_size=(1280, 720)):
+    cap = ey.get_camera(camera_id, tuned_frame_size)
     ey.pass_frames(cap, camera_id)
 
     i = 0
@@ -25,7 +25,7 @@ def webcam(camera_id, frame_size):
     print(f"FPS : {fps}")
 
 
-def features(camera_id, frame_size):
+def features(camera_id=0, tuned_frame_size=(1280, 720)):
     # Seeing features
     some_landmarks_ids = ey.get_some_landmarks_ids()
 
@@ -34,7 +34,7 @@ def features(camera_id, frame_size):
         camera_matrix,
         dst_cof,
         pcf
-    ) = ey.get_camera_properties(camera_id, frame_size)
+    ) = ey.get_camera_properties(camera_id, tuned_frame_size)
 
     print("Configuring face detection model...")
     face_mesh = mp.solutions.face_mesh.FaceMesh(

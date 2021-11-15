@@ -15,7 +15,7 @@ import random
 from codes.base import eyeing as ey
 
 
-def create_empty_model_boi():
+def create_boi():
     print("Starting to create an empty blink_out_in model...")
     path2root = "../"
     subjects_fol = "subjects/"
@@ -98,7 +98,7 @@ def create_empty_model_boi():
     print("\nEmpty blink_out_in model created and saved to " + raw_dir + f"model{max_num + 1}")
 
 
-def create_empty_model_et():
+def create_et():
     print("Starting to create empty eye_tracking models...")
     path2root = "../"
     subjects_fol = "subjects/"

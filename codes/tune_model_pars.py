@@ -25,8 +25,8 @@ def boi(sbj_num, selected_model_num=1, n_epochs=50, patience=10, trainable_layer
     public_scalers_dir = trained_dir + f"scalers{selected_model_num}.bin"
     sbj_dir = path2root + subjects_fol + f"{sbj_num}/"
 
-    print("\nLoading subject data in in_blink_out folder...")
     data_boi_dir = sbj_dir + data_boi_fol
+    print(f"\nLoading subject data in {data_boi_dir}")
     with open(data_boi_dir + "x1.pickle", "rb") as f:
         x1_load = pickle.load(f)
     with open(data_boi_dir + "x2.pickle", "rb") as f:
@@ -34,7 +34,7 @@ def boi(sbj_num, selected_model_num=1, n_epochs=50, patience=10, trainable_layer
     with open(data_boi_dir + "y.pickle", "rb") as f:
         y_load = pickle.load(f)
     n_smp, frame_h, frame_w = x1_load.shape[:-1]
-    print(f"Sapmles number: {n_smp}")
+    print(f"Samples number: {n_smp}")
 
     print("\nNormalizing data...")
     x2_chs_inp = x2_load[:, chosen_inputs]
@@ -82,6 +82,7 @@ def boi(sbj_num, selected_model_num=1, n_epochs=50, patience=10, trainable_layer
     print("End of retraining...")
 
     model.save(sbj_dir + "model-boi")
+    print("\nSaving model-boi in " + sbj_dir + "model-boi")
 
 
 def et(sbj_num, selected_model_num=1, n_epochs=50, patience=10, trainable_layers=1):
@@ -210,6 +211,7 @@ def et(sbj_num, selected_model_num=1, n_epochs=50, patience=10, trainable_layers
                   callbacks=cb)
     print("End of training")
 
-    print("\nSaving models...")
     model_hrz.save(sbj_dir + "model-et-hrz")
     model_vrt.save(sbj_dir + "model-et-vrt")
+    print("\nSaving model-et-hrz in " + sbj_dir + "model-et-hrz")
+    print("Saving model-et-vrt in " + sbj_dir + "model-et-vrt")

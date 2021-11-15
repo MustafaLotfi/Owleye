@@ -13,10 +13,10 @@ elif os.name == "posix":
 from sklearn.utils import shuffle
 
 
-def create_clb_points(grid):
-    clb_win_row = grid[0]
-    clb_win_col = grid[1]
-    smp_in_pnt = grid[2]
+def create_clb_points(clb_grid):
+    clb_win_row = clb_grid[0]
+    clb_win_col = clb_grid[1]
+    smp_in_pnt = clb_grid[2]
     point_ratio = 0.012
     points = []
     dy = (1 - clb_win_row * point_ratio) / (clb_win_row - 1)
@@ -31,13 +31,13 @@ def create_clb_points(grid):
                 smp_in_p.append([p_x, p_y])
             points.append(smp_in_p)
 
-    with open(f"../files/{clb_win_row}x{clb_win_col}x{smp_in_pnt}.pickle", 'wb') as f:
+    with open(f"../files/clb_points/{clb_win_row}x{clb_win_col}x{smp_in_pnt}.pickle", 'wb') as f:
         pickle.dump(points, f)
 
 
-def create_clb_lines(grid):
-    clb_win_row = grid[0]
-    clb_win_col = grid[1]
+def create_clb_lines(clb_grid):
+    clb_win_row = clb_grid[0]
+    clb_win_col = clb_grid[1]
     point_ratio = 0.012
     points = []
     dy = (1 - clb_win_row * point_ratio) / (clb_win_row - 1)
@@ -51,7 +51,7 @@ def create_clb_lines(grid):
             smp_in_p.append([p_x, p_y])
         points.append(smp_in_p)
 
-    with open(f"../files/{clb_win_row}x{clb_win_col}x1.pickle", 'wb') as f:
+    with open(f"../files/clb_points/{clb_win_row}x{clb_win_col}x{clb_grid[2]}.pickle", 'wb') as f:
         pickle.dump(points, f)
 
 
@@ -60,18 +60,18 @@ def et(
         sbj_num,
         sbj_gender,
         sbj_age,
-        camera_id,
-        clb_win_origin,
-        tuned_frame_size,
-        clb_win_align,
-        grid
+        camera_id=0,
+        tuned_frame_size=(1280, 720),
+        clb_win_origin=(0, 0),
+        clb_win_align=(0, 0),
+        clb_grid=(5, 7, 100)
 ):
     # Calibration to Collect 'eye_tracking' data
     path2root = "../"
     subjects_fol = "subjects/"
     et_fol = "data-et-clb/"
     clb_points_fol = "files/clb_points/"
-    clb_file_pnt = f"{grid[0]}x{grid[0]}x{grid[0]}"
+    clb_file_pnt = f"{clb_grid[0]}x{clb_grid[1]}x{clb_grid[2]}"
 
     sbj_dir = path2root + subjects_fol + f"{sbj_num}/"
     if os.path.exists(sbj_dir):
@@ -79,7 +79,7 @@ def et(
         if inp == 'n' or inp == 'N':
             quit()
 
-    clb_file_dir = path2root + clb_points_fol + clb_file_pnt
+    clb_file_dir = path2root + clb_points_fol
     clb_points = ey.load(clb_file_dir, [clb_file_pnt])[0]
 
     (clb_win_size, clb_pnt_d) = ey.get_clb_win_prp(clb_win_align)
@@ -182,11 +182,10 @@ def et(
     print("Calibration finished!!")
 
 
-def bo(camera_id, tuned_frame_size, sbj_num):
+def bo(sbj_num, camera_id=0, tuned_frame_size=(1280, 720), n_smp_in_cls=25):
     subjects_dir = "../subjects/"
     bo_fol = "data-bo/"
     n_class = 2
-    n_smp_in_cls = 20
 
     some_landmarks_ids = ey.get_some_landmarks_ids()
 
@@ -209,7 +208,7 @@ def bo(camera_id, tuned_frame_size, sbj_num):
     output_class = []
     fps_vec = []
     for j in range(n_class):
-        cap = ey.get_camera(camera_id, tuned_frame_size)
+        cap = ey.get_camera(camera_id, frame_size)
         ey.pass_frames(cap, camera_id)
         i = 0
         if j == 0:
@@ -247,6 +246,7 @@ def bo(camera_id, tuned_frame_size, sbj_num):
                     if i == n_smp_in_cls:
                         break
         fps_vec.append(ey.get_time(i, t1))
+        print("\nData collected")
         if os.name == "nt":
             winsound.PlaySound("SystemExit", winsound.SND_ALIAS)
         cap.release()
@@ -303,6 +303,3 @@ def boi(sbj_num):
 
     ey.save([x1_boi, x2_boi, y_boi], boi_dir, ['x1', 'x2', 'y'])
     ey.remove(bo_dir, ['x1', 'x2', 'y'])
-
-
-
