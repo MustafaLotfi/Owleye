@@ -61,7 +61,6 @@ def et(
         sbj_gender,
         sbj_age,
         camera_id=0,
-        tuned_frame_size=(1280, 720),
         clb_win_origin=(0, 0),
         clb_win_align=(0, 0),
         clb_grid=(5, 7, 100)
@@ -91,7 +90,7 @@ def et(
         camera_matrix,
         dst_cof,
         pcf
-    ) = ey.get_camera_properties(camera_id, tuned_frame_size)
+    ) = ey.get_camera_properties(camera_id)
 
     print("Configuring face detection model...")
     face_mesh = mp.solutions.face_mesh.FaceMesh(
@@ -182,7 +181,7 @@ def et(
     print("Calibration finished!!")
 
 
-def bo(sbj_num, camera_id=0, tuned_frame_size=(1280, 720), n_smp_in_cls=25):
+def bo(sbj_num, camera_id=0, n_smp_in_cls=25):
     subjects_dir = "../subjects/"
     bo_fol = "data-bo/"
     n_class = 2
@@ -194,7 +193,7 @@ def bo(sbj_num, camera_id=0, tuned_frame_size=(1280, 720), n_smp_in_cls=25):
         camera_matrix,
         dst_cof,
         pcf
-    ) = ey.get_camera_properties(camera_id, tuned_frame_size)
+    ) = ey.get_camera_properties(camera_id)
 
     print("Configuring face detection model...")
     face_mesh = mp.solutions.face_mesh.FaceMesh(

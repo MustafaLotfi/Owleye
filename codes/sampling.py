@@ -7,7 +7,7 @@ import pickle
 import os
 
 
-def main(sbj_num, camera_id=0, tuned_frame_size=(1280, 720)):
+def main(sbj_num, camera_id=0):
     subjects_dir = "../subjects/"
     smp_fol = "sampling/"
 
@@ -18,7 +18,7 @@ def main(sbj_num, camera_id=0, tuned_frame_size=(1280, 720)):
         camera_matrix,
         dst_cof,
         pcf
-    ) = ey.get_camera_properties(camera_id, tuned_frame_size)
+    ) = ey.get_camera_properties(camera_id)
 
     print("Configuring face detection model...")
     face_mesh = mp.solutions.face_mesh.FaceMesh(
@@ -26,7 +26,7 @@ def main(sbj_num, camera_id=0, tuned_frame_size=(1280, 720)):
         min_tracking_confidence=ey.MIN_TRACKING_CONFIDENCE,
         min_detection_confidence=ey.MIN_DETECTION_CONFIDENCE)
 
-    cap = ey.get_camera(camera_id, tuned_frame_size)
+    cap = ey.get_camera(camera_id, frame_size)
     ey.pass_frames(cap, camera_id)
 
     print("Sampling started...")
@@ -86,7 +86,6 @@ def main(sbj_num, camera_id=0, tuned_frame_size=(1280, 720)):
 
 def test(sbj_num,
          camera_id=0,
-         tuned_frame_size=(1280, 720),
          clb_win_origin=(0, 0),
          clb_win_align=(0, 0),
          clb_grid=(3, 3, 10)):
@@ -108,7 +107,7 @@ def test(sbj_num,
         camera_matrix,
         dst_cof,
         pcf
-    ) = ey.get_camera_properties(camera_id, tuned_frame_size)
+    ) = ey.get_camera_properties(camera_id)
 
     print("Configuring face detection model...")
     face_mesh = mp.solutions.face_mesh.FaceMesh(

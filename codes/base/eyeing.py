@@ -40,9 +40,9 @@ def get_some_landmarks_ids():
     return some_landmarks_ids
 
 
-def get_camera_properties(camera_id, frame_size):
+def get_camera_properties(camera_id):
     print("Getting camera properties...")
-    fr_w, fr_h = frame_size
+    fr_w, fr_h = 1280, 720
     cap = cv2.VideoCapture(camera_id)  # (tp.CAMERA_ID, cv2.CAP_DSHOW)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, fr_w)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, fr_h)
@@ -50,7 +50,7 @@ def get_camera_properties(camera_id, frame_size):
     new_fr_w = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
     new_fr_h = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
     cap.release()
-    new_fr_size = new_fr_w, new_fr_h
+    fr_size = new_fr_w, new_fr_h
 
     fr_center = (new_fr_w // 2, new_fr_h // 2)
     focal_length = new_fr_w
@@ -64,8 +64,7 @@ def get_camera_properties(camera_id, frame_size):
         frame_height=fr_h,
         frame_width=fr_w,
         fy=fr_w)
-
-    return new_fr_size, camera_matrix, dst_cof, pcf
+    return fr_size, camera_matrix, dst_cof, pcf
 
 
 def get_camera(camera_id, frame_size):
@@ -178,6 +177,20 @@ def get_model_inputs(
             all_landmarks_pixels = np.array(all_landmarks[:, :2] * image_size, np.uint32)
             for pix in all_landmarks_pixels[jaw_landmarks_ids]:
                 cv2.circle(image, pix, 2, (0, 255, 255), cv2.FILLED)
+            le = all_landmarks_pixels[left_eye_landmarks_ids]
+            pxl = np.min(le[:, 0])
+            pxr = np.max(le[:, 0])
+            pyt = np.min(le[:, 1])
+            pyb = np.max(le[:, 1])
+            ew = pxr - pxl
+            ht = int(0.3 * ew)
+            hb = int(0.2 * ew)
+            wl = int(0.2 * ew)
+            wr = int(0.1 * ew)
+            etl = pxl - wl, pyt - ht
+            ebr = pxr + wr, pyb + hb
+            print(ebr[0] - etl[0], ebr[1] - etl[1])
+            cv2.rectangle(image, etl, ebr, (190, 100, 40), 2)
             for pix in all_landmarks_pixels[left_eye_landmarks_ids]:
                 cv2.circle(image, pix, 2, (255, 0, 255), cv2.FILLED)
             for pix in all_landmarks_pixels[right_eye_landmarks_ids]:
