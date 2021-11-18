@@ -88,6 +88,21 @@ def get_frame(cap):
     return success, img, img_rgb
 
 
+def get_eyes_pixels(eye_pixels):
+    pxl = np.min(eye_pixels[:, 0])
+    pxr = np.max(eye_pixels[:, 0])
+    pyt = np.min(eye_pixels[:, 1])
+    pyb = np.max(eye_pixels[:, 1])
+    ew = pxr - pxl
+    ht = int(0.35 * ew)
+    hb = int(0.2 * ew)
+    wl = int(0.2 * ew)
+    wr = int(0.1 * ew)
+    eye_top_left = pxl - wl, pyt - ht
+    eye_bottom_right = pxr + wr, pyb + hb
+    return eye_top_left, eye_bottom_right
+
+
 def get_model_inputs(
         image,
         image_rgb,
@@ -103,6 +118,7 @@ def get_model_inputs(
     right_eye_landmarks_ids = [362, 263]
     jaw_landmarks_ids = [61, 291, 199]
     focal_length = camera_matrix[0, 0]
+    eye_size = [100, 50]
 
     mfl = face_mesh.multi_face_landmarks
     if mfl:
@@ -137,8 +153,7 @@ def get_model_inputs(
             _,
             left_iris_landmarks,
             _,
-            left_iris_landmarks_respect_face,
-            left_eye_frame_low
+            left_iris_landmarks_respect_face
         ) = fl2d(
             image_rgb,
             all_landmarks[left_eye_landmarks_ids, :].T,
@@ -152,8 +167,7 @@ def get_model_inputs(
             _,
             right_iris_landmarks,
             _,
-            right_iris_landmarks_respect_face,
-            right_eye_frame_low
+            right_iris_landmarks_respect_face
         ) = fl2d(
             image_rgb,
             all_landmarks[right_eye_landmarks_ids, :].T,
@@ -170,30 +184,33 @@ def get_model_inputs(
                 features_vector.append(feat)
         features_vector = np.array(features_vector)
 
-        eyes_frame_rgb = np.concatenate([left_eye_frame_low, right_eye_frame_low])
-        eyes_frame_gray = np.expand_dims(cv2.cvtColor(eyes_frame_rgb, cv2.COLOR_RGB2GRAY), 2)
+        left_eye_pixels = np.array(all_landmarks[left_eye_landmarks_ids, :2] * image_size, np.uint32)
+        left_eye_tl, left_eye_br = get_eyes_pixels(left_eye_pixels)
+        eye_left = image_rgb[left_eye_tl[1]:left_eye_br[1], left_eye_tl[0]:left_eye_br[0]]
+        eye_left_resize = cv2.resize(eye_left, eye_size, interpolation=cv2.INTER_AREA)
+
+        right_eye_pixels = np.array(all_landmarks[right_eye_landmarks_ids, :2] * image_size, np.uint32)
+        right_eye_tl, right_eye_br = get_eyes_pixels(right_eye_pixels)
+        eye_right = image_rgb[right_eye_tl[1]:right_eye_br[1], right_eye_tl[0]:right_eye_br[0]]
+        eye_right_resize = cv2.resize(eye_right, eye_size, interpolation=cv2.INTER_AREA)
+
+        eyes = np.concatenate([eye_left_resize, eye_right_resize])
+        eyes_gray = np.expand_dims(cv2.cvtColor(eyes, cv2.COLOR_RGB2GRAY), 2)
 
         if show_features:
-            all_landmarks_pixels = np.array(all_landmarks[:, :2] * image_size, np.uint32)
-            for pix in all_landmarks_pixels[jaw_landmarks_ids]:
+            cv2.rectangle(image, left_eye_tl, left_eye_br, (190, 100, 40), 2)
+            cv2.rectangle(image, right_eye_tl, right_eye_br, (190, 100, 40), 2)
+
+            jaw_landmarks_pixels = np.array(all_landmarks[jaw_landmarks_ids, :2] * image_size, np.uint32)
+            for pix in jaw_landmarks_pixels:
                 cv2.circle(image, pix, 2, (0, 255, 255), cv2.FILLED)
-            le = all_landmarks_pixels[left_eye_landmarks_ids]
-            pxl = np.min(le[:, 0])
-            pxr = np.max(le[:, 0])
-            pyt = np.min(le[:, 1])
-            pyb = np.max(le[:, 1])
-            ew = pxr - pxl
-            ht = int(0.3 * ew)
-            hb = int(0.2 * ew)
-            wl = int(0.2 * ew)
-            wr = int(0.1 * ew)
-            etl = pxl - wl, pyt - ht
-            ebr = pxr + wr, pyb + hb
-            print(ebr[0] - etl[0], ebr[1] - etl[1])
-            cv2.rectangle(image, etl, ebr, (190, 100, 40), 2)
-            for pix in all_landmarks_pixels[left_eye_landmarks_ids]:
+
+            left_eye_landmarks_pixels = np.array(all_landmarks[left_eye_landmarks_ids, :2] * image_size, np.uint32)
+            for pix in left_eye_landmarks_pixels:
                 cv2.circle(image, pix, 2, (255, 0, 255), cv2.FILLED)
-            for pix in all_landmarks_pixels[right_eye_landmarks_ids]:
+
+            right_eye_landmarks_pixels = np.array(all_landmarks[right_eye_landmarks_ids, :2] * image_size, np.uint32)
+            for pix in right_eye_landmarks_pixels:
                 cv2.circle(image, pix, 2, (255, 0, 255), cv2.FILLED)
 
             left_iris_pixel = np.array(
@@ -218,10 +235,10 @@ def get_model_inputs(
             cv2.line(image, p1, p2, (127, 64, 255), 2)
     else:
         success = False
-        eyes_frame_gray = None
+        eyes_gray = None
         features_vector = None
 
-    return success, image, eyes_frame_gray, features_vector
+    return success, image, eyes_gray, features_vector
 
 
 def get_time(i, t, print_time=False):
