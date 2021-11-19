@@ -61,7 +61,7 @@ def et(
         sbj_gender,
         sbj_age,
         camera_id=0,
-        clb_grid=(5, 7, 100)
+        clb_grid=(10, 150, 1)
 ):
     # Calibration to Collect 'eye_tracking' data
     path2root = "../"
@@ -174,7 +174,7 @@ def et(
     print("Calibration finished!!")
 
 
-def bo(sbj_num, camera_id=0, n_smp_in_cls=25):
+def bo(sbj_num, camera_id=0, n_smp_in_cls=300):
     subjects_dir = "../subjects/"
     bo_fol = "data-bo/"
     n_class = 2

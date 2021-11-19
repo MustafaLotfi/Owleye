@@ -37,7 +37,7 @@ def features(sbj_num, target_fol):
             d.append(data[j][i])
         print(f"{i}, {d}")
         cv2.imshow("Eyes Image", img)
-        q = cv2.waitKey(200)
+        q = cv2.waitKey(10)
         if q == ord('q'):
             break
         i += 1

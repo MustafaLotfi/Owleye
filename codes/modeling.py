@@ -183,7 +183,7 @@ def create_et():
     print("\nEmpty vertically eye_tracking model created and saved to " + raw_dir + f"model{max_num}-vrt")
 
 
-def train_boi(n_subjects=5, selected_model_num=1, n_epochs=100, patience=15):
+def train_boi(subjects=(1, 2, 3, 4, 5), selected_model_num=1, n_epochs=100, patience=15):
     print("Starting to train blink_out_in model...")
     path2root = "../"
     models_fol = "models/"
@@ -204,7 +204,7 @@ def train_boi(n_subjects=5, selected_model_num=1, n_epochs=100, patience=15):
 
     subjects_dir = path2root + subjects_fol
 
-    for sbj in range(1, n_subjects + 1):
+    for sbj in subjects:
         data_boi_dir = subjects_dir + f"{sbj}/" + data_boi_fol
         with open(data_boi_dir + "x1.pickle", "rb") as f:
             x1_load0 = pickle.load(f)
@@ -294,7 +294,7 @@ def train_boi(n_subjects=5, selected_model_num=1, n_epochs=100, patience=15):
     j_dump(scalers, scalers_dir)
 
 
-def train_et(n_subjects=5, selected_model_num=1, n_epochs=100, patience=15):
+def train_et(subjects=(1, 2, 3, 4, 5), selected_model_num=1, n_epochs=100, patience=15):
     print("Starting to train eye_tracking models...")
     path2root = "../"
     models_fol = "models/"
@@ -316,7 +316,7 @@ def train_et(n_subjects=5, selected_model_num=1, n_epochs=100, patience=15):
     y_load = []
     subjects_dir = path2root + subjects_fol
 
-    for sbj in range(1, n_subjects + 1):
+    for sbj in subjects:
         sbj_dir = subjects_dir + f"{sbj}/"
         sbj_model_boi_dir = sbj_dir + sbj_model_boi_name
         sbj_scalers_boi_dir = sbj_dir + sbj_scalers_boi_name
