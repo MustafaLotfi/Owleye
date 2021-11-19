@@ -4,7 +4,7 @@
 # from codes import tune_model_pars
 from codes import sampling
 # from codes import get_pixels
-from codes import see_data
+# from codes import see_data
 
 
 # ----------- PARAMETERS ------------
@@ -16,8 +16,6 @@ AGE = 25
 
 # calibration_collect_dataset
 CAMERA_ID = 2
-CALIBRATION_WINDOW_ALIGN = 0, 160  # width & height # 140, 160
-CALIBRATION_WINDOW_ORIGIN = 0, 0  # x & y # 140, 0
 CALIBRATION_GRID = 2, 30, 1  # points in height, points in width, samples in points
 
 
@@ -34,8 +32,6 @@ CALIBRATION_GRID = 2, 30, 1  # points in height, points in width, samples in poi
 #     GENDER,
 #     AGE,
 #     CAMERA_ID,
-#     clb_win_origin=CALIBRATION_WINDOW_ORIGIN,
-#     clb_win_align=CALIBRATION_WINDOW_ALIGN,
 #     clb_grid=CALIBRATION_GRID
 # )
 # calibration.bo(NUMBER, CAMERA_ID)
@@ -53,14 +49,12 @@ CALIBRATION_GRID = 2, 30, 1  # points in height, points in width, samples in poi
 sampling.test(
     NUMBER,
     CAMERA_ID,
-    clb_win_origin=CALIBRATION_WINDOW_ORIGIN,
-    clb_win_align=CALIBRATION_WINDOW_ALIGN,
     clb_grid=CALIBRATION_GRID
 )
 
 # get_pixels.main(NUMBER, True)
 
-TARGET_FOLDER = "sampling-test"  # et-clb, boi, sampling or sampling-test
-see_data.features(NUMBER, TARGET_FOLDER)
+# TARGET_FOLDER = "sampling-test"  # et-clb, boi, sampling or sampling-test
+# see_data.features(NUMBER, TARGET_FOLDER)
 # see_data.pixels(NUMBER, CALIBRATION_WINDOW_ORIGIN, CALIBRATION_WINDOW_ALIGN)
 # see_data.pixels_test(NUMBER, CALIBRATION_WINDOW_ORIGIN, CALIBRATION_WINDOW_ALIGN)

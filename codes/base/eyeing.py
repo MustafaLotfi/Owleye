@@ -15,7 +15,7 @@ MIN_DETECTION_CONFIDENCE = 0.5
 CHOSEN_INPUTS = [0, 1, 2, 6, 7, 8, 9]
 
 
-def get_clb_win_prp(clb_win_align):
+def get_clb_win_prp(clb_win_align=(0, 0)):
     clb_win_w_align, clb_win_h_align = clb_win_align
     screen_w = None
     screen_h = None
@@ -26,9 +26,8 @@ def get_clb_win_prp(clb_win_align):
     clb_win_w = screen_w - clb_win_w_align
     clb_win_h = screen_h - clb_win_h_align
     clb_win_size = (clb_win_w, clb_win_h)
-    clb_pnt_d = clb_win_w // 90
 
-    return clb_win_size, clb_pnt_d
+    return clb_win_size
 
 
 def get_some_landmarks_ids():
@@ -93,7 +92,7 @@ def get_eyes_pixels(eye_pixels):
     pxr = np.max(eye_pixels[:, 0])
     pyt = np.min(eye_pixels[:, 1])
     pyb = np.max(eye_pixels[:, 1])
-    ew = pxr - pxl
+    ew = max(pxr - pxl, 25)
     ht = int(0.35 * ew)
     hb = int(0.2 * ew)
     wl = int(0.2 * ew)
@@ -271,20 +270,22 @@ def pass_frames(cap, camera_id):
             get_frame(cap)
 
 
-def show_clb_win(win_size, pnt_d, win_origin, p, win_name, px=None, px_hat=None, t=None):
+def show_clb_win(pnt=None, pnt_hat=None, t=None):
+    win_name = "Calibration"
+    win_size = (640, 480)
     win_w, win_h = win_size
-    win_x, win_y = win_origin
-    clb_img = (np.ones((win_h, win_w, 3)) * 255)
-    if np.array(px).any():
-        cv2.circle(clb_img, px, pnt_d, (0, 0, 255), cv2.FILLED)
-        cv2.putText(clb_img, f"{p}", (int(px[0] - pnt_d // 1.5), int(px[1] + pnt_d // 2.7)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 3)
-    if np.array(px_hat).any():
-        cv2.circle(clb_img, px_hat, int(pnt_d/2), (200, 0, 50), cv2.FILLED)
+    pnt_d = int(win_w / 80.0)
+    clb_img = (np.ones((win_h, win_w, 3)) * 255).astype(np.uint8)
+    if np.array(pnt).any():
+        pxl = (np.array(pnt) * np.array(win_size)).astype(np.uint32)
+        cv2.circle(clb_img, pxl, pnt_d, (0, 0, 255), cv2.FILLED)
+    if np.array(pnt_hat).any():
+        pxl_hat = (np.array(pnt_hat) * np.array(win_size)).astype(np.uint32)
+        cv2.circle(clb_img, pxl_hat, int(pnt_d / 2), (200, 0, 50), cv2.FILLED)
     if np.array(t).any():
-        cv2.putText(clb_img, f"{t} sec", (50, 70), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255, 0, 0), 3)
-    cv2.namedWindow(win_name)
-    cv2.moveWindow(win_name, win_x, win_y)
+        cv2.putText(clb_img, f"{t} sec", (50, 70), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255, 0, 0), 1.25)
+    cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
+    cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     cv2.imshow(win_name, clb_img)
 
 

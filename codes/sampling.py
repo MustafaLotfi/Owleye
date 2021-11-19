@@ -84,11 +84,7 @@ def main(sbj_num, camera_id=0):
     print("Sampling finished!!")
 
 
-def test(sbj_num,
-         camera_id=0,
-         clb_win_origin=(0, 0),
-         clb_win_align=(0, 0),
-         clb_grid=(3, 3, 10)):
+def test(sbj_num, camera_id=0, clb_grid=(3, 3, 10)):
     # Calibration to Collect 'eye_tracking' data
     path2root = "../"
     subjects_fol = "subjects/"
@@ -97,8 +93,6 @@ def test(sbj_num,
     clb_file_pnt = f"{clb_grid[0]}x{clb_grid[1]}x{clb_grid[2]}"
 
     clb_points = ey.load(path2root + clb_points_fol, [clb_file_pnt])[0]
-
-    (clb_win_size, clb_pnt_d) = ey.get_clb_win_prp(clb_win_align)
 
     some_landmarks_ids = ey.get_some_landmarks_ids()
 
@@ -116,21 +110,18 @@ def test(sbj_num,
         min_detection_confidence=ey.MIN_DETECTION_CONFIDENCE)
 
     i = 0
-    p = 1
     fps_vec = []
     t_vec = []
     eyes_data_gray = []
     vector_inputs = []
     points_loc = []
     t0 = time.time()
-    clb_win_name = "Calibration-Test"
     for item in clb_points:
         cap = ey.get_camera(camera_id, frame_size)
         ey.pass_frames(cap, camera_id)
 
         pnt = item[0]
-        pnt_pxl = (np.array(pnt) * np.array(clb_win_size)).astype(np.uint32)
-        ey.show_clb_win(clb_win_size, clb_pnt_d, clb_win_origin, p, clb_win_name, pnt_pxl)
+        ey.show_clb_win(pnt)
 
         button = cv2.waitKey(0)
         if button == 27:
@@ -139,8 +130,7 @@ def test(sbj_num,
             t1 = time.time()
             s = len(item)
             for pnt in item:
-                pnt_pxl = (np.array(pnt) * np.array(clb_win_size)).astype(np.uint32)
-                ey.show_clb_win(clb_win_size, clb_pnt_d, clb_win_origin, p, clb_win_name, pnt_pxl)
+                ey.show_clb_win(pnt)
                 button = cv2.waitKey(1)
                 if button == 27:
                     break
@@ -168,13 +158,12 @@ def test(sbj_num,
                             t_vec.append(int((time.time() - t1) * 100) / 100.0)
                             eyes_data_gray.append(eyes_frame_gray)
                             vector_inputs.append(features_vector)
-                            points_loc.append(pnt_pxl)
+                            points_loc.append(pnt)
                             i += 1
                             break
             fps_vec.append(ey.get_time(s, t1))
         cap.release()
-        cv2.destroyWindow(clb_win_name)
-        p += 1
+        cv2.destroyWindow("Calibration")
 
     cv2.destroyAllWindows()
 
