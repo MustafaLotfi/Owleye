@@ -84,7 +84,7 @@ def main(sbj_num, camera_id=0):
     print("Sampling finished!!")
 
 
-def test(sbj_num, camera_id=0, clb_grid=(3, 3, 10)):
+def test(sbj_num, camera_id=0, clb_grid=(3, 3, 20)):
     # Calibration to Collect 'eye_tracking' data
     path2root = "../"
     subjects_fol = "subjects/"

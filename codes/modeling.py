@@ -365,12 +365,9 @@ def train_et(subjects=(1, 2, 3, 4, 5), selected_model_num=1, n_epochs=100, patie
     x2_scaler = StandardScaler()
     x2 = x2_scaler.fit_transform(x2_chs_inp)
 
-    y_scalers = np.max(y_load, 0)
-    y = y_load / y_scalers
+    scalers = [x1_scaler, x2_scaler]
 
-    scalers = [x1_scaler, x2_scaler, y_scalers]
-
-    x1_shf, x2_shf, y_hrz_shf, y_vrt_shf = shuffle(x1, x2, y[:, 0], y[:, 1])
+    x1_shf, x2_shf, y_hrz_shf, y_vrt_shf = shuffle(x1, x2, y_load[:, 0], y_load[:, 1])
 
     n_train = int(r_train * n_smp)
     x1_train, x2_train = x1_shf[:n_train], x2_shf[:n_train]

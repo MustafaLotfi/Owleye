@@ -9,7 +9,7 @@ import numpy as np
 import os
 
 
-def boi(sbj_num, selected_model_num=1, n_epochs=50, patience=10, trainable_layers=1):
+def boi(sbj_num, selected_model_num=1, n_epochs=20, patience=4, trainable_layers=1):
     print("Starting to retrain blink_out_in model...")
     path2root = "../"
     subjects_fol = "subjects/"
@@ -17,7 +17,7 @@ def boi(sbj_num, selected_model_num=1, n_epochs=50, patience=10, trainable_layer
     models_boi_fol = "boi/"
     trained_fol = "trained/"
     data_boi_fol = "data-boi/"
-    r_train = 0.85
+    r_train = 0.8
     chosen_inputs = [0, 1, 2, 6, 7, 8, 9]
 
     trained_dir = path2root + models_fol + models_boi_fol + trained_fol
@@ -64,7 +64,7 @@ def boi(sbj_num, selected_model_num=1, n_epochs=50, patience=10, trainable_layer
     x_train = [x1_train, x2_train]
     x_test = [x1_test, x2_test]
 
-    print("\nLoading 'blink_out_in' model...")
+    print("\nLoading public blink_out_in model...")
     cb = EarlyStopping(patience=patience, verbose=1, restore_best_weights=True)
     model = load_model(public_model_dir)
 
@@ -73,7 +73,7 @@ def boi(sbj_num, selected_model_num=1, n_epochs=50, patience=10, trainable_layer
     print("\nModel summary:")
     print(model.summary())
 
-    print("\n--------blink_out_in model-------")
+    print("\n--------model-blink_out_in-------")
     model.fit(x_train,
               y_train_ctg,
               validation_data=(x_test, y_test_ctg),
@@ -82,11 +82,11 @@ def boi(sbj_num, selected_model_num=1, n_epochs=50, patience=10, trainable_layer
     print("End of retraining...")
 
     model.save(sbj_dir + "model-boi")
-    print("\nSaving model-boi in " + sbj_dir + "model-boi")
+    print("Saving model-boi in " + sbj_dir + "model-boi")
 
 
 def et(sbj_num, selected_model_num=1, n_epochs=50, patience=10, trainable_layers=1):
-    print("Starting to retrain eye_tracking model...")
+    print("\nStarting to retrain eye_tracking model...")
     path2root = "../"
     models_fol = "models/"
     models_et_fol = "et/"
@@ -95,7 +95,7 @@ def et(sbj_num, selected_model_num=1, n_epochs=50, patience=10, trainable_layers
     data_et_fol = "data-et-clb/"
     sbj_scalers_boi_fol = "scalers-boi.bin"
     sbj_model_boi_fol = "model-boi"
-    r_train = 0.85
+    r_train = 0.8
     chosen_inputs = [0, 1, 2, 6, 7, 8, 9]
 
     sbj_dir = path2root + subjects_dir + f"{sbj_num}/"
@@ -128,7 +128,6 @@ def et(sbj_num, selected_model_num=1, n_epochs=50, patience=10, trainable_layers
     print("\nLoading in_blink_out model...")
     sbj_model_boi_dir = sbj_dir + sbj_model_boi_fol
     model_boi = load_model(sbj_model_boi_dir)
-    print(model_boi.summary())
 
     print("\nPredicting those data that looking 'in' screen.")
     yhat_boi = model_boi.predict([x1_boi, x2_boi]).argmax(1)
@@ -138,7 +137,7 @@ def et(sbj_num, selected_model_num=1, n_epochs=50, patience=10, trainable_layers
     x2_new = []
     y_new = []
     for (x10, x20, y0, yht0) in zip(x1_load, x2_load, y_load, yhat_boi):
-        if True:  # yht0 != 1:
+        if yht0 != 0:
             x1_new.append(x10)
             x2_new.append(x20)
             y_new.append(y0)
@@ -155,19 +154,15 @@ def et(sbj_num, selected_model_num=1, n_epochs=50, patience=10, trainable_layers
     public_scalers_et_dir = trained_dir + f"scalers{selected_model_num}.bin"
     x2_chs_inp_new = x2_new[:, chosen_inputs]
     scalers_et = j_load(public_scalers_et_dir)
-    x1_scaler_et, x2_scaler_et, _ = scalers_et
+    x1_scaler_et, x2_scaler_et = scalers_et
 
     x1_nrm = x1_new / x1_scaler_et
     x2_nrm = x2_scaler_et.transform(x2_chs_inp_new)
 
-    y_scalers_et = np.max(y_new, 0)
-    y_nrm = y_new / y_scalers_et
-
-    scalers_et[2] = y_scalers_et
     j_dump(scalers_et, sbj_dir + "scalers-et.bin")
 
     # Shuffling and splitting data to train and test
-    x1_shf, x2_shf, y_hrz_shf, y_vrt_shf = shuffle(x1_nrm, x2_nrm, y_nrm[:, 0], y_nrm[:, 1])
+    x1_shf, x2_shf, y_hrz_shf, y_vrt_shf = shuffle(x1_nrm, x2_nrm, y_new[:, 0], y_new[:, 1])
 
     n_train = int(r_train * n_smp_new)
     x1_train, x2_train = x1_shf[:n_train], x2_shf[:n_train]

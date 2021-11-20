@@ -1,6 +1,7 @@
 import cv2
 import pickle
 from codes.base import eyeing as ey
+import time
 
 
 def features(sbj_num, target_fol):
@@ -28,6 +29,7 @@ def features(sbj_num, target_fol):
 
     x1 = data[0]
     print(x1.shape)
+    time.sleep(2)
 
     for (i, img) in enumerate(x1):
         d = []
@@ -37,7 +39,7 @@ def features(sbj_num, target_fol):
             d.append(data[j][i])
         print(f"{i}, {d}")
         cv2.imshow("Eyes Image", img)
-        q = cv2.waitKey(10)
+        q = cv2.waitKey(100)
         if q == ord('q'):
             break
         i += 1
@@ -47,11 +49,12 @@ def pixels(sbj_num):
     smp_dir = "../subjects/" + f"{sbj_num}/" + "sampling/"
     [y_hat_boi, t_vec, y_hat_et] = ey.load(smp_dir, ['y-hat-boi', 't', 'y-hat-et'])
 
-    for (y_boi0, t, px_hat) in zip(y_hat_boi, t_vec, y_hat_et):
+    for (y_boi0, t0, y_hat_et0) in zip(y_hat_boi, t_vec, y_hat_et):
+        print(y_hat_et0)
         if False:  # y_boi0 != 2:
-            px_hat = None
-        ey.show_clb_win(None, px_hat, t)
-        q = cv2.waitKey(1)
+            y_hat_et0 = None
+        ey.show_clb_win(None, y_hat_et0, t0)
+        q = cv2.waitKey(100)
         if q == ord('q') or q == ord('Q'):
             break
 
@@ -60,11 +63,12 @@ def pixels_test(sbj_num):
     smp_dir = "../subjects/" + f"{sbj_num}/" + "sampling-test/"
     [y_hat_boi, t_vec, y_hat_et, y_et] = ey.load(smp_dir, ['y-hat-boi', 't', 'y-hat-et', 'y-et'])
 
-    for (y_boi0, t, px, px_hat) in zip(y_hat_boi, t_vec, y_et, y_hat_et):
+    for (y_boi0, t0, y_et0, y_hat_et0) in zip(y_hat_boi, t_vec, y_et, y_hat_et):
+        print(y_hat_et0)
         if False:  # y_boi0 != 2:
-            px_hat = None
-        ey.show_clb_win(px, px_hat, t)
-        q = cv2.waitKey(1)
+            y_hat_et0 = None
+        ey.show_clb_win(y_et0, y_hat_et0, t0)
+        q = cv2.waitKey(100)
         if q == ord('q') or q == ord('Q'):
             break
 

@@ -5,9 +5,8 @@ from codes import see_data
 
 # ----------- PARAMETERS ------------
 # Subject Information
-NUMBER = 1
+NUMBER = 3
 
-# tune_model_pars.boi(NUMBER, selected_model_num=2, n_epochs=5, patience=3, trainable_layers=2)
-# tune_model_pars.et(NUMBER, selected_model_num=2, n_epochs=5, patience=3, trainable_layers=2)
-
-# get_pixels.main(NUMBER, True)
+tune_model_pars.boi(NUMBER)
+tune_model_pars.et(NUMBER)
+get_pixels.main(NUMBER, True)

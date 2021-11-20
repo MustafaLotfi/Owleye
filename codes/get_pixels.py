@@ -39,7 +39,7 @@ def main(sbj_num, testing=False):
 
     x2_chs_inp_et = x2_load[:, ey.CHOSEN_INPUTS]
     scalers_et_dir = sbj_dir + scalers_et_name
-    x1_scaler_et, x2_scaler_et, y_scalers_et = j_load(scalers_et_dir)
+    x1_scaler_et, x2_scaler_et = j_load(scalers_et_dir)
     x1_et = x1_load / x1_scaler_et
     x2_et = x2_scaler_et.transform(x2_chs_inp_et)
     x_et = [x1_et, x2_et]
@@ -53,7 +53,6 @@ def main(sbj_num, testing=False):
     y_vrt_hat[y_vrt_hat < min_out_ratio] = min_out_ratio
     y_hrz_hat[y_hrz_hat > max_out_ratio] = max_out_ratio
     y_vrt_hat[y_vrt_hat > max_out_ratio] = max_out_ratio
-    y_hat_et = (np.concatenate([y_hrz_hat, y_vrt_hat], 1) * y_scalers_et).astype(np.uint32)
-
-    ey.save([t_load, y_hat_boi, y_hat_et], sampling_dir, ['y-hat-boi', 'y-hat-et'])
+    y_hat_et = (np.concatenate([y_hrz_hat, y_vrt_hat], 1))
+    ey.save([t_load, y_hat_boi, y_hat_et], sampling_dir, ['t', 'y-hat-boi', 'y-hat-et'])
 

@@ -281,9 +281,10 @@ def show_clb_win(pnt=None, pnt_hat=None, t=None):
         cv2.circle(clb_img, pxl, pnt_d, (0, 0, 255), cv2.FILLED)
     if np.array(pnt_hat).any():
         pxl_hat = (np.array(pnt_hat) * np.array(win_size)).astype(np.uint32)
+        print(pxl_hat)
         cv2.circle(clb_img, pxl_hat, int(pnt_d / 2), (200, 0, 50), cv2.FILLED)
     if np.array(t).any():
-        cv2.putText(clb_img, f"{t} sec", (50, 70), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255, 0, 0), 1.25)
+        cv2.putText(clb_img, f"{t} sec", (50, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
     cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
     cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     cv2.imshow(win_name, clb_img)
