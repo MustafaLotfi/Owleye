@@ -90,7 +90,16 @@ def test(sbj_num, camera_id=0, clb_grid=(3, 3, 20)):
     subjects_fol = "subjects/"
     smp_tst_fol = "sampling-test/"
     clb_points_fol = "files/clb_points/"
-    clb_file_pnt = f"{clb_grid[0]}x{clb_grid[1]}x{clb_grid[2]}"
+    if len(clb_grid) == 2:
+        clb_file_pnt = f"{clb_grid[0]}x{clb_grid[1]}"
+    elif len(clb_grid) == 3:
+        clb_file_pnt = f"{clb_grid[0]}x{clb_grid[1]}x{clb_grid[2]}"
+    elif len(clb_grid) == 4:
+        clb_file_pnt = f"{clb_grid[0]}x{clb_grid[1]}x{clb_grid[2]}x{clb_grid[3]}"
+    else:
+        print("\nPlease Enter a vector with length of 2-4!!")
+        clb_file_pnt = None
+        quit()
 
     clb_points = ey.load(path2root + clb_points_fol, [clb_file_pnt])[0]
 

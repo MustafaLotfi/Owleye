@@ -13,45 +13,78 @@ elif os.name == "posix":
 from sklearn.utils import shuffle
 
 
-def create_clb_points(clb_grid):
-    clb_win_row = clb_grid[0]
-    clb_win_col = clb_grid[1]
-    smp_in_pnt = clb_grid[2]
+def create_grid(clb_grid):
     point_ratio = 0.012
-    points = []
-    dy = (1 - clb_win_row * point_ratio) / (clb_win_row - 1)
-    dx = (1 - clb_win_col * point_ratio) / (clb_win_col - 1)
+    if len(clb_grid) == 2:
+        rows = clb_grid[0]
+        points_in_row = clb_grid[1]
+        points = []
+        points_name = f"{rows}x{points_in_row}"
+        dy_rows = (1 - rows * point_ratio) / (rows - 1)
+        dx = (1 - points_in_row * point_ratio) / (points_in_row - 1)
 
-    for j in range(clb_win_row):
-        p_y = j * (point_ratio + dy) + point_ratio / 2
-        for i in range(clb_win_col):
-            p_x = i * (point_ratio + dx) + point_ratio / 2
+        for j in range(rows):
+            p_y = j * (point_ratio + dy_rows) + point_ratio / 2
             smp_in_p = []
-            for k in range(smp_in_pnt):
+            for i in range(points_in_row):
+                p_x = i * (point_ratio + dx) + point_ratio / 2
                 smp_in_p.append([p_x, p_y])
             points.append(smp_in_p)
 
-    with open(f"../files/clb_points/{clb_win_row}x{clb_win_col}x{smp_in_pnt}.pickle", 'wb') as f:
-        pickle.dump(points, f)
+    elif len(clb_grid) == 3:
+        rows = clb_grid[0]
+        cols = clb_grid[1]
+        smp_in_pnt = clb_grid[2]
+        points = []
+        points_name = f"{rows}x{cols}x{smp_in_pnt}"
+        dy = (1 - rows * point_ratio) / (rows - 1)
+        dx = (1 - cols * point_ratio) / (cols - 1)
 
+        for j in range(rows):
+            p_y = j * (point_ratio + dy) + point_ratio / 2
+            for i in range(cols):
+                p_x = i * (point_ratio + dx) + point_ratio / 2
+                smp_in_p = []
+                for k in range(smp_in_pnt):
+                    smp_in_p.append([p_x, p_y])
+                points.append(smp_in_p)
 
-def create_clb_lines(clb_grid):
-    clb_win_row = clb_grid[0]
-    clb_win_col = clb_grid[1]
-    point_ratio = 0.012
-    points = []
-    dy = (1 - clb_win_row * point_ratio) / (clb_win_row - 1)
-    dx = (1 - clb_win_col * point_ratio) / (clb_win_col - 1)
+    elif len(clb_grid) == 4:
+        rows = clb_grid[0]
+        points_in_row = clb_grid[1]
+        cols = clb_grid[2]
+        points_in_col = clb_grid[3]
+        points = []
 
-    for j in range(clb_win_row):
-        p_y = j * (point_ratio + dy) + point_ratio / 2
-        smp_in_p = []
-        for i in range(clb_win_col):
-            p_x = i * (point_ratio + dx) + point_ratio / 2
-            smp_in_p.append([p_x, p_y])
-        points.append(smp_in_p)
+        points_name = f"{rows}x{points_in_row}x{cols}x{points_in_col}"
 
-    with open(f"../files/clb_points/{clb_win_row}x{clb_win_col}x{clb_grid[2]}.pickle", 'wb') as f:
+        d_rows = (1 - rows * point_ratio) / (rows - 1)
+        dx = (1 - points_in_row * point_ratio) / (points_in_row - 1)
+        d_cols = (1 - cols * point_ratio) / (cols - 1)
+        dy = (1 - points_in_col * point_ratio) / (points_in_col - 1)
+
+        for j in range(rows):
+            p_y = j * (point_ratio + d_rows) + point_ratio / 2
+            smp_in_p = []
+            for i in range(points_in_row):
+                p_x = i * (point_ratio + dx) + point_ratio / 2
+                smp_in_p.append([p_x, p_y])
+            points.append(smp_in_p)
+        for i in range(cols):
+            p_x = i * (point_ratio + d_cols) + point_ratio / 2
+            smp_in_p = []
+            for j in range(points_in_col):
+                p_y = j * (point_ratio + dy) + point_ratio / 2
+                smp_in_p.append([p_x, p_y])
+            points.append(smp_in_p)
+
+    else:
+        print("\nPlease Enter a vector with length of 2-4!!")
+        points_name = None
+        points = None
+        quit()
+
+    with open(f"../files/clb_points/{points_name}.pickle", 'wb') as f:
         pickle.dump(points, f)
 
 
@@ -61,15 +94,23 @@ def et(
         sbj_gender,
         sbj_age,
         camera_id=0,
-        clb_grid=(10, 150, 1)
+        clb_grid=(10, 150)
 ):
     # Calibration to Collect 'eye_tracking' data
     path2root = "../"
     subjects_fol = "subjects/"
     et_fol = "data-et-clb/"
     clb_points_fol = "files/clb_points/"
-    clb_file_pnt = f"{clb_grid[0]}x{clb_grid[1]}x{clb_grid[2]}"
-
+    if len(clb_grid) == 2:
+        clb_file_pnt = f"{clb_grid[0]}x{clb_grid[1]}"
+    elif len(clb_grid) == 3:
+        clb_file_pnt = f"{clb_grid[0]}x{clb_grid[1]}x{clb_grid[2]}"
+    elif len(clb_grid) == 4:
+        clb_file_pnt = f"{clb_grid[0]}x{clb_grid[1]}x{clb_grid[2]}x{clb_grid[3]}"
+    else:
+        print("\nPlease Enter a vector with length of 2-4!!")
+        clb_file_pnt = None
+        quit()
     sbj_dir = path2root + subjects_fol + f"{sbj_num}/"
     if os.path.exists(sbj_dir):
         inp = input(f"\nThere is a subject in {sbj_dir} folder. do you want to remove it (y/n)? ")

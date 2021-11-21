@@ -9,7 +9,7 @@ import numpy as np
 import os
 
 
-def boi(sbj_num, selected_model_num=1, n_epochs=20, patience=4, trainable_layers=1):
+def boi(sbj_num, selected_model_num=1, n_epochs=5, patience=2, trainable_layers=1):
     print("Starting to retrain blink_out_in model...")
     path2root = "../"
     subjects_fol = "subjects/"
