@@ -85,7 +85,7 @@ def boi(sbj_num, selected_model_num=1, n_epochs=5, patience=2, trainable_layers=
     print("Saving model-boi in " + sbj_dir + "model-boi")
 
 
-def et(sbj_num, selected_model_num=1, n_epochs=50, patience=10, trainable_layers=1):
+def et(sbj_num, selected_model_num=1, n_epochs=60, patience=12, trainable_layers=1):
     print("\nStarting to retrain eye_tracking model...")
     path2root = "../"
     models_fol = "models/"

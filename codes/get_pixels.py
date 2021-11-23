@@ -49,10 +49,10 @@ def main(sbj_num, testing=False):
 
     y_hrz_hat = np.expand_dims(model_et_hrz.predict(x_et).reshape((n_smp,)), 1)
     y_vrt_hat = np.expand_dims(model_et_vrt.predict(x_et).reshape((n_smp,)), 1)
-    y_hrz_hat[y_hrz_hat < min_out_ratio] = min_out_ratio
-    y_vrt_hat[y_vrt_hat < min_out_ratio] = min_out_ratio
-    y_hrz_hat[y_hrz_hat > max_out_ratio] = max_out_ratio
-    y_vrt_hat[y_vrt_hat > max_out_ratio] = max_out_ratio
+    # y_hrz_hat[y_hrz_hat < min_out_ratio] = min_out_ratio
+    # y_vrt_hat[y_vrt_hat < min_out_ratio] = min_out_ratio
+    # y_hrz_hat[y_hrz_hat > max_out_ratio] = max_out_ratio
+    # y_vrt_hat[y_vrt_hat > max_out_ratio] = max_out_ratio
     y_hat_et = (np.concatenate([y_hrz_hat, y_vrt_hat], 1))
     ey.save([t_load, y_hat_boi, y_hat_et], sampling_dir, ['t', 'y-hat-boi', 'y-hat-et'])
 

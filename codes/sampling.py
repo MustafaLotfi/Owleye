@@ -84,7 +84,7 @@ def main(sbj_num, camera_id=0):
     print("Sampling finished!!")
 
 
-def test(sbj_num, camera_id=0, clb_grid=(3, 3, 20)):
+def test(sbj_num, camera_id=0, clb_grid=(3, 3, 100)):
     # Calibration to Collect 'eye_tracking' data
     path2root = "../"
     subjects_fol = "subjects/"
@@ -125,10 +125,9 @@ def test(sbj_num, camera_id=0, clb_grid=(3, 3, 20)):
     vector_inputs = []
     points_loc = []
     t0 = time.time()
+    cap = ey.get_camera(camera_id, frame_size)
+    ey.pass_frames(cap, 100)
     for item in clb_points:
-        cap = ey.get_camera(camera_id, frame_size)
-        ey.pass_frames(cap, camera_id)
-
         pnt = item[0]
         ey.show_clb_win(pnt)
 
@@ -136,6 +135,7 @@ def test(sbj_num, camera_id=0, clb_grid=(3, 3, 20)):
         if button == 27:
             break
         elif button == ord(' '):
+            ey.pass_frames(cap)
             t1 = time.time()
             s = len(item)
             for pnt in item:
@@ -164,16 +164,14 @@ def test(sbj_num, camera_id=0, clb_grid=(3, 3, 20)):
                             False
                         )
                         if features_success:
-                            t_vec.append(int((time.time() - t1) * 100) / 100.0)
+                            t_vec.append(int((time.time() - t0) * 100) / 100.0)
                             eyes_data_gray.append(eyes_frame_gray)
                             vector_inputs.append(features_vector)
                             points_loc.append(pnt)
                             i += 1
                             break
             fps_vec.append(ey.get_time(s, t1))
-        cap.release()
-        cv2.destroyWindow("Calibration")
-
+    cap.release()
     cv2.destroyAllWindows()
 
     ey.get_time(0, t0, True)

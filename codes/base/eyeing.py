@@ -68,7 +68,7 @@ def get_camera_properties(camera_id):
 
 def get_camera(camera_id, frame_size):
     frame_w, frame_h = frame_size
-    cap = cv2.VideoCapture(camera_id)
+    cap = cv2.VideoCapture(camera_id)  # (camera_id, cv2.CAP_DSHOW)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_w)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_h)
     return cap
@@ -264,10 +264,9 @@ def save(data, fol_dir, data_name):
             pickle.dump(d, f)
 
 
-def pass_frames(cap, camera_id):
-    if camera_id == 2:
-        for _ in range(40):
-            get_frame(cap)
+def pass_frames(cap, n_frames=5):
+    for _ in range(n_frames):
+        get_frame(cap)
 
 
 def show_clb_win(pnt=None, pnt_hat=None, t=None):

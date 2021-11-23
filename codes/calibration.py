@@ -93,6 +93,7 @@ def et(
         sbj_num,
         sbj_gender,
         sbj_age,
+        sbj_description,
         camera_id=0,
         clb_grid=(10, 150)
 ):
@@ -141,10 +142,9 @@ def et(
     vector_inputs = []
     points_loc = []
     t0 = time.time()
+    cap = ey.get_camera(camera_id, frame_size)
+    ey.pass_frames(cap, 100)
     for item in clb_points:
-        cap = ey.get_camera(camera_id, frame_size)
-        ey.pass_frames(cap, camera_id)
-
         pnt = item[0]
         ey.show_clb_win(pnt)
 
@@ -152,6 +152,7 @@ def et(
         if button == 27:
             break
         elif button == ord(' '):
+            ey.pass_frames(cap)
             t1 = time.time()
             s = len(item)
             for pnt in item:
@@ -185,10 +186,8 @@ def et(
                             points_loc.append(pnt)
                             break
             fps_vec.append(ey.get_time(s, t1))
-        cap.release()
-        cv2.destroyWindow("Calibration")
         p += 1
-
+    cap.release()
     cv2.destroyAllWindows()
 
     ey.get_time(0, t0, True)
@@ -210,7 +209,8 @@ def et(
     ey.save([x1, x2, y], et_dir, ["x1", "x2", "y"])
 
     f = open(sbj_dir + f"Information.txt", "w+")
-    f.write(sbj_name + "\n" + sbj_gender + "\n" + str(sbj_age) + "\n" + str(datetime.now())[:16] + "\n")
+    f.write(
+        sbj_name + "\n" + sbj_gender + "\n" + str(sbj_age) + "\n" + str(datetime.now())[:16] + "\n" + sbj_description)
     f.close()
     print("Calibration finished!!")
 
@@ -240,14 +240,15 @@ def bo(sbj_num, camera_id=0, n_smp_in_cls=300):
     vector_inputs = []
     output_class = []
     fps_vec = []
+    cap = ey.get_camera(camera_id, frame_size)
+    ey.pass_frames(cap, 100)
     for j in range(n_class):
-        cap = ey.get_camera(camera_id, frame_size)
-        ey.pass_frames(cap, camera_id)
         i = 0
         if j == 0:
             input("Close your eyes then press ENTER: ")
         elif j == 1:
             input("Look everywhere 'out' of screen and press ENTER: ")
+        ey.pass_frames(cap)
         t1 = time.time()
         while True:
             frame_success, frame, frame_rgb = ey.get_frame(cap)
@@ -282,8 +283,7 @@ def bo(sbj_num, camera_id=0, n_smp_in_cls=300):
         print("Data collected")
         if os.name == "nt":
             winsound.PlaySound("SystemExit", winsound.SND_ALIAS)
-        cap.release()
-
+    cap.release()
     cv2.destroyAllWindows()
     ey.get_time(0, t0, True)
     print(f"\nMean FPS : {np.array(fps_vec).mean()}")
