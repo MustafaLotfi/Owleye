@@ -5,7 +5,7 @@ from codes import sampling
 
 # ----------- PARAMETERS ------------
 # Subject Information
-NUMBER = 11
+NUMBER = 13
 NAME = "Mostafa Lotfi"
 GENDER = "Male"
 AGE = 25
@@ -20,7 +20,7 @@ CALIBRATION_GRID = 4, 200, 6, 100  # points in height, points in width, samples 
 # show.webcam(CAMERA_ID)
 # show.features(CAMERA_ID)
 
-# calibration.create_grid(CALIBRATION_GRID)
+calibration.create_grid(CALIBRATION_GRID)
 
 # calibration.et(
 #     NAME,
@@ -33,10 +33,11 @@ CALIBRATION_GRID = 4, 200, 6, 100  # points in height, points in width, samples 
 # )
 # calibration.bo(NUMBER, CAMERA_ID)
 # calibration.boi(NUMBER)
-#
-# sampling.test(
-#     NUMBER,
-#     CAMERA_ID
-# )
+
+sampling.test(
+    NUMBER,
+    CAMERA_ID,
+    CALIBRATION_GRID
+)
 # sampling.main(NUMBER, CAMERA_ID)
 

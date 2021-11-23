@@ -29,7 +29,11 @@ def create_grid(clb_grid):
             for i in range(points_in_row):
                 p_x = i * (point_ratio + dx) + point_ratio / 2
                 smp_in_p.append([p_x, p_y])
-            points.append(smp_in_p)
+            if j % 2 == 0:
+                points.append(smp_in_p)
+            else:
+                smp_in_p.reverse()
+                points.append(smp_in_p)
 
     elif len(clb_grid) == 3:
         rows = clb_grid[0]
@@ -69,14 +73,22 @@ def create_grid(clb_grid):
             for i in range(points_in_row):
                 p_x = i * (point_ratio + dx) + point_ratio / 2
                 smp_in_p.append([p_x, p_y])
-            points.append(smp_in_p)
+            if j % 2 == 0:
+                points.append(smp_in_p)
+            else:
+                smp_in_p.reverse()
+                points.append(smp_in_p)
         for i in range(cols):
             p_x = i * (point_ratio + d_cols) + point_ratio / 2
             smp_in_p = []
             for j in range(points_in_col):
                 p_y = j * (point_ratio + dy) + point_ratio / 2
                 smp_in_p.append([p_x, p_y])
-            points.append(smp_in_p)
+            if i % 2 == 0:
+                points.append(smp_in_p)
+            else:
+                smp_in_p.reverse()
+                points.append(smp_in_p)
 
     else:
         print("\nPlease Enter a vector with length of 2-4!!")

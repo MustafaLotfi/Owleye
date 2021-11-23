@@ -124,10 +124,11 @@ def test(sbj_num, camera_id=0, clb_grid=(3, 3, 100)):
     eyes_data_gray = []
     vector_inputs = []
     points_loc = []
-    t0 = time.time()
     cap = ey.get_camera(camera_id, frame_size)
     ey.pass_frames(cap, 100)
+    t0 = time.time()
     for item in clb_points:
+        print(item)
         pnt = item[0]
         ey.show_clb_win(pnt)
 

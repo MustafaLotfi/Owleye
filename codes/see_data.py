@@ -45,9 +45,9 @@ def features(sbj_num, target_fol):
         i += 1
 
 
-def pixels(sbj_num):
+def pixels(sbj_num, y_name):
     smp_dir = "../subjects/" + f"{sbj_num}/" + "sampling/"
-    [y_hat_boi, t_vec, y_hat_et] = ey.load(smp_dir, ['y-hat-boi', 't', 'y-hat-et'])
+    [y_hat_boi, t_vec, y_hat_et] = ey.load(smp_dir, ['y-hat-boi', 't', y_name])
 
     for (y_boi0, t0, y_hat_et0) in zip(y_hat_boi, t_vec, y_hat_et):
         print(y_hat_et0)
@@ -59,7 +59,7 @@ def pixels(sbj_num):
             break
 
 
-def pixels_test(sbj_num):
+def pixels_test(sbj_num, y_name):
     smp_dir = "../subjects/" + f"{sbj_num}/" + "sampling-test/"
     [y_hat_boi, t_vec, y_hat_et, y_et] = ey.load(smp_dir, ['y-hat-boi', 't', 'y-hat-et', 'y-et'])
 
