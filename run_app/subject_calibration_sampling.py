@@ -22,15 +22,10 @@ show.features(CAMERA_ID)
 
 calibration.create_grid(CALIBRATION_GRID)
 
-calibration.et(
-    NAME,
-    NUMBER,
-    GENDER,
-    AGE,
-    Description,
-    CAMERA_ID,
-    clb_grid=CALIBRATION_GRID
-)
+calibration.et((NUMBER, NAME, GENDER, AGE, Descriptions),
+               CAMERA_ID,
+               clb_grid=CALIBRATION_GRID
+               )
 calibration.bo(NUMBER, CAMERA_ID)
 calibration.boi(NUMBER)
 

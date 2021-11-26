@@ -7,8 +7,11 @@ import pickle
 import os
 
 
+PATH2ROOT = "../"
+
+
 def main(sbj_num, camera_id=0):
-    subjects_dir = "../subjects/"
+    subjects_dir = PATH2ROOT + "subjects/"
     smp_fol = "sampling/"
 
     some_landmarks_ids = ey.get_some_landmarks_ids()
@@ -84,12 +87,12 @@ def main(sbj_num, camera_id=0):
     print("Sampling finished!!")
 
 
-def test(sbj_num, camera_id=0, clb_grid=(3, 3, 100)):
+def test(sbj_num, camera_id, clb_grid=(3, 3, 100)):
     # Calibration to Collect 'eye_tracking' data
-    path2root = "../"
     subjects_fol = "subjects/"
     smp_tst_fol = "sampling-test/"
     clb_points_fol = "files/clb_points/"
+    mn_edge = 0.02
     if len(clb_grid) == 2:
         clb_file_pnt = f"{clb_grid[0]}x{clb_grid[1]}"
     elif len(clb_grid) == 3:
@@ -101,7 +104,7 @@ def test(sbj_num, camera_id=0, clb_grid=(3, 3, 100)):
         clb_file_pnt = None
         quit()
 
-    clb_points = ey.load(path2root + clb_points_fol, [clb_file_pnt])[0]
+    clb_points = ey.load(PATH2ROOT + clb_points_fol, [clb_file_pnt])[0]
 
     some_landmarks_ids = ey.get_some_landmarks_ids()
 
@@ -127,52 +130,59 @@ def test(sbj_num, camera_id=0, clb_grid=(3, 3, 100)):
     cap = ey.get_camera(camera_id, frame_size)
     ey.pass_frames(cap, 100)
     t0 = time.time()
-    for item in clb_points:
-        pnt = item[0]
-        ey.show_clb_win(pnt)
 
-        button = cv2.waitKey(0)
-        if button == 27:
-            break
-        elif button == ord(' '):
-            ey.pass_frames(cap)
-            t1 = time.time()
-            s = len(item)
-            for pnt in item:
-                ey.show_clb_win(pnt)
-                button = cv2.waitKey(1)
-                if button == 27:
-                    break
-                while True:
-                    frame_success, frame, frame_rgb = ey.get_frame(cap)
-                    if frame_success:
-                        results = face_mesh.process(frame_rgb)
-                        (
-                            features_success,
-                            _,
-                            eyes_frame_gray,
-                            features_vector
-                        ) = ey.get_model_inputs(
-                            frame,
-                            frame_rgb,
-                            results,
-                            camera_matrix,
-                            pcf,
-                            frame_size,
-                            dst_cof,
-                            some_landmarks_ids,
-                            False
-                        )
-                        if features_success:
-                            t_vec.append(int((time.time() - t0) * 100) / 100.0)
-                            eyes_data_gray.append(eyes_frame_gray)
-                            vector_inputs.append(features_vector)
-                            points_loc.append(pnt)
-                            i += 1
-                            break
-            fps_vec.append(ey.get_time(s, t1))
+    monitors = get_monitors()
+    for (i_m, m) in enumerate(monitors):
+        win_name = f"Calibration-{i_m}"
+        cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
+        cv2.moveWindow(win_name, i_m * m.width, 0)
+        cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+        for item in clb_points:
+            pnt = item[0]
+            ey.show_clb_win(win_name, pnt)
+
+            button = cv2.waitKey(0)
+            if button == 27:
+                break
+            elif button == ord(' '):
+                ey.pass_frames(cap)
+                t1 = time.time()
+                s = len(item)
+                for pnt in item:
+                    ey.show_clb_win(win_name, pnt)
+                    button = cv2.waitKey(1)
+                    if button == 27:
+                        break
+                    while True:
+                        frame_success, frame, frame_rgb = ey.get_frame(cap)
+                        if frame_success:
+                            results = face_mesh.process(frame_rgb)
+                            (
+                                features_success,
+                                _,
+                                eyes_frame_gray,
+                                features_vector
+                            ) = ey.get_model_inputs(
+                                frame,
+                                frame_rgb,
+                                results,
+                                camera_matrix,
+                                pcf,
+                                frame_size,
+                                dst_cof,
+                                some_landmarks_ids,
+                                False
+                            )
+                            if features_success:
+                                t_vec.append(int((time.time() - t0) * 100) / 100.0)
+                                eyes_data_gray.append(eyes_frame_gray)
+                                vector_inputs.append(features_vector)
+                                points_loc.append([pnt[0]+i_m*(1+mn_edge), pnt[1]])
+                                i += 1
+                                break
+                fps_vec.append(ey.get_time(s, t1))
+        cv2.destroyWindow(win_name)
     cap.release()
-    cv2.destroyAllWindows()
 
     ey.get_time(0, t0, True)
     print(f"\nMean FPS : {np.array(fps_vec).mean()}")
@@ -182,7 +192,11 @@ def test(sbj_num, camera_id=0, clb_grid=(3, 3, 100)):
     x2 = np.array(vector_inputs)
     y = np.array(points_loc)
 
-    smp_dir = path2root + subjects_fol + f"{sbj_num}/" + smp_tst_fol
+    n_mns = len(monitors)
+    mns_len = n_mns + (n_mns - 1) * mn_edge
+    y[:, 0] = y[:, 0] / mns_len
+
+    smp_dir = PATH2ROOT + subjects_fol + f"{sbj_num}/" + smp_tst_fol
     if not os.path.exists(smp_dir):
         os.mkdir(smp_dir)
 

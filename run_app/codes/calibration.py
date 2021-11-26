@@ -14,6 +14,9 @@ elif os.name == "posix":
 from sklearn.utils import shuffle
 
 
+PATH2ROOT = "../"
+
+
 def create_grid(clb_grid):
     point_ratio = 0.012
     if len(clb_grid) == 2:
@@ -97,26 +100,22 @@ def create_grid(clb_grid):
         points = None
         quit()
 
-    with open(f"../files/clb_points/{points_name}.pickle", 'wb') as f:
+    with open(PATH2ROOT + f"files/clb_points/{points_name}.pickle", 'wb') as f:
         pickle.dump(points, f)
 
 
-def et_monitor(
-        sbj_name,
-        sbj_num,
-        sbj_gender,
-        sbj_age,
-        sbj_description,
-        clb_grid,
-        i_monitor,
-        monitor,
-        camera_id=0
-):
-    # Calibration to Collect 'eye_tracking' data
-    path2root = "../"
+def et(info, camera_id=0, clb_grid=(4, 200, 6, 100)):
+    num, name, gender, age, description = info
     subjects_fol = "subjects/"
     et_fol = "data-et-clb/"
     clb_points_fol = "files/clb_points/"
+    sbj_dir = PATH2ROOT + subjects_fol + f"{num}/"
+    if os.path.exists(sbj_dir):
+        inp = input(f"\nThere is a subject in subjects/{info[0]}/ folder. do you want to remove it (y/n)? ")
+        if inp == 'n' or inp == 'N':
+            quit()
+
+    mn_edge = 0.02
     if len(clb_grid) == 2:
         clb_file_pnt = f"{clb_grid[0]}x{clb_grid[1]}"
     elif len(clb_grid) == 3:
@@ -127,9 +126,8 @@ def et_monitor(
         print("\nPlease Enter a vector with length of 2-4!!")
         clb_file_pnt = None
         quit()
-    sbj_dir = path2root + subjects_fol + f"{sbj_num}/"
 
-    clb_file_dir = path2root + clb_points_fol
+    clb_file_dir = PATH2ROOT + clb_points_fol
     clb_points = ey.load(clb_file_dir, [clb_file_pnt])[0]
 
     some_landmarks_ids = ey.get_some_landmarks_ids()
@@ -147,7 +145,6 @@ def et_monitor(
         min_tracking_confidence=ey.MIN_TRACKING_CONFIDENCE,
         min_detection_confidence=ey.MIN_DETECTION_CONFIDENCE)
 
-    p = 1
     fps_vec = []
     eyes_data_gray = []
     vector_inputs = []
@@ -155,51 +152,58 @@ def et_monitor(
     t0 = time.time()
     cap = ey.get_camera(camera_id, frame_size)
     ey.pass_frames(cap, 100)
-    for item in clb_points:
-        pnt = item[0]
-        ey.show_clb_win(i_monitor, monitor, pnt)
 
-        button = cv2.waitKey(0)
-        if button == 27:
-            break
-        elif button == ord(' '):
-            ey.pass_frames(cap)
-            t1 = time.time()
-            s = len(item)
-            for pnt in item:
-                ey.show_clb_win(i_monitor, monitor, pnt)
-                button = cv2.waitKey(1)
-                if button == 27:
-                    break
-                while True:
-                    frame_success, frame, frame_rgb = ey.get_frame(cap)
-                    if frame_success:
-                        results = face_mesh.process(frame_rgb)
-                        (
-                            features_success,
-                            _,
-                            eyes_frame_gray,
-                            features_vector
-                        ) = ey.get_model_inputs(
-                            frame,
-                            frame_rgb,
-                            results,
-                            camera_matrix,
-                            pcf,
-                            frame_size,
-                            dst_cof,
-                            some_landmarks_ids,
-                            False
-                        )
-                        if features_success:
-                            eyes_data_gray.append(eyes_frame_gray)
-                            vector_inputs.append(features_vector)
-                            points_loc.append(pnt)
-                            break
-            fps_vec.append(ey.get_time(s, t1))
-        p += 1
+    monitors = get_monitors()
+    for (i_m, m) in enumerate(monitors):
+        win_name = f"Calibration-{i_m}"
+        cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
+        cv2.moveWindow(win_name, i_m * m.width, 0)
+        cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+        for item in clb_points:
+            pnt = item[0]
+            ey.show_clb_win(win_name, pnt)
+
+            button = cv2.waitKey(0)
+            if button == 27:
+                break
+            elif button == ord(' '):
+                ey.pass_frames(cap)
+                t1 = time.time()
+                s = len(item)
+                for pnt in item:
+                    ey.show_clb_win(win_name, pnt)
+                    button = cv2.waitKey(1)
+                    if button == 27:
+                        break
+                    while True:
+                        frame_success, frame, frame_rgb = ey.get_frame(cap)
+                        if frame_success:
+                            results = face_mesh.process(frame_rgb)
+                            (
+                                features_success,
+                                _,
+                                eyes_frame_gray,
+                                features_vector
+                            ) = ey.get_model_inputs(
+                                frame,
+                                frame_rgb,
+                                results,
+                                camera_matrix,
+                                pcf,
+                                frame_size,
+                                dst_cof,
+                                some_landmarks_ids,
+                                False
+                            )
+                            if features_success:
+                                eyes_data_gray.append(eyes_frame_gray)
+                                vector_inputs.append(features_vector)
+                                points_loc.append([pnt[0] + i_m * (1 + mn_edge), pnt[1]])
+                                break
+                fps_vec.append(ey.get_time(s, t1))
+        cv2.destroyWindow(win_name)
     cap.release()
-    cv2.destroyAllWindows()
 
     ey.get_time(0, t0, True)
     print(f"\nMean FPS : {np.array(fps_vec).mean()}")
@@ -208,7 +212,11 @@ def et_monitor(
     x2 = np.array(vector_inputs)
     y = np.array(points_loc)
 
-    subjects_dir = path2root + subjects_fol
+    n_mns = len(monitors)
+    mns_len = n_mns + (n_mns - 1) * mn_edge
+    y[:, 0] = y[:, 0] / mns_len
+
+    subjects_dir = PATH2ROOT + subjects_fol
     if not os.path.exists(subjects_dir):
         os.mkdir(subjects_dir)
     if not os.path.exists(sbj_dir):
@@ -217,17 +225,17 @@ def et_monitor(
     if not os.path.exists(et_dir):
         os.mkdir(et_dir)
 
-    ey.save([x1, x2, y], et_dir, [f"x{i_monitor}1", f"x{i_monitor}2", f"y{i_monitor}"])
-
     f = open(sbj_dir + "Information.txt", "w+")
-    f.write(
-        sbj_name + "\n" + sbj_gender + "\n" + str(sbj_age) + "\n" + str(datetime.now())[:16] + "\n" + sbj_description)
+    f.write(name + "\n" + gender + "\n" + str(age) + "\n" + str(datetime.now())[:16] + "\n" + description)
     f.close()
+
+    ey.save([x1, x2, y], et_dir, ["x1", "x2", "y"])
+
     print("Calibration finished!!")
 
 
 def bo(sbj_num, camera_id=0, n_smp_in_cls=300):
-    subjects_dir = "../subjects/"
+    subjects_dir = PATH2ROOT + "subjects/"
     bo_fol = "data-bo/"
     n_class = 2
 
@@ -317,7 +325,7 @@ def bo(sbj_num, camera_id=0, n_smp_in_cls=300):
 
 
 def boi(sbj_num):
-    subjects_dir = "../subjects/"
+    subjects_dir = PATH2ROOT + "subjects/"
     boi_fol = "data-boi/"
     et_fol = "data-et-clb/"
     bo_fol = "data-bo/"
@@ -348,32 +356,3 @@ def boi(sbj_num):
     ey.save([x1_boi, x2_boi, y_boi], boi_dir, ['x1', 'x2', 'y'])
     ey.remove(bo_dir, ['x1', 'x2', 'y'])
 
-
-def et(
-    sbj_name,
-    sbj_num,
-    sbj_gender,
-    sbj_age,
-    sbj_description,
-    camera_id=0,
-    clb_grid=(10, 150)
-):
-
-    sbj_dir = f"../subjects/{sbj_num}/"
-    if os.path.exists(sbj_dir):
-        inp = input(f"\nThere is a subject in {sbj_dir} folder. do you want to remove it (y/n)? ")
-        if inp == 'n' or inp == 'N':
-            quit()
-    mns = get_monitors()
-    for (i, m) in enumerate(mns):
-        et_monitor(
-            sbj_name,
-            sbj_num,
-            sbj_gender,
-            sbj_age,
-            sbj_description,
-            clb_grid,
-            i,
-            m,
-            camera_id=0
-            )

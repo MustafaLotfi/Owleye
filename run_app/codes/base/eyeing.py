@@ -269,13 +269,10 @@ def pass_frames(cap, n_frames=5):
         get_frame(cap)
 
 
-def show_clb_win(i_monitor, monitor, pnt=None, pnt_hat=None, t=None):
-    m_w = monitor.width
-    win_name = "Calibration"
+def show_clb_win(win_name, pnt=None, pnt_hat=None, t=None):
     win_size = (640, 480)
-    win_w, win_h = win_size
-    pnt_d = int(win_w / 80.0)
-    clb_img = (np.ones((win_h, win_w, 3)) * 255).astype(np.uint8)
+    pnt_d = int(win_size[0] / 80.0)
+    clb_img = (np.ones((win_size[1], win_size[0], 3)) * 255).astype(np.uint8)
     if np.array(pnt).any():
         pxl = (np.array(pnt) * np.array(win_size)).astype(np.uint32)
         cv2.circle(clb_img, pxl, pnt_d, (0, 0, 255), cv2.FILLED)
@@ -285,10 +282,6 @@ def show_clb_win(i_monitor, monitor, pnt=None, pnt_hat=None, t=None):
         cv2.circle(clb_img, pxl_hat, int(pnt_d / 2), (200, 0, 50), cv2.FILLED)
     if np.array(t).any():
         cv2.putText(clb_img, f"{t} sec", (50, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
-    
-    cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
-    cv2.moveWindow(win_name, i_monitor * m_w, 0)
-    cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     cv2.imshow(win_name, clb_img)
 
 

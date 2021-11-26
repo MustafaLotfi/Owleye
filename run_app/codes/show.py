@@ -5,6 +5,8 @@ from codes.base import eyeing as ey
 from screeninfo import get_monitors
 
 
+mns = get_monitors()
+
 
 def webcam(camera_id=0):
     frame_size, _, _, _ = ey.get_camera_properties(camera_id)
@@ -13,9 +15,11 @@ def webcam(camera_id=0):
 
     i = 0
     win_name = "Webcam"
-    m_w = get_monitors()[0].width
     cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
-    cv2.moveWindow(win_name, 1 * m_w, 0)
+    if len(mns) == 1:
+        cv2.moveWindow(win_name, 0, 0)
+    else:
+        cv2.moveWindow(win_name, mns[0].width, 0)
     cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     t0 = time.time()
     while True:
@@ -52,9 +56,11 @@ def features(camera_id=0):
 
     cap = ey.get_camera(camera_id, frame_size)
     win_name = "Features"
-    m_w = get_monitors()[0].width
     cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
-    cv2.moveWindow(win_name, 1 * m_w, 0)
+    if len(mns) == 1:
+        cv2.moveWindow(win_name, 0, 0)
+    else:
+        cv2.moveWindow(win_name, mns[0].width, 0)
     cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     t0 = time.time()
     i = 0
