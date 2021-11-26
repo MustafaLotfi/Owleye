@@ -2,6 +2,8 @@ import cv2
 import time
 import mediapipe as mp
 from codes.base import eyeing as ey
+from screeninfo import get_monitors
+
 
 
 def webcam(camera_id=0):
@@ -10,12 +12,17 @@ def webcam(camera_id=0):
     ey.pass_frames(cap, camera_id)
 
     i = 0
+    win_name = "Webcam"
+    m_w = get_monitors()[0].width
+    cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
+    cv2.moveWindow(win_name, 1 * m_w, 0)
+    cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     t0 = time.time()
     while True:
         frame_success, frame, _ = ey.get_frame(cap)
         if frame_success:
             i += 1
-            cv2.imshow("Image", frame)
+            cv2.imshow(win_name, frame)
             q = cv2.waitKey(1)
             if q == ord('q') or q == ord('Q'):
                 break
@@ -44,6 +51,11 @@ def features(camera_id=0):
         min_detection_confidence=ey.MIN_DETECTION_CONFIDENCE)
 
     cap = ey.get_camera(camera_id, frame_size)
+    win_name = "Features"
+    m_w = get_monitors()[0].width
+    cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
+    cv2.moveWindow(win_name, 1 * m_w, 0)
+    cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     t0 = time.time()
     i = 0
     while True:
@@ -68,7 +80,7 @@ def features(camera_id=0):
             )
             if features_success:
                 i += 1
-                cv2.imshow("Features", frame)
+                cv2.imshow(win_name, frame)
                 q = cv2.waitKey(1)
                 if q == ord('q') or q == ord('Q'):
                     break

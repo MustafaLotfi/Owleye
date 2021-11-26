@@ -128,7 +128,6 @@ def test(sbj_num, camera_id=0, clb_grid=(3, 3, 100)):
     ey.pass_frames(cap, 100)
     t0 = time.time()
     for item in clb_points:
-        print(item)
         pnt = item[0]
         ey.show_clb_win(pnt)
 

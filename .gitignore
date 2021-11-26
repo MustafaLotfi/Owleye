@@ -134,10 +134,10 @@ dmypy.json
 # Eye-Tracker
 media/
 subjects/
-codes/p1.py
-codes/.ipynb_checkpoints/
-codes/__pycache__/
-codes/backup_codes/
+run_app/codes/p1.py
+run_app/codes/.ipynb_checkpoints/
+run_app/codes/__pycache__/
+run_app/codes/backup_codes/
 models/boi/raw/
 models/boi/trained/*
 !models/boi/trained/model1/

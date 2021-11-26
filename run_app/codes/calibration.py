@@ -6,6 +6,7 @@ from codes.base import eyeing as ey
 import pickle
 import os
 from datetime import datetime
+from screeninfo import get_monitors
 if os.name == "nt":
     import winsound
 elif os.name == "posix":
@@ -100,14 +101,16 @@ def create_grid(clb_grid):
         pickle.dump(points, f)
 
 
-def et(
+def et_monitor(
         sbj_name,
         sbj_num,
         sbj_gender,
         sbj_age,
         sbj_description,
-        camera_id=0,
-        clb_grid=(10, 150)
+        clb_grid,
+        i_monitor,
+        monitor,
+        camera_id=0
 ):
     # Calibration to Collect 'eye_tracking' data
     path2root = "../"
@@ -125,10 +128,6 @@ def et(
         clb_file_pnt = None
         quit()
     sbj_dir = path2root + subjects_fol + f"{sbj_num}/"
-    if os.path.exists(sbj_dir):
-        inp = input(f"\nThere is a subject in {sbj_dir} folder. do you want to remove it (y/n)? ")
-        if inp == 'n' or inp == 'N':
-            quit()
 
     clb_file_dir = path2root + clb_points_fol
     clb_points = ey.load(clb_file_dir, [clb_file_pnt])[0]
@@ -158,7 +157,7 @@ def et(
     ey.pass_frames(cap, 100)
     for item in clb_points:
         pnt = item[0]
-        ey.show_clb_win(pnt)
+        ey.show_clb_win(i_monitor, monitor, pnt)
 
         button = cv2.waitKey(0)
         if button == 27:
@@ -168,7 +167,7 @@ def et(
             t1 = time.time()
             s = len(item)
             for pnt in item:
-                ey.show_clb_win(pnt)
+                ey.show_clb_win(i_monitor, monitor, pnt)
                 button = cv2.waitKey(1)
                 if button == 27:
                     break
@@ -218,9 +217,9 @@ def et(
     if not os.path.exists(et_dir):
         os.mkdir(et_dir)
 
-    ey.save([x1, x2, y], et_dir, ["x1", "x2", "y"])
+    ey.save([x1, x2, y], et_dir, [f"x{i_monitor}1", f"x{i_monitor}2", f"y{i_monitor}"])
 
-    f = open(sbj_dir + f"Information.txt", "w+")
+    f = open(sbj_dir + "Information.txt", "w+")
     f.write(
         sbj_name + "\n" + sbj_gender + "\n" + str(sbj_age) + "\n" + str(datetime.now())[:16] + "\n" + sbj_description)
     f.close()
@@ -348,3 +347,33 @@ def boi(sbj_num):
 
     ey.save([x1_boi, x2_boi, y_boi], boi_dir, ['x1', 'x2', 'y'])
     ey.remove(bo_dir, ['x1', 'x2', 'y'])
+
+
+def et(
+    sbj_name,
+    sbj_num,
+    sbj_gender,
+    sbj_age,
+    sbj_description,
+    camera_id=0,
+    clb_grid=(10, 150)
+):
+
+    sbj_dir = f"../subjects/{sbj_num}/"
+    if os.path.exists(sbj_dir):
+        inp = input(f"\nThere is a subject in {sbj_dir} folder. do you want to remove it (y/n)? ")
+        if inp == 'n' or inp == 'N':
+            quit()
+    mns = get_monitors()
+    for (i, m) in enumerate(mns):
+        et_monitor(
+            sbj_name,
+            sbj_num,
+            sbj_gender,
+            sbj_age,
+            sbj_description,
+            clb_grid,
+            i,
+            m,
+            camera_id=0
+            )
