@@ -108,10 +108,10 @@ def et(info, camera_id=0, clb_grid=(4, 200, 6, 100)):
     num, name, gender, age, description = info
     subjects_fol = "subjects/"
     et_fol = "data-et-clb/"
-    clb_points_fol = "files/clb_points/"
+    clb_points_dir = PATH2ROOT + "files/clb_points/"
     sbj_dir = PATH2ROOT + subjects_fol + f"{num}/"
     if os.path.exists(sbj_dir):
-        inp = input(f"\nThere is a subject in subjects/{info[0]}/ folder. do you want to remove it (y/n)? ")
+        inp = input(f"\nThere is a subject in subjects/{num}/ folder. do you want to remove it (y/n)? ")
         if inp == 'n' or inp == 'N':
             quit()
 
@@ -127,8 +127,7 @@ def et(info, camera_id=0, clb_grid=(4, 200, 6, 100)):
         clb_file_pnt = None
         quit()
 
-    clb_file_dir = PATH2ROOT + clb_points_fol
-    clb_points = ey.load(clb_file_dir, [clb_file_pnt])[0]
+    clb_points = ey.load(clb_points_dir, [clb_file_pnt])[0]
 
     some_landmarks_ids = ey.get_some_landmarks_ids()
 
@@ -154,7 +153,10 @@ def et(info, camera_id=0, clb_grid=(4, 200, 6, 100)):
     ey.pass_frames(cap, 100)
 
     monitors = get_monitors()
-    for (i_m, m) in enumerate(monitors):
+
+    m = monitors[0]
+    for i_m in range(2):  # (i_m, m) in enumerate(monitors):
+
         win_name = f"Calibration-{i_m}"
         cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
         cv2.moveWindow(win_name, i_m * m.width, 0)
@@ -199,7 +201,7 @@ def et(info, camera_id=0, clb_grid=(4, 200, 6, 100)):
                             if features_success:
                                 eyes_data_gray.append(eyes_frame_gray)
                                 vector_inputs.append(features_vector)
-                                points_loc.append([pnt[0] + i_m * (1 + mn_edge), pnt[1]])
+                                points_loc.append([pnt[0] + i_m, pnt[1]])
                                 break
                 fps_vec.append(ey.get_time(s, t1))
         cv2.destroyWindow(win_name)
@@ -211,11 +213,12 @@ def et(info, camera_id=0, clb_grid=(4, 200, 6, 100)):
     x1 = np.array(eyes_data_gray)
     x2 = np.array(vector_inputs)
     y = np.array(points_loc)
-
+    print(y)
     n_mns = len(monitors)
-    mns_len = n_mns + (n_mns - 1) * mn_edge
-    y[:, 0] = y[:, 0] / mns_len
+    y[:, 0] = y[:, 0] / 2  # n_mns
 
+    print("*******************************************************************")
+    print(y)
     subjects_dir = PATH2ROOT + subjects_fol
     if not os.path.exists(subjects_dir):
         os.mkdir(subjects_dir)

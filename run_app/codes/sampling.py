@@ -5,6 +5,7 @@ import mediapipe as mp
 from codes.base import eyeing as ey
 import pickle
 import os
+from screeninfo import get_monitors
 
 
 PATH2ROOT = "../"
@@ -89,9 +90,8 @@ def main(sbj_num, camera_id=0):
 
 def test(sbj_num, camera_id, clb_grid=(3, 3, 100)):
     # Calibration to Collect 'eye_tracking' data
-    subjects_fol = "subjects/"
-    smp_tst_fol = "sampling-test/"
-    clb_points_fol = "files/clb_points/"
+    clb_points_dir = PATH2ROOT + "files/clb_points/"
+    smp_dir = PATH2ROOT + f"subjects/{sbj_num}/sampling-test/"
     mn_edge = 0.02
     if len(clb_grid) == 2:
         clb_file_pnt = f"{clb_grid[0]}x{clb_grid[1]}"
@@ -104,7 +104,7 @@ def test(sbj_num, camera_id, clb_grid=(3, 3, 100)):
         clb_file_pnt = None
         quit()
 
-    clb_points = ey.load(PATH2ROOT + clb_points_fol, [clb_file_pnt])[0]
+    clb_points = ey.load(clb_points_dir, [clb_file_pnt])[0]
 
     some_landmarks_ids = ey.get_some_landmarks_ids()
 
@@ -196,10 +196,8 @@ def test(sbj_num, camera_id, clb_grid=(3, 3, 100)):
     mns_len = n_mns + (n_mns - 1) * mn_edge
     y[:, 0] = y[:, 0] / mns_len
 
-    smp_dir = PATH2ROOT + subjects_fol + f"{sbj_num}/" + smp_tst_fol
     if not os.path.exists(smp_dir):
         os.mkdir(smp_dir)
 
     ey.save([t, x1, x2, y], smp_dir, ['t', 'x1', 'x2', 'y-et'])
     print("Calibration finished!!")
-

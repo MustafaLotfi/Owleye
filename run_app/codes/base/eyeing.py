@@ -94,7 +94,7 @@ def get_eyes_pixels(eye_pixels):
     pyb = np.max(eye_pixels[:, 1])
     ew = max(pxr - pxl, 25)
     ht = int(0.35 * ew)
-    hb = int(0.2 * ew)
+    hb = int(0.25 * ew)
     wl = int(0.2 * ew)
     wr = int(0.1 * ew)
     eye_top_left = pxl - wl, pyt - ht

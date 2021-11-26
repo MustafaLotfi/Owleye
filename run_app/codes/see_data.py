@@ -6,39 +6,39 @@ from screeninfo import get_monitors
 
 
 monitors = get_monitors()
-mn_data_edge = 0.02
+MN_DATA_EDGE = 0.02
+PATH2ROOT = "../"
 
 
 def features(sbj_num, target_fol):
-    subjects_dir = "../subjects/"
+    sbj_dir = PATH2ROOT + f"subjects/{sbj_num}/"
     if target_fol == "et-clb":
         target_fol = "data-et-clb/"
-        target_dir = subjects_dir + f"{sbj_num}/" + target_fol
+        target_dir = sbj_dir + target_fol
         data = ey.load(target_dir, ["x1", "x2", "y"])
     elif target_fol == "boi":
         target_fol = "data-boi/"
-        target_dir = subjects_dir + f"{sbj_num}/" + target_fol
+        target_dir = sbj_dir + target_fol
         data = ey.load(target_dir, ["x1", "x2", "y"])
     elif target_fol == "sampling":
         target_fol = "sampling/"
-        target_dir = subjects_dir + f"{sbj_num}/" + target_fol
+        target_dir = sbj_dir + target_fol
         data = ey.load(target_dir, ["x1", "x2", "t"])
     elif target_fol == "sampling-test":
         target_fol = "sampling-test/"
-        target_dir = subjects_dir + f"{sbj_num}/" + target_fol
+        target_dir = sbj_dir + target_fol
         data = ey.load(target_dir, ["x1", "x2", "t", "y-et"])
     else:
         data = None
         print("The folder isn't valid!!")
         quit()
 
-    win_name = f"Calibration-{i_m}"
-    cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
+    win_name = "Eyes"
+    cv2.namedWindow(win_name)
     if len(monitors) == 1:
         cv2.moveWindow(win_name, int(monitors[0].width / 2), int(monitors[0].height / 2))
     else:
         cv2.moveWindow(win_name, monitors[0].width + int(monitors[0].width / 2), int(monitors[0].height / 2))
-    cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
     x1 = data[0]
     print(x1.shape)
@@ -51,7 +51,7 @@ def features(sbj_num, target_fol):
                 continue
             d.append(data[j][i])
         print(f"{i}, {d}")
-        cv2.imshow("Eyes Image", img)
+        cv2.imshow(win_name, img)
         q = cv2.waitKey(100)
         if q == ord('q'):
             break
@@ -59,11 +59,11 @@ def features(sbj_num, target_fol):
 
 
 def pixels(num, y_name, n_monitors_data=1, show_all_monitors=False):
-    smp_dir = "../subjects/" + f"{num}/" + "sampling/"
+    smp_dir = PATH2ROOT + f"subjects/{num}/sampling/"
     [t_vec, y_hat_boi, y_hat_et] = ey.load(smp_dir, ['t', 'y-hat-boi', y_name])
 
     if show_all_monitors:
-        mns_data_len = n_monitors_data + (n_monitors_data - 1) * mn_data_edge
+        mns_data_len = n_monitors_data + (n_monitors_data - 1) * MN_DATA_EDGE
         mns_x = 0
         for (i, m) in enumerate(monitors):
             win_name = f"Calibration-{i}"
@@ -90,8 +90,8 @@ def pixels(num, y_name, n_monitors_data=1, show_all_monitors=False):
                 if i != 1:
                     t0 = None
                 if not y_hat_et0:
-                    if y_hat_et0[0] * mns_data_len < (i + 1) + (i + 1) * mn_data_edge:
-                        y_hat_et0[0] = y_hat_et0[0] * mns_data_len - i * (1 + mn_data_edge)
+                    if y_hat_et0[0] * mns_data_len < (i + 1) + (i + 1) * MN_DATA_EDGE:
+                        y_hat_et0[0] = y_hat_et0[0] * mns_data_len - i * (1 + MN_DATA_EDGE)
                     else:
                         y_hat_et0 = None
                 ey.show_clb_win(win_name, pnt_hat=y_hat_et0, t=t0)
@@ -104,10 +104,10 @@ def pixels(num, y_name, n_monitors_data=1, show_all_monitors=False):
 
 
 def pixels_test(num, y_name, n_monitors_data=1, show_all_monitors=False):
-    smp_dir = "../subjects/" + f"{num}/" + "sampling-test/"
+    smp_dir = PATH2ROOT + f"subjects/{num}/sampling-test/"
     [t_vec, y_hat_boi, y_hat_et, y_et] = ey.load(smp_dir, ['t', 'y-hat-boi', y_name, 'y-et'])
     if show_all_monitors:
-        mns_data_len = n_monitors_data + (n_monitors_data - 1) * mn_data_edge
+        mns_data_len = n_monitors_data + (n_monitors_data - 1) * MN_DATA_EDGE
         mns_x = 0
         for (i, m) in enumerate(monitors):
             win_name = f"Calibration-{i}"
@@ -134,12 +134,12 @@ def pixels_test(num, y_name, n_monitors_data=1, show_all_monitors=False):
                 if i != 1:
                     t0 = None
                 if not y_hat_et0:
-                    if y_hat_et0[0] * mns_data_len < (i + 1) + (i+1) * mn_data_edge:
-                        y_hat_et0[0] = y_hat_et0[0] * mns_data_len - i * (1 + mn_data_edge)
+                    if y_hat_et0[0] * mns_data_len < (i + 1) + (i+1) * MN_DATA_EDGE:
+                        y_hat_et0[0] = y_hat_et0[0] * mns_data_len - i * (1 + MN_DATA_EDGE)
                     else:
                         y_hat_et0 = None
-                    if y_et0[0] * mns_data_len < (i + 1) + (i+1) * mn_data_edge:
-                        y_et0[0] = y_et0[0] * mns_data_len - i * (1 + mn_data_edge)
+                    if y_et0[0] * mns_data_len < (i + 1) + (i+1) * MN_DATA_EDGE:
+                        y_et0[0] = y_et0[0] * mns_data_len - i * (1 + MN_DATA_EDGE)
                     else:
                         y_et0 = None
                 ey.show_clb_win(win_name, y_et0, y_hat_et0, t0)
