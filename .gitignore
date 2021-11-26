@@ -135,6 +135,8 @@ dmypy.json
 media/
 subjects/
 run_app/codes/p1.py
+run_app/codes/p2.py
+run_app/codes/p3.py
 run_app/codes/.ipynb_checkpoints/
 run_app/codes/__pycache__/
 run_app/codes/backup_codes/
