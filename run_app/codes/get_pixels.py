@@ -14,6 +14,7 @@ def main(sbj_num, testing=False):
     scalers_et_name = "scalers-et.bin"
     min_out_ratio = 0.005
     max_out_ratio = 0.995
+    y_scale = 1000.0
     if testing:
         sampling_fol = "sampling-test/"
     else:
@@ -47,8 +48,8 @@ def main(sbj_num, testing=False):
     model_et_hrz = load_model(sbj_dir + model_et_hrz_name)
     model_et_vrt = load_model(sbj_dir + model_et_vrt_name)
 
-    y_hrz_hat = np.expand_dims(model_et_hrz.predict(x_et).reshape((n_smp,)), 1)
-    y_vrt_hat = np.expand_dims(model_et_vrt.predict(x_et).reshape((n_smp,)), 1)
+    y_hrz_hat = np.expand_dims(model_et_hrz.predict(x_et).reshape((n_smp,)), 1) / y_scale
+    y_vrt_hat = np.expand_dims(model_et_vrt.predict(x_et).reshape((n_smp,)), 1) / y_scale
     # y_hrz_hat[y_hrz_hat < min_out_ratio] = min_out_ratio
     # y_vrt_hat[y_vrt_hat < min_out_ratio] = min_out_ratio
     # y_hrz_hat[y_hrz_hat > max_out_ratio] = max_out_ratio

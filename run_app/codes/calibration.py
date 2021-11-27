@@ -100,6 +100,7 @@ def create_grid(clb_grid):
 
 def et(info, camera_id=0, clb_grid=(4, 200, 6, 100)):
     num, name, gender, age, description = info
+    y_scale = 1000
     subjects_fol = "subjects/"
     et_fol = "data-et-clb/"
     sbj_dir = PATH2ROOT + subjects_fol + f"{num}/"
@@ -134,8 +135,7 @@ def et(info, camera_id=0, clb_grid=(4, 200, 6, 100)):
     ey.pass_frames(cap, 100)
 
     monitors = get_monitors()
-    m = monitors[0]
-    for i_m in range(2):  # (i_m, m) in enumerate(monitors):
+    for (i_m, m) in enumerate(monitors):
 
         win_name = f"Calibration-{i_m}"
         cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
@@ -193,11 +193,12 @@ def et(info, camera_id=0, clb_grid=(4, 200, 6, 100)):
     x1 = np.array(eyes_data_gray)
     x2 = np.array(vector_inputs)
     y = np.array(points_loc)
+
     print(y)
-    n_mns = len(monitors)
-    y[:, 0] = y[:, 0] / 2  # n_mns
+    y[:, 0] = y[:, 0] / len(monitors)
     print("*******************************************************************")
     print(y)
+
     subjects_dir = PATH2ROOT + subjects_fol
     if not os.path.exists(subjects_dir):
         os.mkdir(subjects_dir)

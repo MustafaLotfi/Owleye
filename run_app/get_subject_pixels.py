@@ -5,7 +5,7 @@ from codes import see_data
 
 # ----------- PARAMETERS ------------
 # Subject Information
-NUMBER = 12
+NUMBER = 14
 
 tune_model_pars.boi(NUMBER)
 tune_model_pars.et(NUMBER)

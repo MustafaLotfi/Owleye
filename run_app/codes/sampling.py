@@ -11,9 +11,8 @@ from codes.calibration import create_grid
 PATH2ROOT = "../"
 
 
-def main(sbj_num, camera_id=0):
-    subjects_dir = PATH2ROOT + "subjects/"
-    smp_fol = "sampling/"
+def main(num, camera_id=0):
+    smp_dir = PATH2ROOT + f"subjects/{num}/sampling/"
 
     some_landmarks_ids = ey.get_some_landmarks_ids()
 
@@ -80,7 +79,6 @@ def main(sbj_num, camera_id=0):
     x1 = np.array(eyes_data_gray)
     x2 = np.array(vector_inputs)
 
-    smp_dir = subjects_dir + f"{sbj_num}/" + smp_fol
     if not os.path.exists(smp_dir):
         os.mkdir(smp_dir)
 
@@ -88,10 +86,10 @@ def main(sbj_num, camera_id=0):
     print("Sampling finished!!")
 
 
-def test(sbj_num, camera_id, clb_grid=(3, 3, 100)):
+def test(num, camera_id, clb_grid=(3, 3, 100)):
     # Calibration to Collect 'eye_tracking' data
-    smp_dir = PATH2ROOT + f"subjects/{sbj_num}/sampling-test/"
-
+    smp_dir = PATH2ROOT + f"subjects/{num}/sampling-test/"
+    y_scale = 1000
     clb_points = create_grid(clb_grid)
 
     some_landmarks_ids = ey.get_some_landmarks_ids()
@@ -120,9 +118,7 @@ def test(sbj_num, camera_id, clb_grid=(3, 3, 100)):
     t0 = time.time()
 
     monitors = get_monitors()
-    m = monitors[0]
-    for i_m in range(2):
-    # for (i_m, m) in enumerate(monitors):
+    for (i_m, m) in enumerate(monitors):
         win_name = f"Calibration-{i_m}"
         cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
         cv2.moveWindow(win_name, i_m * m.width, 0)
@@ -183,13 +179,11 @@ def test(sbj_num, camera_id, clb_grid=(3, 3, 100)):
     y = np.array(points_loc)
 
     print(y)
-    # n_mns = len(monitors)
-    y[:, 0] = y[:, 0] / 2  # n_mns
+    y[:, 0] = y[:, 0] / len(monitors)
     print("*******************************************************************")
     print(y)
 
     if not os.path.exists(smp_dir):
         os.mkdir(smp_dir)
-
     ey.save([t, x1, x2, y], smp_dir, ['t', 'x1', 'x2', 'y-et'])
     print("Calibration finished!!")

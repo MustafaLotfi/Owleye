@@ -6,7 +6,6 @@ from screeninfo import get_monitors
 
 
 monitors = get_monitors()
-MN_DATA_EDGE = 0.02
 PATH2ROOT = "../"
 
 
@@ -63,7 +62,6 @@ def pixels(num, y_name, n_monitors_data=1, show_all_monitors=False):
     [t_vec, y_hat_boi, y_hat_et] = ey.load(smp_dir, ['t', 'y-hat-boi', y_name])
 
     if show_all_monitors:
-        mns_data_len = n_monitors_data + (n_monitors_data - 1) * MN_DATA_EDGE
         mns_x = 0
         for (i, m) in enumerate(monitors):
             win_name = f"Calibration-{i}"
@@ -90,15 +88,16 @@ def pixels(num, y_name, n_monitors_data=1, show_all_monitors=False):
                 if i != 1:
                     t0 = None
                 if not y_hat_et0:
-                    if y_hat_et0[0] * mns_data_len < (i + 1) + (i + 1) * MN_DATA_EDGE:
-                        y_hat_et0[0] = y_hat_et0[0] * mns_data_len - i * (1 + MN_DATA_EDGE)
+                    pw_hat = y_hat_et0[0] * n_monitors_data
+                    if (pw_hat > i) and (pw_hat < (i + 1)):
+                        y_hat_et0[0] = pw_hat - i
                     else:
                         y_hat_et0 = None
                 ey.show_clb_win(win_name, pnt_hat=y_hat_et0, t=t0)
         else:
             ey.show_clb_win(win_name, pnt_hat=y_hat_et0, t=t0)
 
-        q = cv2.waitKey(1)
+        q = cv2.waitKey(50)
         if q == ord('q') or q == ord('Q'):
             break
 
@@ -107,7 +106,6 @@ def pixels_test(num, y_name, n_monitors_data=1, show_all_monitors=False):
     smp_dir = PATH2ROOT + f"subjects/{num}/sampling-test/"
     [t_vec, y_hat_boi, y_hat_et, y_et] = ey.load(smp_dir, ['t', 'y-hat-boi', y_name, 'y-et'])
     if show_all_monitors:
-        mns_data_len = n_monitors_data + (n_monitors_data - 1) * MN_DATA_EDGE
         mns_x = 0
         for (i, m) in enumerate(monitors):
             win_name = f"Calibration-{i}"
@@ -134,18 +132,20 @@ def pixels_test(num, y_name, n_monitors_data=1, show_all_monitors=False):
                 if i != 1:
                     t0 = None
                 if not y_hat_et0:
-                    if y_hat_et0[0] * mns_data_len < (i + 1) + (i+1) * MN_DATA_EDGE:
-                        y_hat_et0[0] = y_hat_et0[0] * mns_data_len - i * (1 + MN_DATA_EDGE)
+                    pw_hat = y_hat_et0[0] * n_monitors_data
+                    if (pw_hat > i) and (pw_hat < (i + 1)):
+                        y_hat_et0[0] = pw_hat - i
                     else:
                         y_hat_et0 = None
-                    if y_et0[0] * mns_data_len < (i + 1) + (i+1) * MN_DATA_EDGE:
-                        y_et0[0] = y_et0[0] * mns_data_len - i * (1 + MN_DATA_EDGE)
+                    pw = y_et0[0] * n_monitors_data
+                    if (pw > i) and (pw < (i + 1)):
+                        y_et0[0] = pw - i
                     else:
                         y_et0 = None
                 ey.show_clb_win(win_name, y_et0, y_hat_et0, t0)
         else:
             ey.show_clb_win(win_name, y_et0, y_hat_et0, t0)
 
-        q = cv2.waitKey(1)
+        q = cv2.waitKey(50)
         if q == ord('q') or q == ord('Q'):
             break
