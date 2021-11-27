@@ -284,9 +284,3 @@ def show_clb_win(win_name, pnt=None, pnt_hat=None, t=None):
         cv2.putText(clb_img, f"{t} sec", (50, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
     cv2.imshow(win_name, clb_img)
 
-
-def remove(fol_dir, data_name):
-    for dn in data_name:
-        os.remove(fol_dir + dn + ".pickle")
-
-    os.rmdir(fol_dir)

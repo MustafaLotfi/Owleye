@@ -11,7 +11,7 @@ mns = get_monitors()
 def webcam(camera_id=0):
     frame_size, _, _, _ = ey.get_camera_properties(camera_id)
     cap = ey.get_camera(camera_id, frame_size)
-    ey.pass_frames(cap, camera_id)
+    ey.pass_frames(cap, 100)
 
     i = 0
     win_name = "Webcam"
@@ -55,6 +55,7 @@ def features(camera_id=0):
         min_detection_confidence=ey.MIN_DETECTION_CONFIDENCE)
 
     cap = ey.get_camera(camera_id, frame_size)
+    ey.pass_frames(cap, 100)
     win_name = "Features"
     cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
     if len(mns) == 1:

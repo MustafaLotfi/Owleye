@@ -13,19 +13,16 @@ Descriptions = "3 monitors"
 
 # calibration_collect_dataset
 CAMERA_ID = 2
-CALIBRATION_GRID = 3, 20  # points in height, points in width, samples in points
+CALIBRATION_GRID = 2, 10  # points in height, points in width, samples in points
 
-
+info = (NUMBER, NAME, GENDER, AGE, Descriptions)
 # ----------- FUNCTIONS ------------
 # show.webcam(CAMERA_ID)
-# show.features(CAMERA_ID)
-#
-# calibration.create_grid(CALIBRATION_GRID)
-#
-calibration.et((NUMBER, NAME, GENDER, AGE, Descriptions), CAMERA_ID, CALIBRATION_GRID)
+show.features(CAMERA_ID)
 
-# calibration.bo(NUMBER, CAMERA_ID, 20)
-# calibration.boi(NUMBER)
-#
-# sampling.test(NUMBER, CAMERA_ID, CALIBRATION_GRID)
-# sampling.main(NUMBER, CAMERA_ID)
+calibration.et(info, CAMERA_ID, CALIBRATION_GRID)
+
+calibration.boi(NUMBER, CAMERA_ID, 20)
+
+sampling.test(NUMBER, CAMERA_ID, CALIBRATION_GRID)
+sampling.main(NUMBER, CAMERA_ID)

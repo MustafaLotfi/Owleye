@@ -23,7 +23,6 @@ def create_grid(clb_grid):
         rows = clb_grid[0]
         points_in_row = clb_grid[1]
         points = []
-        points_name = f"{rows}x{points_in_row}"
         dy_rows = (1 - rows * point_ratio) / (rows - 1)
         dx = (1 - points_in_row * point_ratio) / (points_in_row - 1)
 
@@ -44,7 +43,6 @@ def create_grid(clb_grid):
         cols = clb_grid[1]
         smp_in_pnt = clb_grid[2]
         points = []
-        points_name = f"{rows}x{cols}x{smp_in_pnt}"
         dy = (1 - rows * point_ratio) / (rows - 1)
         dx = (1 - cols * point_ratio) / (cols - 1)
 
@@ -63,8 +61,6 @@ def create_grid(clb_grid):
         cols = clb_grid[2]
         points_in_col = clb_grid[3]
         points = []
-
-        points_name = f"{rows}x{points_in_row}x{cols}x{points_in_col}"
 
         d_rows = (1 - rows * point_ratio) / (rows - 1)
         dx = (1 - points_in_row * point_ratio) / (points_in_row - 1)
@@ -96,38 +92,23 @@ def create_grid(clb_grid):
 
     else:
         print("\nPlease Enter a vector with length of 2-4!!")
-        points_name = None
         points = None
         quit()
 
-    with open(PATH2ROOT + f"files/clb_points/{points_name}.pickle", 'wb') as f:
-        pickle.dump(points, f)
+    return points
 
 
 def et(info, camera_id=0, clb_grid=(4, 200, 6, 100)):
     num, name, gender, age, description = info
     subjects_fol = "subjects/"
     et_fol = "data-et-clb/"
-    clb_points_dir = PATH2ROOT + "files/clb_points/"
     sbj_dir = PATH2ROOT + subjects_fol + f"{num}/"
     if os.path.exists(sbj_dir):
         inp = input(f"\nThere is a subject in subjects/{num}/ folder. do you want to remove it (y/n)? ")
         if inp == 'n' or inp == 'N':
             quit()
 
-    mn_edge = 0.02
-    if len(clb_grid) == 2:
-        clb_file_pnt = f"{clb_grid[0]}x{clb_grid[1]}"
-    elif len(clb_grid) == 3:
-        clb_file_pnt = f"{clb_grid[0]}x{clb_grid[1]}x{clb_grid[2]}"
-    elif len(clb_grid) == 4:
-        clb_file_pnt = f"{clb_grid[0]}x{clb_grid[1]}x{clb_grid[2]}x{clb_grid[3]}"
-    else:
-        print("\nPlease Enter a vector with length of 2-4!!")
-        clb_file_pnt = None
-        quit()
-
-    clb_points = ey.load(clb_points_dir, [clb_file_pnt])[0]
+    clb_points = create_grid(clb_grid)
 
     some_landmarks_ids = ey.get_some_landmarks_ids()
 
@@ -153,7 +134,6 @@ def et(info, camera_id=0, clb_grid=(4, 200, 6, 100)):
     ey.pass_frames(cap, 100)
 
     monitors = get_monitors()
-
     m = monitors[0]
     for i_m in range(2):  # (i_m, m) in enumerate(monitors):
 
@@ -216,7 +196,6 @@ def et(info, camera_id=0, clb_grid=(4, 200, 6, 100)):
     print(y)
     n_mns = len(monitors)
     y[:, 0] = y[:, 0] / 2  # n_mns
-
     print("*******************************************************************")
     print(y)
     subjects_dir = PATH2ROOT + subjects_fol
@@ -237,9 +216,35 @@ def et(info, camera_id=0, clb_grid=(4, 200, 6, 100)):
     print("Calibration finished!!")
 
 
-def bo(sbj_num, camera_id=0, n_smp_in_cls=300):
-    subjects_dir = PATH2ROOT + "subjects/"
-    bo_fol = "data-bo/"
+def integrate_bo_et(sbj_num, data_bo):
+    sbj_dir = PATH2ROOT + f"subjects/{sbj_num}/"
+    boi_fol = "data-boi/"
+    et_fol = "data-et-clb/"
+
+    et_dir = sbj_dir + et_fol
+
+    x1_et, x2_et = ey.load(et_dir, ['x1', 'x2'])
+    x1_bo, x2_bo, y_bo = data_bo
+
+    smp_in_cls = int(x1_bo.shape[0] / 2)
+
+    x1_et_shf, x2_et_shf = shuffle(x1_et, x2_et)
+
+    x1_in, x2_in = x1_et_shf[:smp_in_cls], x2_et_shf[:smp_in_cls]
+    y_in = np.ones((smp_in_cls,)) * 2
+
+    x1_boi = np.concatenate((x1_in, x1_bo))
+    x2_boi = np.concatenate((x2_in, x2_bo))
+    y_boi = np.concatenate((y_in, y_bo))
+
+    boi_dir = sbj_dir + boi_fol
+    if not os.path.exists(boi_dir):
+        os.mkdir(boi_dir)
+
+    ey.save([x1_boi, x2_boi, y_boi], boi_dir, ['x1', 'x2', 'y'])
+
+
+def boi(sbj_num, camera_id=0, n_smp_in_cls=300):
     n_class = 2
 
     some_landmarks_ids = ey.get_some_landmarks_ids()
@@ -314,48 +319,8 @@ def bo(sbj_num, camera_id=0, n_smp_in_cls=300):
     x2 = np.array(vector_inputs)
     y = np.array(output_class)
 
-    if not os.path.exists(subjects_dir):
-        os.mkdir(subjects_dir)
-    sbj_dir = subjects_dir + f"{sbj_num}/"
-    if not os.path.exists(sbj_dir):
-        os.mkdir(sbj_dir)
-    bo_dir = sbj_dir + bo_fol
-    if not os.path.exists(bo_dir):
-        os.mkdir(bo_dir)
-
-    ey.save([x1, x2, y], bo_dir, ['x1', 'x2', 'y'])
     print("\nData collection finished!!")
 
+    integrate_bo_et(sbj_num, [x1, x2, y])
 
-def boi(sbj_num):
-    subjects_dir = PATH2ROOT + "subjects/"
-    boi_fol = "data-boi/"
-    et_fol = "data-et-clb/"
-    bo_fol = "data-bo/"
-
-    sbj_dir = subjects_dir + f"{sbj_num}/"
-
-    et_dir = sbj_dir + et_fol
-    bo_dir = sbj_dir + bo_fol
-
-    x1_et, x2_et = ey.load(et_dir, ['x1', 'x2'])
-    x1_bo, x2_bo, y_bo = ey.load(bo_dir, ['x1', 'x2', 'y'])
-
-    smp_in_cls = int(x1_bo.shape[0] / 2)
-
-    x1_et_shf, x2_et_shf = shuffle(x1_et, x2_et)
-
-    x1_in, x2_in = x1_et_shf[:smp_in_cls], x2_et_shf[:smp_in_cls]
-    y_in = np.ones((smp_in_cls,)) * 2
-
-    x1_boi = np.concatenate((x1_in, x1_bo))
-    x2_boi = np.concatenate((x2_in, x2_bo))
-    y_boi = np.concatenate((y_in, y_bo))
-
-    boi_dir = sbj_dir + boi_fol
-    if not os.path.exists(boi_dir):
-        os.mkdir(boi_dir)
-
-    ey.save([x1_boi, x2_boi, y_boi], boi_dir, ['x1', 'x2', 'y'])
-    ey.remove(bo_dir, ['x1', 'x2', 'y'])
 

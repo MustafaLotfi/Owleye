@@ -6,7 +6,7 @@ from codes.base import eyeing as ey
 import pickle
 import os
 from screeninfo import get_monitors
-
+from codes.calibration import create_grid
 
 PATH2ROOT = "../"
 
@@ -90,21 +90,9 @@ def main(sbj_num, camera_id=0):
 
 def test(sbj_num, camera_id, clb_grid=(3, 3, 100)):
     # Calibration to Collect 'eye_tracking' data
-    clb_points_dir = PATH2ROOT + "files/clb_points/"
     smp_dir = PATH2ROOT + f"subjects/{sbj_num}/sampling-test/"
-    mn_edge = 0.02
-    if len(clb_grid) == 2:
-        clb_file_pnt = f"{clb_grid[0]}x{clb_grid[1]}"
-    elif len(clb_grid) == 3:
-        clb_file_pnt = f"{clb_grid[0]}x{clb_grid[1]}x{clb_grid[2]}"
-    elif len(clb_grid) == 4:
-        clb_file_pnt = f"{clb_grid[0]}x{clb_grid[1]}x{clb_grid[2]}x{clb_grid[3]}"
-    else:
-        print("\nPlease Enter a vector with length of 2-4!!")
-        clb_file_pnt = None
-        quit()
 
-    clb_points = ey.load(clb_points_dir, [clb_file_pnt])[0]
+    clb_points = create_grid(clb_grid)
 
     some_landmarks_ids = ey.get_some_landmarks_ids()
 
@@ -132,7 +120,9 @@ def test(sbj_num, camera_id, clb_grid=(3, 3, 100)):
     t0 = time.time()
 
     monitors = get_monitors()
-    for (i_m, m) in enumerate(monitors):
+    m = monitors[0]
+    for i_m in range(2):
+    # for (i_m, m) in enumerate(monitors):
         win_name = f"Calibration-{i_m}"
         cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
         cv2.moveWindow(win_name, i_m * m.width, 0)
@@ -177,7 +167,7 @@ def test(sbj_num, camera_id, clb_grid=(3, 3, 100)):
                                 t_vec.append(int((time.time() - t0) * 100) / 100.0)
                                 eyes_data_gray.append(eyes_frame_gray)
                                 vector_inputs.append(features_vector)
-                                points_loc.append([pnt[0]+i_m*(1+mn_edge), pnt[1]])
+                                points_loc.append([pnt[0] + i_m, pnt[1]])
                                 i += 1
                                 break
                 fps_vec.append(ey.get_time(s, t1))
@@ -192,9 +182,11 @@ def test(sbj_num, camera_id, clb_grid=(3, 3, 100)):
     x2 = np.array(vector_inputs)
     y = np.array(points_loc)
 
-    n_mns = len(monitors)
-    mns_len = n_mns + (n_mns - 1) * mn_edge
-    y[:, 0] = y[:, 0] / mns_len
+    print(y)
+    # n_mns = len(monitors)
+    y[:, 0] = y[:, 0] / 2  # n_mns
+    print("*******************************************************************")
+    print(y)
 
     if not os.path.exists(smp_dir):
         os.mkdir(smp_dir)
