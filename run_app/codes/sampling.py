@@ -37,7 +37,7 @@ def main(num, camera_id=0):
     t_vec = []
     eyes_data_gray = []
     vector_inputs = []
-    t0 = time.time()
+    t0 = time.perf_counter()
     while True:
         frame_success, frame, frame_rgb = ey.get_frame(cap)
         if frame_success:
@@ -59,7 +59,7 @@ def main(num, camera_id=0):
                 False
             )
             if features_success:
-                t_vec.append(int((time.time() - t0) * 100) / 100.0)
+                t_vec.append(round(time.perf_counter() - t0, 3))
                 eyes_data_gray.append(eyes_frame_gray)
                 vector_inputs.append(features_vector)
 
@@ -89,7 +89,6 @@ def main(num, camera_id=0):
 def test(num, camera_id, clb_grid=(3, 3, 100)):
     # Calibration to Collect 'eye_tracking' data
     smp_dir = PATH2ROOT + f"subjects/{num}/sampling-test/"
-    y_scale = 1000
     clb_points = create_grid(clb_grid)
 
     some_landmarks_ids = ey.get_some_landmarks_ids()
@@ -115,7 +114,7 @@ def test(num, camera_id, clb_grid=(3, 3, 100)):
     points_loc = []
     cap = ey.get_camera(camera_id, frame_size)
     ey.pass_frames(cap, 100)
-    t0 = time.time()
+    t0 = time.perf_counter()
 
     monitors = get_monitors()
     for (i_m, m) in enumerate(monitors):
@@ -132,7 +131,7 @@ def test(num, camera_id, clb_grid=(3, 3, 100)):
                 break
             elif button == ord(' '):
                 ey.pass_frames(cap)
-                t1 = time.time()
+                t1 = time.perf_counter()
                 s = len(item)
                 for pnt in item:
                     ey.show_clb_win(win_name, pnt)
@@ -160,7 +159,7 @@ def test(num, camera_id, clb_grid=(3, 3, 100)):
                                 False
                             )
                             if features_success:
-                                t_vec.append(int((time.time() - t0) * 100) / 100.0)
+                                t_vec.append(round(time.perf_counter() - t0, 3))
                                 eyes_data_gray.append(eyes_frame_gray)
                                 vector_inputs.append(features_vector)
                                 points_loc.append([pnt[0] + i_m, pnt[1]])

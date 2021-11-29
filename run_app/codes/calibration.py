@@ -100,7 +100,6 @@ def create_grid(clb_grid):
 
 def et(info, camera_id=0, clb_grid=(4, 200, 6, 100)):
     num, name, gender, age, description = info
-    y_scale = 1000
     subjects_fol = "subjects/"
     et_fol = "data-et-clb/"
     sbj_dir = PATH2ROOT + subjects_fol + f"{num}/"
@@ -130,7 +129,7 @@ def et(info, camera_id=0, clb_grid=(4, 200, 6, 100)):
     eyes_data_gray = []
     vector_inputs = []
     points_loc = []
-    t0 = time.time()
+    t0 = time.perf_counter()
     cap = ey.get_camera(camera_id, frame_size)
     ey.pass_frames(cap, 100)
 
@@ -151,7 +150,7 @@ def et(info, camera_id=0, clb_grid=(4, 200, 6, 100)):
                 break
             elif button == ord(' '):
                 ey.pass_frames(cap)
-                t1 = time.time()
+                t1 = time.perf_counter()
                 s = len(item)
                 for pnt in item:
                     ey.show_clb_win(win_name, pnt)
@@ -263,7 +262,7 @@ def boi(sbj_num, camera_id=0, n_smp_in_cls=300):
         min_tracking_confidence=ey.MIN_TRACKING_CONFIDENCE,
         min_detection_confidence=ey.MIN_DETECTION_CONFIDENCE)
 
-    t0 = time.time()
+    t0 = time.perf_counter()
     eyes_data_gray = []
     vector_inputs = []
     output_class = []
@@ -277,7 +276,7 @@ def boi(sbj_num, camera_id=0, n_smp_in_cls=300):
         elif j == 1:
             input("Look everywhere 'out' of screen and press ENTER: ")
         ey.pass_frames(cap)
-        t1 = time.time()
+        t1 = time.perf_counter()
         while True:
             frame_success, frame, frame_rgb = ey.get_frame(cap)
             if frame_success:
