@@ -1,6 +1,8 @@
-from codes import modeling
+from codes.get_model import Modeling
 
-# modeling.create_boi()
-# modeling.create_et()
-# modeling.train_boi(subjects=[1], n_epochs=200, patience=15)
-modeling.train_et(subjects=[1], n_epochs=200, patience=15)
+
+mdl = Modeling()
+mdl.create_boi()
+mdl.create_et()
+mdl.train_boi(subjects=[1], n_epochs=5, patience=2)
+mdl.train_et(subjects=[1], n_epochs=5, patience=2)

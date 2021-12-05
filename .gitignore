@@ -134,6 +134,7 @@ dmypy.json
 # Eye-Tracker
 media/
 subjects/
+run_app/p1.py
 run_app/codes/p1.py
 run_app/codes/p2.py
 run_app/codes/p3.py

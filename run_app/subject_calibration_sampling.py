@@ -1,13 +1,13 @@
-from codes import show
-from codes import calibration
-from codes import sampling
+from codes.show import Camera
+from codes.calibrate import Calibration
+from codes.do_sampling import Sampling
 
 
 # ----------- PARAMETERS ------------
 # Subject Information
 NUMBER = 14
 NAME = "Mostafa Lotfi"
-GENDER = "Male"
+GENDER = "M"
 AGE = 25
 Descriptions = "3 monitors"
 
@@ -15,14 +15,18 @@ Descriptions = "3 monitors"
 CAMERA_ID = 2
 CALIBRATION_GRID = 2, 10  # points in height, points in width, samples in points
 
-info = (NUMBER, NAME, GENDER, AGE, Descriptions)
+INFO = (NAME, GENDER, AGE, Descriptions)
+
 # ----------- FUNCTIONS ------------
-# show.webcam(CAMERA_ID)
-show.features(CAMERA_ID)
+cam = Camera(CAMERA_ID)
+cam.raw()
+cam.features()
 
-calibration.et(info, CAMERA_ID, CALIBRATION_GRID)
+clb = Calibration(NUMBER, CAMERA_ID)
+clb.et(INFO, CALIBRATION_GRID)
+clb.boi(20)
 
-calibration.boi(NUMBER, CAMERA_ID, 20)
+smp = Sampling(NUMBER, CAMERA_ID)
+smp.test(CALIBRATION_GRID)
+smp.main()
 
-sampling.test(NUMBER, CAMERA_ID, CALIBRATION_GRID)
-sampling.main(NUMBER, CAMERA_ID)
