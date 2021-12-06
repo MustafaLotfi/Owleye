@@ -19,14 +19,7 @@ CALIBRATION_GRID = (4, 200, 6, 100)
 
 
 class Calibration(object):
-    def __init__(self, number, camera_id=0, path2root="../"):
-        super().__init__()
-
-        self.running = True
-        self.num = number
-        self.camera_id = camera_id
-        self.path2root = path2root
-        
+    running = True    
 
     @staticmethod
     def create_grid(clb_grid):
@@ -110,11 +103,7 @@ class Calibration(object):
         return points
 
 
-    def et(self, info=INFO, clb_grid=CALIBRATION_GRID):
-        num = self.num
-        camera_id = self.camera_id
-        path2root = self.path2root
-
+    def et(self, num, camera_id=0, info=INFO, clb_grid=CALIBRATION_GRID, path2root="../"):
         name, gender, age, description = info
         subjects_fol = "subjects/"
         et_fol = "data-et-clb/"
@@ -232,9 +221,8 @@ class Calibration(object):
         print("Calibration finished!!")
 
 
-    def integrate_bo_et(self, data_bo):
-        path2root = self.path2root
-        num = self.num
+    @staticmethod
+    def integrate_bo_et(num, data_bo, path2root):
         sbj_dir = path2root + f"subjects/{num}/"
         boi_fol = "data-boi/"
         et_fol = "data-et-clb/"
@@ -262,8 +250,7 @@ class Calibration(object):
         ey.save([x1_boi, x2_boi, y_boi], boi_dir, ['x1', 'x2', 'y'])
 
 
-    def boi(self, n_smp_in_cls=300):
-        camera_id = self.camera_id
+    def boi(self, num, camera_id=0, n_smp_in_cls=300, path2root="../"):
         n_class = 2
 
         some_landmarks_ids = ey.get_some_landmarks_ids()
@@ -289,6 +276,8 @@ class Calibration(object):
         cap = ey.get_camera(camera_id, frame_size)
         ey.pass_frames(cap, 100)
         for j in range(n_class):
+            if not self.running:
+                break
             i = 0
             if j == 0:
                 input("Close your eyes then press ENTER: ")
@@ -340,6 +329,6 @@ class Calibration(object):
 
         print("\nData collection finished!!")
 
-        self.integrate_bo_et([x1, x2, y])
+        self.integrate_bo_et(num, [x1, x2, y], path2root)
 
 

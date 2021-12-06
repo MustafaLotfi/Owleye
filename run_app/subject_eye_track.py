@@ -6,10 +6,10 @@ from codes.get_eye_track import EyeTrack
 # Subject Information
 NUMBER = 14
 
-# tun_mdl = Tuning(NUMBER)
-# tun_mdl.boi(2, 2, 1, 1)
-# tun_mdl.et(2, 2, 1, 1)
+# tun_mdl = Tuning()
+# tun_mdl.boi_mdl(NUMBER, 2, 2, 1, 1)
+# tun_mdl.et_mdl(NUMBER, 2, 2, 1, 1)
 
-eyt = EyeTrack(NUMBER)
-eyt.raw_pixels(testing=True)
-eyt.filtration_fixations(testing=True)
+eyt = EyeTrack()
+eyt.raw_pixels(NUMBER, True)
+eyt.filtration_fixations(NUMBER, True)

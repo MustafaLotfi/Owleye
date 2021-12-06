@@ -1,155 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QThread, pyqtSignal, QObject
-# import numpy as np
-# import cv2
-# import time
-# import mediapipe as mp
-# from codes.base import eyeing as ey
-# import pickle
-# import os
-# from datetime import datetime
-# from screeninfo import get_monitors
-# if os.name == "nt":
-#     import winsound
-# elif os.name == "posix":
-#     pass
-# from sklearn.utils import shuffle
-
-
-PATH2ROOT = "../"
-
-# s1 = "4, 200, 6, 100"
-# s1 = " " + s1 + " "
-# sep = []
-# sep.append(0)
-# for pos, s in enumerate(s1):
-#     if s == ',':
-#         sep.append(pos)
-
-# sep.append(len(s1)-1)
-# grid_len = len(sep)
-# grid = []
-# for i in range(grid_len-1):
-#     grid.append(int(s1[sep[i]+1:sep[i+1]]))
-
-# print(grid)
-# self.b1.setEnabled(False)
-
-class Worker(QObject):
-    def __init__(self, num, name, age, gender, dsc, cam_id, clb_grid):
-        super().__init__()
-
-    running = True
-    finished = pyqtSignal()
-    cam_finished = pyqtSignal()
-    clb_finished = pyqtSignal()
-    smp_finished = pyqtSignal()
-    tst_finished = pyqtSignal()
-    mdl_finished = pyqtSignal()
-    gp_finished = pyqtSignal()
-    finished = pyqtSignal()
-    finished = pyqtSignal()
-    
-
-    name = ""
-    num = 0
-    age = 0
-    gender = ""
-    dsc = ""
-    cam_id = 0
-    clb_grid = ""
-
-    cam = False
-    clb = False
-    smp = False
-    tst = False
-    mdl = False
-    gp = False
-    gf = False
-    see_smp = False
-    see_tst = False
-
-    def do_work(self):
-        if self.cam:
-            self.see_camera()
-        if self.clb:
-            self.calibration()
-        if self.smp:
-            self.sampling()
-        if self.mdl:
-            self.modeling()
-        if self.gp:
-            self.get_pixels_fixations()
-        if self.see_smp:
-            self.see_pixels()
-
-        self.finished.emit()
-
-    def see_camera(self):
-        i = 0
-        while (i < 1000) and self.running:
-            i += 1
-            print("Camera")
-            # print("name " + str(self.name))
-            # print("number " + str(self.num))
-            # print("age " + str(self.age))
-            # print("gender " + str(self.gender))
-            # print("descriptions " + str(self.dsc))
-            # print("Camera ID " + str(self.cam_id))
-            # print("Calibration Grid " + str(self.clb_grid))
-
-        # if not self.clb and not self.smp and not self.mdl and not self.gpf and not self.see_px:
-        #     self.finished.emit()
-        #     self.running = False
-
-    def calibration(self):
-        i = 0
-        while (i < 1000) and self.running:
-            i += 1
-            print("calibration")
-
-        # if not self.smp and not self.mdl and not self.gpf and not self.see_px:
-        #     self.finished.emit()
-        #     self.running = False
-
-    def sampling(self):
-        i = 0
-        while (i < 1000) and self.running:
-            i += 1
-            print("sampling")
-
-        # if not self.mdl and not self.gpf and not self.see_px:
-        #     self.finished.emit()
-        #     self.running = False
-
-    def modeling(self):
-        i = 0
-        while (i < 1000) and self.running:
-            i += 1
-            print("modeling")
-
-        # if not self.gpf and not self.see_px:
-        #     self.finished.emit()
-        #     self.running = False
-
-    def get_pixels_fixations(self):
-        i = 0
-        while (i < 1000) and self.running:
-            i += 1
-            print("get_pixels_fixations")
-
-        # if not self.see_px:
-        #     self.finished.emit()
-        #     self.running = False
-
-    def see_pixels(self):
-        i = 0
-        while (i < 1000) and self.running:
-            i += 1
-            print("see_pixels")
-
-        # self.finished.emit()
-        # self.running = False
+from PyQt5.QtCore import QThread
+from codes.work import Worker
 
 
 class Ui_MainWindow(object):
@@ -437,16 +288,36 @@ class Ui_MainWindow(object):
         self.cb_see_tst.clicked.connect(self.see_data_uncheck)
         
     def b_start_action(self):
-        # self.b_start.setEnabled(False)
+        self.name = self.le_name.text()
+        self.num = int(self.le_num.text())
+        self.age = int(self.le_age.text())
+        self.dsc = self.te_dsc.toPlainText()
+        self.cam_id = int(self.le_cam_id.text())
+        clb_grid_txt = self.le_grd.text()
+
+        clb_grid_txt = " " + clb_grid_txt + " "
+        sep = []
+        sep.append(0)
+        for pos, s in enumerate(clb_grid_txt):
+            if s == ',':
+                sep.append(pos)
+
+        sep.append(len(clb_grid_txt)-1)
+        grid_len = len(sep)
+        self.clb_grid = []
+        for i in range(grid_len-1):
+            self.clb_grid.append(int(clb_grid_txt[sep[i]+1:sep[i+1]]))
+
+        if self.rb_m.isChecked():
+            self.gender = "M"
+        else:
+            self.gender = "F"
+
         self.worker = Worker()
-        self.worker.name = self.le_name.text()
-        self.worker.num = int(self.le_num.text())
-        self.worker.age = int(self.le_age.text())
-        self.worker.dsc = self.te_dsc.toPlainText()
-        self.worker.cam_id = int(self.le_cam_id.text())
-        self.worker.clb_grid = self.le_grd.text()
-
-
+        self.worker.num = self.num
+        self.worker.camera_id = self.cam_id
+        self.worker.info = (self.name, self.gender, self.age, self.dsc)
+        self.worker.clb_grid = self.clb_grid
 
         if self.cb_cam.checkState() == 2:
             self.worker.cam = True
@@ -467,41 +338,34 @@ class Ui_MainWindow(object):
         if self.cb_see_tst.checkState() == 2:
             self.worker.see_tst = True
 
-        if self.rb_m.isChecked():
-            self.worker.gender = "M"
-        else:
-            self.worker.gender = "F"
-        
         self.thread = QThread()
         self.worker.moveToThread(self.thread)
 
         self.thread.started.connect(self.worker.do_work)
-        # self.thread.started.connect(lambda: self.b_start.setEnabled(False))
 
         self.thread.start()
-        # self.b_start.setEnabled(False)
 
         self.worker.finished.connect(self.thread.quit)
-        # self.worker.finished.connect(self.worker.deleteLater)
-        # self.worker.finished.connect(self.thread.deleteLater)
+        self.worker.cam_started.connect(lambda: self.monitor("Camera"))
+        self.worker.clb_started.connect(lambda: self.monitor("Calibration"))
+        self.worker.smp_started.connect(lambda: self.monitor("Sampling"))
+        self.worker.tst_started.connect(lambda: self.monitor("Testing"))
+        self.worker.mdl_started.connect(lambda: self.monitor("Tuning params"))
+        self.worker.gp_started.connect(lambda: self.monitor("Getpixels"))
+        self.worker.gf_started.connect(lambda: self.monitor("Fixations"))
+        self.worker.see_smp_started.connect(lambda: self.monitor("See sampling"))
+        self.worker.see_tst_started.connect(lambda: self.monitor("See test"))
         
-        self.worker.finished.connect(self.show_stop)
+        self.worker.finished.connect(lambda: self.monitor("End!"))
         self.worker.finished.connect(lambda: self.b_start.setEnabled(True))
 
-        # self.b_start.setEnabled(True)
 
     def b_stop_action(self):
         self.worker.running = False
-        # print(self.worker.running)
 
-    def show_stop(self):
-        # print("SSSSS")
-        # print(self.cb_cam.checkState())
-        # print(self.rb_f.isChecked())
-        # print(self.le_nm.text())
-        # print(self.te_dsc.toPlainText())
-        
-        print("Stoped")
+    def monitor(self, txt):
+        self.l_monitor.setText(txt)
+        print(txt)
 
     def clb_uncheck(self):
         if self.cb_clb.checkState() == 2:

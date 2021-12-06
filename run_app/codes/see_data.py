@@ -9,16 +9,8 @@ monitors = get_monitors()
 
 
 class See(object):
-    def __init__(self, number, path2root="../"):
-        super().__init__()
-
-        self.num = number
-        self.path2root = path2root
-
-    def features(self, target_fol="et-clb"):
-        num = self.num
-        path2root = self.path2root
-
+    running = True
+    def data_features(self, num, target_fol="et-clb", path2root="../"):
         sbj_dir = path2root + f"subjects/{num}/"
         if target_fol == "et-clb":
             target_fol = "data-et-clb/"
@@ -53,6 +45,8 @@ class See(object):
         time.sleep(2)
 
         for (i, img) in enumerate(x1):
+            if not self.running:
+                break
             d = []
             for (j, _) in enumerate(data):
                 if j == 0:
@@ -65,11 +59,10 @@ class See(object):
                 break
             i += 1
 
+        cv2.destroyAllWindows()
 
-    def pixels(self, y_name="y-hat-et", n_monitors_data=1, show_in_all_monitors=False):
-        num = self.num
-        path2root = self.path2root
 
+    def pixels(self, num, y_name="y-hat-et", n_monitors_data=1, show_in_all_monitors=False, path2root="../"):
         smp_dir = path2root + f"subjects/{num}/sampling/"
         [t_vec, y_hat_boi, y_hat_et] = ey.load(smp_dir, ['t', 'y-hat-boi', y_name])
 
@@ -87,12 +80,14 @@ class See(object):
             else:
                 i = 1
             m_w = monitors[0].width
-            win_name = f"Calibration"
+            win_name = "Calibration"
             cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
             cv2.moveWindow(win_name, i * m_w, 0)
             cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
         for (t0, y_boi0, y_hat_et0) in zip(t_vec, y_hat_boi, y_hat_et):
+            if not self.running:
+                break
             if False:  # y_boi0 != 2:
                 y_hat_et0 = None
             if show_in_all_monitors:
@@ -113,11 +108,10 @@ class See(object):
             if q == ord('q') or q == ord('Q'):
                 break
 
+        cv2.destroyAllWindows()
 
-    def pixels_test(self, y_name="y-hat-et", n_monitors_data=1, show_in_all_monitors=False):
-        num = self.num
-        path2root = self.path2root
 
+    def pixels_test(self, num, y_name="y-hat-et", n_monitors_data=1, show_in_all_monitors=False, path2root="../"):
         smp_dir = path2root + f"subjects/{num}/sampling-test/"
         [t_vec, y_hat_boi, y_hat_et, y_et] = ey.load(smp_dir, ['t', 'y-hat-boi', y_name, 'y-et'])
         if show_in_all_monitors:
@@ -134,12 +128,14 @@ class See(object):
             else:
                 i = 1
             m_w = monitors[0].width
-            win_name = f"Calibration"
+            win_name = "Calibration"
             cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
             cv2.moveWindow(win_name, i * m_w, 0)
             cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
         for (t0, y_boi0, y_et0, y_hat_et0) in zip(t_vec, y_hat_boi, y_et, y_hat_et):
+            if not self.running:
+                break
             if False:  # y_boi0 != 2:
                 y_hat_et0 = None
             if show_in_all_monitors:
@@ -164,3 +160,5 @@ class See(object):
             q = cv2.waitKey(50)
             if q == ord('q') or q == ord('Q'):
                 break
+
+        cv2.destroyAllWindows()

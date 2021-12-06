@@ -132,6 +132,7 @@ dmypy.json
 .idea/
 
 # Eye-Tracker
+gui/
 media/
 subjects/
 run_app/p1.py

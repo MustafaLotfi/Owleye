@@ -8,14 +8,8 @@ from screeninfo import get_monitors
 monitors = get_monitors()
 
 class Camera(object):
-    def __init__(self, camera_id=0):
-        super().__init__()
-        self.camera_id = camera_id
-        self.running = True
-        
-
-    def raw(self):
-        camera_id = self.camera_id
+    running = True
+    def raw(self, camera_id):
         frame_size, _, _, _ = ey.get_camera_properties(camera_id)
         cap = ey.get_camera(camera_id, frame_size)
         ey.pass_frames(cap, 100)
@@ -44,8 +38,7 @@ class Camera(object):
         print(f"FPS : {fps}")
 
 
-    def features(self):
-        camera_id = self.camera_id
+    def features(self, camera_id):
         # Seeing features
         some_landmarks_ids = ey.get_some_landmarks_ids()
 

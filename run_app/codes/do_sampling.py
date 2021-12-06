@@ -12,18 +12,10 @@ from codes.calibrate import Calibration
 CALIBRATION_GRID = (3, 3, 80)
 
 
-class Sampling(Calibration):
-    def __init__(self, number, camera_id=0, path2root="../"):
-        self.running = True
-        self.num = number
-        self.camera_id = camera_id
-        self.path2root = path2root
+class Sampling(object):
+    running = True
 
-    def main(self):
-        num = self.num
-        camera_id = self.camera_id
-        path2root = self.path2root
-
+    def get_sample(self, num, camera_id=0, path2root="../"):
         smp_dir = path2root + f"subjects/{num}/sampling/"
 
         some_landmarks_ids = ey.get_some_landmarks_ids()
@@ -98,13 +90,11 @@ class Sampling(Calibration):
         print("Sampling finished!!")
 
 
-    def test(self, clb_grid=(3, 3, 100)):
-        num = self.num
-        camera_id = self.camera_id
-        path2root = self.path2root
+    def test(self, num, camera_id=0, clb_grid=(3, 3, 10), path2root="../"):
         # Calibration to Collect 'eye_tracking' data
         smp_dir = path2root + f"subjects/{num}/sampling-test/"
-        clb_points = self.create_grid(clb_grid)
+
+        clb_points = Calibration().create_grid(clb_grid)
 
         some_landmarks_ids = ey.get_some_landmarks_ids()
 
@@ -201,4 +191,4 @@ class Sampling(Calibration):
         if not os.path.exists(smp_dir):
             os.mkdir(smp_dir)
         ey.save([t, x1, x2, y], smp_dir, ['t', 'x1', 'x2', 'y-et'])
-        print("Calibration finished!!")
+        print("Calibration finished!")

@@ -10,14 +10,8 @@ import os
 
 
 class Tuning(object):
-    def __init__(self, number, path2root="../"):
-        super().__init__()
-        self.num = number
-        self.path2root = path2root
-
-    def boi(self, selected_model_num=1, n_epochs=5, patience=2, trainable_layers=1):
-        num = self.num
-        path2root = self.path2root
+    @staticmethod
+    def boi_mdl(num, selected_model_num=1, n_epochs=5, patience=2, trainable_layers=1, path2root="../"):
         print("Starting to retrain blink_out_in model...")
         subjects_fol = "subjects/"
         models_fol = "models/"
@@ -91,10 +85,8 @@ class Tuning(object):
         model.save(sbj_dir + "model-boi")
         print("Saving model-boi in " + sbj_dir + "model-boi")
 
-
-    def et(self, selected_model_num=1, n_epochs=60, patience=12, trainable_layers=1):
-        num = self.num
-        path2root = self.path2root
+    @staticmethod
+    def et_mdl(num, selected_model_num=1, n_epochs=60, patience=12, trainable_layers=1, path2root="../"):
         print("\nStarting to retrain eye_tracking model...")
         models_fol = "models/"
         models_et_fol = "et/"

@@ -18,15 +18,15 @@ CALIBRATION_GRID = 2, 10  # points in height, points in width, samples in points
 INFO = (NAME, GENDER, AGE, Descriptions)
 
 # ----------- FUNCTIONS ------------
-cam = Camera(CAMERA_ID)
-cam.raw()
-cam.features()
+# cam = Camera()
+# cam.raw(CAMERA_ID)
+# cam.features(CAMERA_ID)
 
-clb = Calibration(NUMBER, CAMERA_ID)
-clb.et(INFO, CALIBRATION_GRID)
-clb.boi(20)
+# clb = Calibration()
+# clb.et(NUMBER, CAMERA_ID, INFO, CALIBRATION_GRID)
+# clb.boi(NUMBER, CAMERA_ID, 20)
 
-smp = Sampling(NUMBER, CAMERA_ID)
-smp.test(CALIBRATION_GRID)
-smp.main()
+smp = Sampling()
+smp.test(NUMBER, CAMERA_ID, CALIBRATION_GRID)
+smp.get_sample(NUMBER, CAMERA_ID)
 
