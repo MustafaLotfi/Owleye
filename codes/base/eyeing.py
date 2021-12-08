@@ -111,7 +111,8 @@ def get_model_inputs(
         image_size,
         dst_cof,
         some_landmarks_ids,
-        show_features
+        show_features,
+        path2root0
 ):
     left_eye_landmarks_ids = [33, 133]
     right_eye_landmarks_ids = [362, 263]
@@ -159,6 +160,7 @@ def get_model_inputs(
             image_size,
             is_right_eye=False,
             focal_length=focal_length,
+            path2root0=path2root0
         )
 
         (
@@ -173,6 +175,7 @@ def get_model_inputs(
             image_size,
             is_right_eye=True,
             focal_length=focal_length,
+            path2root0=path2root0
         )
 
         features.append(left_iris_landmarks_respect_face[0, :2])

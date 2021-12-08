@@ -10,7 +10,7 @@ from codes.base.core import (
 
 
 def from_landmarks_to_depth(
-    frame_rgb, eye_landmarks, image_size, is_right_eye=False, focal_length=None
+    frame_rgb, eye_landmarks, image_size, is_right_eye=False, focal_length=None, path2root0="../"
 ):
     if focal_length is None:
         focal_length = frame_rgb.shape[1]
@@ -24,7 +24,7 @@ def from_landmarks_to_depth(
     position_in_frame = np.array((slice_x[0], slice_y[0], 0))
 
     eye_contours, iris_landmarks, eye_frame_low = detect_iris(
-        eye_image.copy(), is_right_eye=is_right_eye
+        eye_image.copy(), is_right_eye=is_right_eye, path2root0=path2root0
     )
 
     iris_landmarks_respect = iris_landmarks.copy()
@@ -48,13 +48,13 @@ def from_landmarks_to_depth(
     return depth, iris_size, iris_landmarks, eye_contours, iris_landmarks_respect
 
 
-def detect_iris(eye_frame, is_right_eye=False):
+def detect_iris(eye_frame, is_right_eye=False, path2root0="../"):
     side_low = 64
     eye_frame_low = cv2.resize(
         eye_frame, (side_low, side_low), interpolation=cv2.INTER_AREA
     )
 
-    model_path = "../models/iris/iris_landmark.tflite"
+    model_path = path2root0 + "models/iris/iris_landmark.tflite"
 
     if is_right_eye:
         eye_frame_low = np.fliplr(eye_frame_low)

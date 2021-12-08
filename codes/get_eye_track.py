@@ -7,11 +7,13 @@ from scipy import signal
 from openpyxl import Workbook
 
 
+PATH2ROOT="../"
+
+
 class EyeTrack(object):
-    path2root = "../"
-    def raw_pixels(self, num, testing=False):
-        path2root = self.path2root
-        sbj_dir = path2root + f"subjects/{num}/"
+    @staticmethod
+    def raw_pixels(num, testing=False):
+        sbj_dir = PATH2ROOT + f"subjects/{num}/"
         model_boi_dir = sbj_dir + "model-boi"
         scalers_boi_dir = sbj_dir + "scalers-boi.bin"
         model_et_hrz_dir = sbj_dir + "model-et-hrz"
@@ -19,7 +21,7 @@ class EyeTrack(object):
         scalers_et_dir = sbj_dir + "scalers-et.bin"
         min_out_ratio = 0.005
         max_out_ratio = 0.995
-        Y_SCALE = 1000.0
+        y_scale = 1000.0
 
         if testing:
             sampling_fol = "sampling-test/"
@@ -50,8 +52,8 @@ class EyeTrack(object):
         model_et_hrz = load_model(model_et_hrz_dir)
         model_et_vrt = load_model(model_et_vrt_dir)
 
-        y_hrz_hat = np.expand_dims(model_et_hrz.predict(x_et).reshape((n_smp,)), 1) / Y_SCALE
-        y_vrt_hat = np.expand_dims(model_et_vrt.predict(x_et).reshape((n_smp,)), 1) / Y_SCALE
+        y_hrz_hat = np.expand_dims(model_et_hrz.predict(x_et).reshape((n_smp,)), 1) / y_scale
+        y_vrt_hat = np.expand_dims(model_et_vrt.predict(x_et).reshape((n_smp,)), 1) / y_scale
         # y_hrz_hat[y_hrz_hat < min_out_ratio] = min_out_ratio
         # y_vrt_hat[y_vrt_hat < min_out_ratio] = min_out_ratio
         # y_hrz_hat[y_hrz_hat > max_out_ratio] = max_out_ratio
@@ -59,8 +61,8 @@ class EyeTrack(object):
         y_hat_et = (np.concatenate([y_hrz_hat, y_vrt_hat], 1))
         ey.save([t_load, y_hat_boi, y_hat_et], sampling_dir, ['t', 'y-hat-boi', 'y-hat-et'])
 
+    @staticmethod
     def filtration_fixations(
-            self, 
             num,
             testing=False,
             t_discard=0.3,
@@ -69,7 +71,6 @@ class EyeTrack(object):
             vx_thr=2.5,
             vy_thr=2.5
     ):
-        path2root = self.path2root
           # pxr  --> pixel ratio (pixel/screen_width)
           # pxr
           # pxr/sec
@@ -79,7 +80,7 @@ class EyeTrack(object):
         else:
             sampling_fol = "sampling/"
 
-        sampling_dir = path2root + f"subjects/{num}/" + sampling_fol
+        sampling_dir = PATH2ROOT + f"subjects/{num}/" + sampling_fol
 
         t, boi, et = ey.load(sampling_dir, ['t', 'y-hat-boi', 'y-hat-et'])
 

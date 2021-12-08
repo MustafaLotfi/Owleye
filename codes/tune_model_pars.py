@@ -9,11 +9,12 @@ import numpy as np
 import os
 
 
-class Tuning(object):
-    path2root = "../"
+PATH2ROOT = "../"
 
-    def boi_mdl(self, num, selected_model_num=1, n_epochs=5, patience=2, trainable_layers=1):
-        path2root = self.path2root
+
+class Tuning(object):
+    @staticmethod
+    def boi_mdl(num, selected_model_num=1, n_epochs=5, patience=2, trainable_layers=1, path2root0="../"):
         print("Starting to retrain blink_out_in model...")
         subjects_fol = "subjects/"
         models_fol = "models/"
@@ -23,10 +24,10 @@ class Tuning(object):
         r_train = 0.8
         chosen_inputs = [0, 1, 2, 6, 7, 8, 9]
 
-        trained_dir = path2root + models_fol + models_boi_fol + trained_fol
+        trained_dir = path2root0 + models_fol + models_boi_fol + trained_fol
         public_model_dir = trained_dir + f"model{selected_model_num}"
         public_scalers_dir = trained_dir + f"scalers{selected_model_num}.bin"
-        sbj_dir = path2root + subjects_fol + f"{num}/"
+        sbj_dir = PATH2ROOT + subjects_fol + f"{num}/"
 
         data_boi_dir = sbj_dir + data_boi_fol
         print(f"\nLoading subject data in {data_boi_dir}")
@@ -87,8 +88,8 @@ class Tuning(object):
         model.save(sbj_dir + "model-boi")
         print("Saving model-boi in " + sbj_dir + "model-boi")
 
-    def et_mdl(self, num, selected_model_num=1, n_epochs=60, patience=12, trainable_layers=1):
-        path2root = self.path2root
+    @staticmethod
+    def et_mdl(num, selected_model_num=1, n_epochs=60, patience=12, trainable_layers=1, path2root0="../"):
         print("\nStarting to retrain eye_tracking model...")
         models_fol = "models/"
         models_et_fol = "et/"
@@ -100,8 +101,8 @@ class Tuning(object):
         r_train = 0.8
         chosen_inputs = [0, 1, 2, 6, 7, 8, 9]
 
-        sbj_dir = path2root + subjects_dir + f"{num}/"
-        trained_dir = path2root + models_fol + models_et_fol + trained_fol
+        sbj_dir = PATH2ROOT + subjects_dir + f"{num}/"
+        trained_dir = path2root0 + models_fol + models_et_fol + trained_fol
 
         # ### Retraining 'eye_tracking' model with subject calibration data
 

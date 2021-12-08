@@ -360,8 +360,8 @@ class Ui_MainWindow(object):
         self.worker.mdl_started.connect(lambda: self.monitor("Tuning params"))
         self.worker.gp_started.connect(lambda: self.monitor("Getting pixels"))
         self.worker.gf_started.connect(lambda: self.monitor("Getting fixations"))
-        self.worker.see_smp_started.connect(lambda: self.monitor("Seeing sampling data"))
-        self.worker.see_tst_started.connect(lambda: self.monitor("Seeing testing data"))
+        self.worker.see_smp_started.connect(lambda: self.monitor("Seeing sampling pixels"))
+        self.worker.see_tst_started.connect(lambda: self.monitor("Seeing testing pixels"))
         
         self.worker.finished.connect(lambda: self.monitor("Eye Tracking finished!"))
         self.worker.finished.connect(lambda: self.b_start.setEnabled(True))

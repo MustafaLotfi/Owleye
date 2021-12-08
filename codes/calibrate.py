@@ -16,11 +16,11 @@ from sklearn.utils import shuffle
 
 INFO = ("Mostafa Lotfi", "M", 25, "Phone Number: +989368385420")
 CALIBRATION_GRID = (4, 200, 6, 100)
+path2root = "../"
 
 
 class Calibration(object):
     running = True
-    path2root = "../"
 
     @staticmethod
     def create_grid(clb_grid):
@@ -104,7 +104,7 @@ class Calibration(object):
         return points
 
 
-    def et(self, num, camera_id=0, info=INFO, clb_grid=CALIBRATION_GRID):
+    def et(self, num, camera_id=0, info=INFO, clb_grid=CALIBRATION_GRID, path2root0="../"):
         name, gender, age, description = info
         path2root = self.path2root
         subjects_fol = "subjects/"
@@ -185,7 +185,8 @@ class Calibration(object):
                                     frame_size,
                                     dst_cof,
                                     some_landmarks_ids,
-                                    False
+                                    False,
+
                                 )
                                 if features_success:
                                     eyes_data_gray.append(eyes_frame_gray)
@@ -252,7 +253,7 @@ class Calibration(object):
         ey.save([x1_boi, x2_boi, y_boi], boi_dir, ['x1', 'x2', 'y'])
 
 
-    def boi(self, num, camera_id=0, n_smp_in_cls=300):
+    def boi(self, num, camera_id=0, n_smp_in_cls=300, path2root0="../"):
         n_class = 2
 
         some_landmarks_ids = ey.get_some_landmarks_ids()
@@ -306,7 +307,8 @@ class Calibration(object):
                         frame_size,
                         dst_cof,
                         some_landmarks_ids,
-                        False
+                        False,
+                        path2root0
                     )
                     if features_success:
                         eyes_data_gray.append(eyes_frame_gray)
