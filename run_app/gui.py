@@ -1,13 +1,18 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QThread
 from codes.work import Worker
+import os
+
+
+path2root = os.path.dirname(__file__) + "/../"
 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(317, 477)
+        MainWindow.resize(323, 477)
         MainWindow.setAcceptDrops(True)
+        # MainWindow.setWindowIcon(QtGui.QIcon("../docs/images/logo.png"))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -70,15 +75,6 @@ class Ui_MainWindow(object):
         self.cb_gp.setChecked(True)
         self.cb_gp.setObjectName("cb_gp")
         self.gridLayout.addWidget(self.cb_gp, 10, 0, 1, 3)
-        self.l_monitor = QtWidgets.QLabel(self.centralwidget)
-        font = QtGui.QFont()
-        font.setFamily("Times New Roman")
-        font.setPointSize(12)
-        font.setBold(False)
-        font.setWeight(50)
-        self.l_monitor.setFont(font)
-        self.l_monitor.setObjectName("l_monitor")
-        self.gridLayout.addWidget(self.l_monitor, 14, 3, 2, 2)
         self.le_name = QtWidgets.QLineEdit(self.centralwidget)
         font = QtGui.QFont()
         font.setFamily("Times New Roman")
@@ -231,9 +227,18 @@ class Ui_MainWindow(object):
         self.cb_all_mns.setChecked(True)
         self.cb_all_mns.setObjectName("cb_all_mns")
         self.gridLayout.addWidget(self.cb_all_mns, 12, 0, 1, 3)
+        self.l_monitor = QtWidgets.QLabel(self.centralwidget)
+        font = QtGui.QFont()
+        font.setFamily("Times New Roman")
+        font.setPointSize(12)
+        font.setBold(False)
+        font.setWeight(50)
+        self.l_monitor.setFont(font)
+        self.l_monitor.setObjectName("l_monitor")
+        self.gridLayout.addWidget(self.l_monitor, 14, 3, 2, 5)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 317, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 323, 22))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -247,7 +252,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Eye Tracker"))
         self.l_name.setText(_translate("MainWindow", "Name:"))
         self.cb_gf.setText(_translate("MainWindow", "Get Fixations"))
         self.le_age.setText(_translate("MainWindow", "25"))
@@ -314,6 +319,8 @@ class Ui_MainWindow(object):
             self.gender = "F"
 
         self.worker = Worker()
+        self.worker.path2root = path2root
+
         self.worker.num = self.num
         self.worker.camera_id = self.cam_id
         self.worker.info = (self.name, self.gender, self.age, self.dsc)
@@ -351,12 +358,12 @@ class Ui_MainWindow(object):
         self.worker.smp_started.connect(lambda: self.monitor("Sampling"))
         self.worker.tst_started.connect(lambda: self.monitor("Testing"))
         self.worker.mdl_started.connect(lambda: self.monitor("Tuning params"))
-        self.worker.gp_started.connect(lambda: self.monitor("Getpixels"))
-        self.worker.gf_started.connect(lambda: self.monitor("Fixations"))
-        self.worker.see_smp_started.connect(lambda: self.monitor("See sampling"))
-        self.worker.see_tst_started.connect(lambda: self.monitor("See test"))
+        self.worker.gp_started.connect(lambda: self.monitor("Getting pixels"))
+        self.worker.gf_started.connect(lambda: self.monitor("Getting fixations"))
+        self.worker.see_smp_started.connect(lambda: self.monitor("Seeing sampling data"))
+        self.worker.see_tst_started.connect(lambda: self.monitor("Seeing testing data"))
         
-        self.worker.finished.connect(lambda: self.monitor("End!"))
+        self.worker.finished.connect(lambda: self.monitor("Eye Tracking finished!"))
         self.worker.finished.connect(lambda: self.b_start.setEnabled(True))
 
 
@@ -365,7 +372,6 @@ class Ui_MainWindow(object):
 
     def monitor(self, txt):
         self.l_monitor.setText(txt)
-        print(txt)
 
     def clb_uncheck(self):
         if self.cb_clb.checkState() == 2:

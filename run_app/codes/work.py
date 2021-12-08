@@ -39,40 +39,52 @@ class Worker(QObject, Camera, Calibration, Sampling, Tuning, EyeTrack, See):
         
     def do_work(self):
         if self.cam and self.running:
+            print("\nCamera")
             self.cam_started.emit()
             self.features(self.camera_id)
         if self.clb and self.running:
+            print("\nCalibration")
             self.clb_started.emit()
             self.et(self.num, self.camera_id, self.info, self.clb_grid)
             self.boi(self.num, self.camera_id, 20)
         if self.smp and self.running:
+            print("\nSampling")
             self.smp_started.emit()
             self.get_sample(self.num, self.camera_id)
         if self.tst and self.running:
+            print("\nTesting")
             self.tst_started.emit()
             self.test(self.num, self.camera_id)
         if self.mdl and self.running:
+            print("\nTuning params")
             self.mdl_started.emit()
             self.boi_mdl(self.num, 2, 2, 1, 1)
             self.et_mdl(self.num, 2, 2, 1, 1)
         if self.gp and self.running:
+            print("\nGetting pixels")
             self.gp_started.emit()
             self.raw_pixels(self.num)
         if self.tst and self.gp and self.running:
+            print("\nGetting test pixels")
             self.gp_started.emit()
             self.raw_pixels(self.num, True)
         if self.gf and self.running:
+            print("\nGetting fixations")
             self.gf_started.emit()
             self.filtration_fixations(self.num)
         if self.tst and self.gf and self.running:
+            print("\nGetting test fixations")
             self.gf_started.emit()
             self.filtration_fixations(self.num, True)
         if self.see_smp and self.running:
+            print("\nSeeing sampling data")
             self.see_smp_started.emit()
             self.pixels(self.num)
         if self.see_tst and self.running:
+            print("\nSeeing testing data")
             self.see_tst_started.emit()
             self.pixels_test(self.num)
 
+        print("\nEye Tracking finished!")
         self.finished.emit()
         self.running = True

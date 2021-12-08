@@ -17,7 +17,7 @@ from codes.base import eyeing as ey
 
 class Modeling():
     @staticmethod
-    def create_boi():
+    def create_boi(path2root="../"):
         print("Starting to create an empty blink_out_in model...")
         path2root = "../"
         subjects_fol = "subjects/"
@@ -101,7 +101,7 @@ class Modeling():
 
 
     @staticmethod
-    def create_et():
+    def create_et(path2root="../"):
         print("Starting to create empty eye_tracking models...")
         path2root = "../"
         subjects_fol = "subjects/"
@@ -187,7 +187,7 @@ class Modeling():
 
 
     @staticmethod
-    def train_boi(subjects=(1, 2, 3, 4, 5), selected_model_num=1, n_epochs=100, patience=15):
+    def train_boi(subjects=(1, 2, 3, 4, 5), selected_model_num=1, n_epochs=100, patience=15, path2root="../"):
         print("Starting to train blink_out_in model...")
         path2root = "../"
         models_fol = "models/"
@@ -299,7 +299,7 @@ class Modeling():
 
 
     @staticmethod
-    def train_et(subjects=(1, 2, 3, 4, 5), selected_model_num=1, n_epochs=100, patience=15):
+    def train_et(subjects=(1, 2, 3, 4, 5), selected_model_num=1, n_epochs=100, patience=15, path2root="../"):
         print("Starting to train eye_tracking models...")
         path2root = "../"
         models_fol = "models/"

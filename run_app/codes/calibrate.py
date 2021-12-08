@@ -19,7 +19,8 @@ CALIBRATION_GRID = (4, 200, 6, 100)
 
 
 class Calibration(object):
-    running = True    
+    running = True
+    path2root = "../"
 
     @staticmethod
     def create_grid(clb_grid):
@@ -103,8 +104,9 @@ class Calibration(object):
         return points
 
 
-    def et(self, num, camera_id=0, info=INFO, clb_grid=CALIBRATION_GRID, path2root="../"):
+    def et(self, num, camera_id=0, info=INFO, clb_grid=CALIBRATION_GRID):
         name, gender, age, description = info
+        path2root = self.path2root
         subjects_fol = "subjects/"
         et_fol = "data-et-clb/"
         sbj_dir = path2root + subjects_fol + f"{num}/"
@@ -250,7 +252,7 @@ class Calibration(object):
         ey.save([x1_boi, x2_boi, y_boi], boi_dir, ['x1', 'x2', 'y'])
 
 
-    def boi(self, num, camera_id=0, n_smp_in_cls=300, path2root="../"):
+    def boi(self, num, camera_id=0, n_smp_in_cls=300):
         n_class = 2
 
         some_landmarks_ids = ey.get_some_landmarks_ids()
@@ -329,6 +331,6 @@ class Calibration(object):
 
         print("\nData collection finished!!")
 
-        self.integrate_bo_et(num, [x1, x2, y], path2root)
+        self.integrate_bo_et(num, [x1, x2, y], self.path2root)
 
 

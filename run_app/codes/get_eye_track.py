@@ -8,8 +8,9 @@ from openpyxl import Workbook
 
 
 class EyeTrack(object):
-    @staticmethod
-    def raw_pixels(num, testing=False, path2root="../"):
+    path2root = "../"
+    def raw_pixels(self, num, testing=False):
+        path2root = self.path2root
         sbj_dir = path2root + f"subjects/{num}/"
         model_boi_dir = sbj_dir + "model-boi"
         scalers_boi_dir = sbj_dir + "scalers-boi.bin"
@@ -58,18 +59,17 @@ class EyeTrack(object):
         y_hat_et = (np.concatenate([y_hrz_hat, y_vrt_hat], 1))
         ey.save([t_load, y_hat_boi, y_hat_et], sampling_dir, ['t', 'y-hat-boi', 'y-hat-et'])
 
-
-    @staticmethod
     def filtration_fixations(
+            self, 
             num,
             testing=False,
             t_discard=0.3,
             x_merge=0.1,
             y_merge=0.1,
             vx_thr=2.5,
-            vy_thr=2.5,
-            path2root="../"
+            vy_thr=2.5
     ):
+        path2root = self.path2root
           # pxr  --> pixel ratio (pixel/screen_width)
           # pxr
           # pxr/sec

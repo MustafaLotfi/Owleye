@@ -10,7 +10,9 @@ monitors = get_monitors()
 
 class See(object):
     running = True
-    def data_features(self, num, target_fol="et-clb", path2root="../"):
+    path2root = "../"
+    def data_features(self, num, target_fol="et-clb"):
+        path2root = self.path2root
         sbj_dir = path2root + f"subjects/{num}/"
         if target_fol == "et-clb":
             target_fol = "data-et-clb/"
@@ -62,7 +64,8 @@ class See(object):
         cv2.destroyAllWindows()
 
 
-    def pixels(self, num, y_name="y-hat-et", n_monitors_data=1, show_in_all_monitors=False, path2root="../"):
+    def pixels(self, num, y_name="y-hat-et", n_monitors_data=1, show_in_all_monitors=False):
+        path2root = self.path2root
         smp_dir = path2root + f"subjects/{num}/sampling/"
         [t_vec, y_hat_boi, y_hat_et] = ey.load(smp_dir, ['t', 'y-hat-boi', y_name])
 
@@ -111,7 +114,8 @@ class See(object):
         cv2.destroyAllWindows()
 
 
-    def pixels_test(self, num, y_name="y-hat-et", n_monitors_data=1, show_in_all_monitors=False, path2root="../"):
+    def pixels_test(self, num, y_name="y-hat-et", n_monitors_data=1, show_in_all_monitors=False):
+        path2root = self.path2root
         smp_dir = path2root + f"subjects/{num}/sampling-test/"
         [t_vec, y_hat_boi, y_hat_et, y_et] = ey.load(smp_dir, ['t', 'y-hat-boi', y_name, 'y-et'])
         if show_in_all_monitors:
