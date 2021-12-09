@@ -23,6 +23,7 @@ class Camera(object):
             cv2.moveWindow(win_name, monitors[0].width, 0)
         cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
         t0 = time.perf_counter()
+        print("Showing camera..")
         while self.running:
             frame_success, frame, _ = ey.get_frame(cap)
             if frame_success:
@@ -66,6 +67,7 @@ class Camera(object):
         cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
         t0 = time.perf_counter()
         i = 0
+        print("Showing features..")
         while self.running:
             frame_success, frame, frame_rgb = ey.get_frame(cap)
             if frame_success:

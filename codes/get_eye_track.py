@@ -25,7 +25,7 @@ class EyeTrack(object):
         y_scale = 1000.0
 
         if testing:
-            sampling_fol = "sampling-test/"
+            sampling_fol = "testing/"
         else:
             sampling_fol = "sampling/"
 
@@ -126,7 +126,7 @@ class EyeTrack(object):
           # pxr/sec
           # pxr/sec
         if testing:
-            sampling_fol = "sampling-test/"
+            sampling_fol = "testing/"
         else:
             sampling_fol = "sampling/"
 

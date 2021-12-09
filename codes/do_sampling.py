@@ -13,10 +13,10 @@ CALIBRATION_GRID = (3, 3, 80)
 PATH2ROOT = ""
 
 
-class Sampling(object):
+class Smp(object):
     running = True
 
-    def start_sampling(self, num, camera_id=0):
+    def sampling(self, num, camera_id=0):
         smp_dir = PATH2ROOT + f"subjects/{num}/sampling/"
 
         some_landmarks_ids = ey.get_some_landmarks_ids()
@@ -91,9 +91,9 @@ class Sampling(object):
         print("Sampling finished!")
 
 
-    def test(self, num, camera_id=0, clb_grid=(3, 3, 10)):
+    def testing(self, num, camera_id=0, clb_grid=(3, 3, 10)):
         # Calibration to Collect 'eye_tracking' data
-        smp_dir = PATH2ROOT + f"subjects/{num}/sampling-test/"
+        smp_dir = PATH2ROOT + f"subjects/{num}/testing/"
 
         clb_points = Calibration().create_grid(clb_grid)
 

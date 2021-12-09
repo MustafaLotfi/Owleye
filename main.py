@@ -1,7 +1,7 @@
 import os
 from codes.show import Camera
 from codes.calibrate import Calibration
-from codes.do_sampling import Sampling
+from codes.do_sampling import Smp
 from codes.tune_model_pars import Tuning
 from codes.get_eye_track import EyeTrack
 from codes.get_model import Modeling
@@ -14,7 +14,7 @@ CAMERA_ID = 2
 
 # *********************** SEE CAMERA ***********************
 # Camera().raw(CAMERA_ID)
-Camera().features(CAMERA_ID)
+# Camera().features(CAMERA_ID)
 
 # *********************** CALIBRATION **********************
 # NAME = "Mostafa Lotfi"
@@ -27,36 +27,38 @@ Camera().features(CAMERA_ID)
 # Calibration().boi(NUMBER, CAMERA_ID, 20)
 
 # # *********************** SAMPLING *************************
-# Sampling().start_sampling(NUMBER, CAMERA_ID)
+# Smp().sampling(NUMBER, CAMERA_ID)
 
 # # *********************** TESTING **************************
-# Sampling().test(NUMBER, CAMERA_ID)
+# Smp().testing(NUMBER, CAMERA_ID)
 
 # # ********************* SEE FEATURES ***********************
-# TARGET_FOLDER = "et-clb"  # et-clb, boi, sampling or sampling-test
-# See().data_features(NUMBER, TARGET_FOLDER)
+# See().data_features(NUMBER, "et")
+# See().data_features(NUMBER, "boi")
+# See().data_features(NUMBER, "smp")
+# See().data_features(NUMBER, "tst")
 
 # # *********************** MODELING *************************
 # Tuning().boi_mdl(NUMBER, 2, 2, 1, 1, delete_files=True)
 # Tuning().et_mdl(NUMBER, 2, 2, 1, 1, delete_files=True)
 
 # # *********************** GET PIXELS ***********************
-# EyeTrack().get_pixels(NUMBER, delete_files=True)
+# EyeTrack().get_pixels(NUMBER)
 
 # # ******************* GET TESTING PIXELS *******************
 # EyeTrack().get_pixels(NUMBER, True, delete_files=True)
 
 # # ******************** GET FIXATIONS ***********************
-# EyeTrack().filtration_fixations(NUMBER)
+# EyeTrack().get_fixations(NUMBER)
 
 # # ***************** GET TESTINGT FIXATIONS *****************
-# EyeTrack().filtration_fixations(NUMBER, True)
+# EyeTrack().get_fixations(NUMBER, True)
 
 # ***************** SEE SAMPLING PIXELS ********************
-# See().pixels(NUMBER)
+See().pixels(NUMBER)
 
 # ***************** SEE TESTING PIXELS *********************
-# See().pixels_test(NUMBER)
+See().pixels_test(NUMBER)
 
 # ***************** CREATE PUBLIC MODELS *******************
 # mdl = Modeling()

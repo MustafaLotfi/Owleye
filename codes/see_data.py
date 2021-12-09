@@ -12,9 +12,9 @@ class See(object):
     running = True
 
     @staticmethod
-    def data_features(num, target_fol="et-clb"):
+    def data_features(num, target_fol="et"):
         sbj_dir = PATH2ROOT + f"subjects/{num}/"
-        if target_fol == "et-clb":
+        if target_fol == "et":
             target_fol = "data-et-clb/"
             target_dir = sbj_dir + target_fol
             data = ey.load(target_dir, ["x1", "x2", "y"])
@@ -22,12 +22,12 @@ class See(object):
             target_fol = "data-boi/"
             target_dir = sbj_dir + target_fol
             data = ey.load(target_dir, ["x1", "x2", "y"])
-        elif target_fol == "sampling":
+        elif target_fol == "smp":
             target_fol = "sampling/"
             target_dir = sbj_dir + target_fol
             data = ey.load(target_dir, ["x1", "x2", "t"])
-        elif target_fol == "sampling-test":
-            target_fol = "sampling-test/"
+        elif target_fol == "tst":
+            target_fol = "testing/"
             target_dir = sbj_dir + target_fol
             data = ey.load(target_dir, ["x1", "x2", "t", "y-et"])
         else:
@@ -62,9 +62,9 @@ class See(object):
         cv2.destroyAllWindows()
 
 
-    def pixels(self, num, y_name="y-hat-et", n_monitors_data=1, show_in_all_monitors=False):
+    def pixels(self, num, y_name='et-flt-in', n_monitors_data=1, show_in_all_monitors=False):
         smp_dir = PATH2ROOT + f"subjects/{num}/sampling/"
-        [t_vec, y_hat_boi, y_hat_et] = ey.load(smp_dir, ['t', 'y-hat-boi', y_name])
+        [t_vec, y_hat_et] = ey.load(smp_dir, ['t', y_name])
 
         if show_in_all_monitors:
             mns_x = 0
@@ -85,9 +85,7 @@ class See(object):
             cv2.moveWindow(win_name, i * m_w, 0)
             cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
-        for (t0, y_boi0, y_hat_et0) in zip(t_vec, y_hat_boi, y_hat_et):
-            if False:  # y_boi0 != 2:
-                y_hat_et0 = None
+        for (t0, y_hat_et0) in zip(t_vec, y_hat_et):
             if show_in_all_monitors:
                 for (i, _) in enumerate(monitors):
                     if i != 1:
@@ -111,9 +109,9 @@ class See(object):
         cv2.destroyAllWindows()
 
 
-    def pixels_test(self, num, y_name="y-hat-et", n_monitors_data=1, show_in_all_monitors=False):
-        smp_dir = PATH2ROOT + f"subjects/{num}/sampling-test/"
-        [t_vec, y_hat_boi, y_hat_et, y_et] = ey.load(smp_dir, ['t', 'y-hat-boi', y_name, 'y-et'])
+    def pixels_test(self, num, y_name='et-flt-in', n_monitors_data=1, show_in_all_monitors=False):
+        smp_dir = PATH2ROOT + f"subjects/{num}/testing/"
+        [t_vec, y_hat_et, y_et] = ey.load(smp_dir, ['t', y_name, 'y-et'])
         if show_in_all_monitors:
             mns_x = 0
             for (i, m) in enumerate(monitors):
@@ -133,9 +131,7 @@ class See(object):
             cv2.moveWindow(win_name, i * m_w, 0)
             cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
-        for (t0, y_boi0, y_et0, y_hat_et0) in zip(t_vec, y_hat_boi, y_et, y_hat_et):
-            if False:  # y_boi0 != 2:
-                y_hat_et0 = None
+        for (t0, y_et0, y_hat_et0) in zip(t_vec, y_et, y_hat_et):
             if show_in_all_monitors:
                 for (i, _) in enumerate(monitors):
                     if i != 1:
