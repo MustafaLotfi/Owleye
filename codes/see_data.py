@@ -6,14 +6,14 @@ from screeninfo import get_monitors
 
 
 monitors = get_monitors()
-
+PATH2ROOT = ""
 
 class See(object):
     running = True
-    path2root = "../"
-    def data_features(self, num, target_fol="et-clb"):
-        path2root = self.path2root
-        sbj_dir = path2root + f"subjects/{num}/"
+
+    @staticmethod
+    def data_features(num, target_fol="et-clb"):
+        sbj_dir = PATH2ROOT + f"subjects/{num}/"
         if target_fol == "et-clb":
             target_fol = "data-et-clb/"
             target_dir = sbj_dir + target_fol
@@ -47,8 +47,6 @@ class See(object):
         time.sleep(2)
 
         for (i, img) in enumerate(x1):
-            if not self.running:
-                break
             d = []
             for (j, _) in enumerate(data):
                 if j == 0:
@@ -65,8 +63,7 @@ class See(object):
 
 
     def pixels(self, num, y_name="y-hat-et", n_monitors_data=1, show_in_all_monitors=False):
-        path2root = self.path2root
-        smp_dir = path2root + f"subjects/{num}/sampling/"
+        smp_dir = PATH2ROOT + f"subjects/{num}/sampling/"
         [t_vec, y_hat_boi, y_hat_et] = ey.load(smp_dir, ['t', 'y-hat-boi', y_name])
 
         if show_in_all_monitors:
@@ -89,8 +86,6 @@ class See(object):
             cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
         for (t0, y_boi0, y_hat_et0) in zip(t_vec, y_hat_boi, y_hat_et):
-            if not self.running:
-                break
             if False:  # y_boi0 != 2:
                 y_hat_et0 = None
             if show_in_all_monitors:
@@ -110,13 +105,14 @@ class See(object):
             q = cv2.waitKey(50)
             if q == ord('q') or q == ord('Q'):
                 break
+            if not self.running:
+                break
 
         cv2.destroyAllWindows()
 
 
     def pixels_test(self, num, y_name="y-hat-et", n_monitors_data=1, show_in_all_monitors=False):
-        path2root = self.path2root
-        smp_dir = path2root + f"subjects/{num}/sampling-test/"
+        smp_dir = PATH2ROOT + f"subjects/{num}/sampling-test/"
         [t_vec, y_hat_boi, y_hat_et, y_et] = ey.load(smp_dir, ['t', 'y-hat-boi', y_name, 'y-et'])
         if show_in_all_monitors:
             mns_x = 0
@@ -138,8 +134,6 @@ class See(object):
             cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
         for (t0, y_boi0, y_et0, y_hat_et0) in zip(t_vec, y_hat_boi, y_et, y_hat_et):
-            if not self.running:
-                break
             if False:  # y_boi0 != 2:
                 y_hat_et0 = None
             if show_in_all_monitors:
@@ -163,6 +157,8 @@ class See(object):
 
             q = cv2.waitKey(50)
             if q == ord('q') or q == ord('Q'):
+                break
+            if not self.running:
                 break
 
         cv2.destroyAllWindows()

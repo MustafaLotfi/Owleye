@@ -12,23 +12,24 @@ from sklearn.utils import shuffle
 from joblib import dump as j_dump
 from joblib import load as j_load
 import random
-from codes.base import eyeing as ey
+
+
+PATH2ROOT = ""
+CHOSEN_INPUTS = [0, 1, 2, 6, 7, 8, 9]
+Y_SCALE = 1000.0
 
 
 class Modeling():
     @staticmethod
-    def create_boi(path2root="../"):
+    def create_boi():
         print("Starting to create an empty blink_out_in model...")
-        path2root = "../"
         subjects_fol = "subjects/"
         data_boi_fol = "data-boi/"
         models_fol = "models/"
         models_boi_fol = "boi/"
         raw_fol = "raw/"
 
-        chosen_inputs = ey.CHOSEN_INPUTS
-
-        data_boi_dir = path2root + subjects_fol + f"{1}/" + data_boi_fol
+        data_boi_dir = PATH2ROOT + subjects_fol + f"{1}/" + data_boi_fol
 
         with open(data_boi_dir + "x1.pickle", "rb") as f:
             x1 = pickle.load(f)
@@ -37,7 +38,7 @@ class Modeling():
         with open(data_boi_dir + "y.pickle", "rb") as f:
             y = pickle.load(f)
 
-        x2_chs_inp = x2[:, chosen_inputs]
+        x2_chs_inp = x2[:, CHOSEN_INPUTS]
 
         inp1 = Input(x1.shape[1:])
         layer = Conv2D(16, (5, 5), (1, 1), "same", activation="relu")(inp1)
@@ -74,7 +75,7 @@ class Modeling():
 
         print(model.summary())
 
-        models_dir = path2root + models_fol
+        models_dir = PATH2ROOT + models_fol
         if not os.path.exists(models_dir):
             os.mkdir(models_dir)
 
@@ -101,25 +102,22 @@ class Modeling():
 
 
     @staticmethod
-    def create_et(path2root="../"):
+    def create_et():
         print("Starting to create empty eye_tracking models...")
-        path2root = "../"
         subjects_fol = "subjects/"
         data_et_fol = "data-et-clb/"
         models_fol = "models/"
         models_et_fol = "et/"
         raw_fol = "raw/"
 
-        chosen_inputs = ey.CHOSEN_INPUTS
-
-        data_et_dir = path2root + subjects_fol + f"{1}/" + data_et_fol
+        data_et_dir = PATH2ROOT + subjects_fol + f"{1}/" + data_et_fol
 
         with open(data_et_dir + "x1.pickle", "rb") as f:
             x1 = pickle.load(f)
         with open(data_et_dir + "x2.pickle", "rb") as f:
             x2 = pickle.load(f)
 
-        x2_chs_inp = x2[:, chosen_inputs]
+        x2_chs_inp = x2[:, CHOSEN_INPUTS]
 
         inp1 = Input(x1.shape[1:])
         layer = Conv2D(16, (5, 5), (1, 1), 'same', activation='relu')(inp1)
@@ -156,7 +154,7 @@ class Modeling():
 
         print(model.summary())
 
-        models_dir = path2root + models_fol
+        models_dir = PATH2ROOT + models_fol
         if not os.path.exists(models_dir):
             os.mkdir(models_dir)
 
@@ -185,11 +183,9 @@ class Modeling():
         print("\nEmpty horizontally eye_tracking model created and saved to " + raw_dir + f"model{max_num}-hrz")
         print("\nEmpty vertically eye_tracking model created and saved to " + raw_dir + f"model{max_num}-vrt")
 
-
     @staticmethod
-    def train_boi(subjects=(1, 2, 3, 4, 5), selected_model_num=1, n_epochs=100, patience=15, path2root="../"):
+    def train_boi(subjects=(1, 2, 3, 4, 5), selected_model_num=1, n_epochs=100, patience=15):
         print("Starting to train blink_out_in model...")
-        path2root = "../"
         models_fol = "models/"
         models_boi_fol = "boi/"
         raw_fol = "raw/"
@@ -200,13 +196,11 @@ class Modeling():
         min_brightness_ratio = 0.6
         max_brightness_ratio = 1.6
 
-        chosen_inputs = ey.CHOSEN_INPUTS
-
         x1_load = []
         x2_load = []
         y_load = []
 
-        subjects_dir = path2root + subjects_fol
+        subjects_dir = PATH2ROOT + subjects_fol
 
         for sbj in subjects:
             data_boi_dir = subjects_dir + f"{sbj}/" + data_boi_fol
@@ -228,7 +222,7 @@ class Modeling():
         n_smp = x1_load.shape[0]
         print(f"\nNumber of samples : {n_smp}")
 
-        x2_chs_inp = x2_load[:, chosen_inputs]
+        x2_chs_inp = x2_load[:, CHOSEN_INPUTS]
 
         # changing brightness
         x1_chg_bri = x1_load.copy()
@@ -263,7 +257,7 @@ class Modeling():
 
         cb = EarlyStopping(patience=patience, verbose=1, restore_best_weights=True)
 
-        raw_model_dir = path2root + models_fol + models_boi_fol + raw_fol + f"model{selected_model_num}"
+        raw_model_dir = PATH2ROOT + models_fol + models_boi_fol + raw_fol + f"model{selected_model_num}"
 
         print("\nLoading blink_in_out model from " + raw_model_dir)
         model = load_model(raw_model_dir)
@@ -276,7 +270,7 @@ class Modeling():
                   epochs=n_epochs,
                   callbacks=cb)
 
-        trained_dir = path2root + models_fol + models_boi_fol + trained_fol
+        trained_dir = PATH2ROOT + models_fol + models_boi_fol + trained_fol
         if not os.path.exists(trained_dir):
             os.mkdir(trained_dir)
 
@@ -294,14 +288,13 @@ class Modeling():
         max_num += 1
         model.save(trained_dir + f"model{max_num}")
         print("\nSaving blink_out_in model in " + trained_dir + f"model{max_num}")
-        scalers_dir = path2root + models_fol + models_boi_fol + trained_fol + f"scalers{max_num}.bin"
+        scalers_dir = PATH2ROOT + models_fol + models_boi_fol + trained_fol + f"scalers{max_num}.bin"
         j_dump(scalers, scalers_dir)
 
 
     @staticmethod
-    def train_et(subjects=(1, 2, 3, 4, 5), selected_model_num=1, n_epochs=100, patience=15, path2root="../"):
+    def train_et(subjects=(1, 2, 3, 4, 5), selected_model_num=1, n_epochs=100, patience=15):
         print("Starting to train eye_tracking models...")
-        path2root = "../"
         models_fol = "models/"
         models_et_fol = "et/"
         raw_fol = "raw/"
@@ -314,12 +307,10 @@ class Modeling():
         min_brightness_ratio = 0.6
         max_brightness_ratio = 1.6
 
-        chosen_inputs = ey.CHOSEN_INPUTS
-
         x1_load = []
         x2_load = []
         y_load = []
-        subjects_dir = path2root + subjects_fol
+        subjects_dir = PATH2ROOT + subjects_fol
 
         for sbj in subjects:
             sbj_dir = subjects_dir + f"{sbj}/"
@@ -334,7 +325,7 @@ class Modeling():
             with open(data_et_dir + "y.pickle", "rb") as f:
                 sbj_y_load = pickle.load(f)
 
-            sbj_x2_chs_inp = sbj_x2_load[:, chosen_inputs]
+            sbj_x2_chs_inp = sbj_x2_load[:, CHOSEN_INPUTS]
             sbj_scalers_boi = j_load(sbj_scalers_boi_dir)
             sbj_x1_scaler_boi, sbj_x2_scaler_boi = sbj_scalers_boi
             sbj_x1 = sbj_x1_load / sbj_x1_scaler_boi
@@ -362,7 +353,7 @@ class Modeling():
             r = random.uniform(min_brightness_ratio, max_brightness_ratio)
             x1_chg_bri[i] = (x1_chg_bri[i] * r).astype(np.uint8)
 
-        x2_chs_inp = x2_load[:, chosen_inputs]
+        x2_chs_inp = x2_load[:, CHOSEN_INPUTS]
 
         x1_scaler = 255
         x1 = x1_chg_bri / x1_scaler
@@ -389,7 +380,7 @@ class Modeling():
 
         cb = EarlyStopping(patience=patience, verbose=1, restore_best_weights=True)
 
-        raw_models_dir = path2root + models_fol + models_et_fol + raw_fol
+        raw_models_dir = PATH2ROOT + models_fol + models_et_fol + raw_fol
         print("\nLoading horizontally eye_tracking model from " + raw_models_dir + f"model{selected_model_num}-hrz")
         print("Loading vertically eye_tracking model from " + raw_models_dir + f"model{selected_model_num}-vrt")
         model_hrz = load_model(raw_models_dir + f"model{selected_model_num}-hrz")
@@ -398,19 +389,19 @@ class Modeling():
 
         print("\n--------horizontally eye_tracking model-------")
         model_hrz.fit(x_train_list,
-                      y_hrz_train,
-                      validation_data=(x_test_list, y_hrz_test),
+                      y_hrz_train * Y_SCALE,
+                      validation_data=(x_test_list, y_hrz_test * Y_SCALE),
                       epochs=n_epochs,
                       callbacks=cb)
 
         print("\n--------vertically eye_tracking model-------")
         model_vrt.fit(x_train_list,
-                      y_vrt_train,
-                      validation_data=(x_test_list, y_vrt_test),
+                      y_vrt_train * Y_SCALE,
+                      validation_data=(x_test_list, y_vrt_test * Y_SCALE),
                       epochs=n_epochs,
                       callbacks=cb)
 
-        trained_dir = path2root + models_fol + models_et_fol + trained_fol
+        trained_dir = PATH2ROOT + models_fol + models_et_fol + trained_fol
         if not os.path.exists(trained_dir):
             os.mkdir(trained_dir)
 
@@ -433,5 +424,5 @@ class Modeling():
         model_hrz.save(trained_dir + f"model{max_num}-hrz")
         model_vrt.save(trained_dir + f"model{max_num}-vrt")
 
-        scalers_dir = path2root + models_fol + models_et_fol + trained_fol + f"scalers{max_num}.bin"
+        scalers_dir = PATH2ROOT + models_fol + models_et_fol + trained_fol + f"scalers{max_num}.bin"
         j_dump(scalers, scalers_dir)

@@ -10,15 +10,14 @@ from codes.calibrate import Calibration
 
 
 CALIBRATION_GRID = (3, 3, 80)
+PATH2ROOT = ""
 
 
 class Sampling(object):
     running = True
-    path2root = "../"
 
-    def get_sample(self, num, camera_id=0):
-        path2root = self.path2root
-        smp_dir = path2root + f"subjects/{num}/sampling/"
+    def start_sampling(self, num, camera_id=0):
+        smp_dir = PATH2ROOT + f"subjects/{num}/sampling/"
 
         some_landmarks_ids = ey.get_some_landmarks_ids()
 
@@ -89,13 +88,12 @@ class Sampling(object):
             os.mkdir(smp_dir)
 
         ey.save([t, x1, x2], smp_dir, ['t', 'x1', 'x2'])
-        print("Sampling finished!!")
+        print("Sampling finished!")
 
 
     def test(self, num, camera_id=0, clb_grid=(3, 3, 10)):
-        path2root = self.path2root
         # Calibration to Collect 'eye_tracking' data
-        smp_dir = path2root + f"subjects/{num}/sampling-test/"
+        smp_dir = PATH2ROOT + f"subjects/{num}/sampling-test/"
 
         clb_points = Calibration().create_grid(clb_grid)
 
@@ -133,7 +131,7 @@ class Sampling(object):
             cv2.moveWindow(win_name, i_m * m.width, 0)
             cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
             for item in clb_points:
-                if not self.running:
+                if not self.running and (i_m != 0):
                     break
                 pnt = item[0]
                 ey.show_clb_win(win_name, pnt)
@@ -177,7 +175,11 @@ class Sampling(object):
                                     points_loc.append([pnt[0] + i_m, pnt[1]])
                                     i += 1
                                     break
+                        if not self.running:
+                            break
                     fps_vec.append(ey.get_time(s, t1))
+                if not self.running:
+                    break
             cv2.destroyWindow(win_name)
         cap.release()
 
@@ -194,4 +196,4 @@ class Sampling(object):
         if not os.path.exists(smp_dir):
             os.mkdir(smp_dir)
         ey.save([t, x1, x2, y], smp_dir, ['t', 'x1', 'x2', 'y-et'])
-        print("Calibration finished!")
+        print("Testing finished!")

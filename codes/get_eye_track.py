@@ -5,14 +5,15 @@ from joblib import load as j_load
 from codes.base import eyeing as ey
 from scipy import signal
 from openpyxl import Workbook
+import os
 
 
-PATH2ROOT="../"
+PATH2ROOT = ""
 
 
 class EyeTrack(object):
     @staticmethod
-    def raw_pixels(num, testing=False):
+    def get_pixels(num, testing=False, delete_files=False):
         sbj_dir = PATH2ROOT + f"subjects/{num}/"
         model_boi_dir = sbj_dir + "model-boi"
         scalers_boi_dir = sbj_dir + "scalers-boi.bin"
@@ -59,10 +60,59 @@ class EyeTrack(object):
         # y_hrz_hat[y_hrz_hat > max_out_ratio] = max_out_ratio
         # y_vrt_hat[y_vrt_hat > max_out_ratio] = max_out_ratio
         y_hat_et = (np.concatenate([y_hrz_hat, y_vrt_hat], 1))
-        ey.save([t_load, y_hat_boi, y_hat_et], sampling_dir, ['t', 'y-hat-boi', 'y-hat-et'])
+
+        et_in = y_hat_et.copy()
+        # not_in = (y_hat_boi != 2)
+        # not_in[0] = False
+        # not_in[-1] = False
+        # i = 0
+        # while i<=n_smp-2:
+        #     j = 0
+        #     if not_in[i+1]:
+        #         while not_in[i+j+1]:
+        #             j += 1
+        #             if i+j >=n_smp-2:
+        #                 break
+        #         det = (et_in[i+j+1]-et_in[i])/(j+1)
+        #         for (ii, k) in enumerate(range(i+1, i+j+1)):
+        #             et_in[k] = et_in[i] + (ii+1) * det
+        #     i += j+1
+
+        et_med = et_in.copy()
+        et_med[:, 0] = signal.medfilt(et_in[:, 0], 5)
+        et_med[:, 1] = signal.medfilt(et_in[:, 1], 5)
+
+        ey.save([et_med], sampling_dir, ['et-flt-in'])
+
+        wb = Workbook()
+        ws = wb.active
+        ws['A1'] = "# of Sample"
+        ws['B1'] = "Time (sec)"
+        ws['C1'] = "x (pixel/screen_width)"
+        ws['D1'] = "y (pixel/screen_height)"
+        i = 0
+        while i < n_smp:
+            ws[f'A{i+2}'] = i
+            ws[f'B{i+2}'] = t_load[i]
+            ws[f'C{i+2}'] = et_med[i, 0]
+            ws[f'D{i+2}'] = et_med[i, 1]
+            i += 1
+
+        wb.save(sampling_dir + "EYE-TRACK.xlsx")
+
+        if delete_files:
+            ey.remove(model_boi_dir)
+            os.remove(scalers_boi_dir)
+            ey.remove(model_et_hrz_dir)
+            ey.remove(model_et_vrt_dir)
+            os.remove(scalers_et_dir)
+            ey.remove(sampling_dir, ['x1', 'x2'])
+        else:
+            ey.save([y_hat_boi, y_hat_et], sampling_dir, ['y-hat-boi', 'y-hat-et'])
+
 
     @staticmethod
-    def filtration_fixations(
+    def get_fixations(
             num,
             testing=False,
             t_discard=0.3,
@@ -82,35 +132,9 @@ class EyeTrack(object):
 
         sampling_dir = PATH2ROOT + f"subjects/{num}/" + sampling_fol
 
-        t, boi, et = ey.load(sampling_dir, ['t', 'y-hat-boi', 'y-hat-et'])
+        t, et_med = ey.load(sampling_dir, ['t', 'et-flt-in'])
 
-        n_smp = et.shape[0]
-
-        vet = et.copy()
-        vet[1:, 0] = (et[1:, 0] - et[:-1, 0]) / (t[1:] - t[:-1])
-        vet[1:, 1] = (et[1:, 1] - et[:-1, 1]) / (t[1:] - t[:-1])
-        vet[0] = vet[1]
-
-        et_in = et.copy()
-        # not_in = (boi != 2)
-        # not_in[0] = False
-        # not_in[-1] = False
-        # i = 0
-        # while i<=n_smp-2:
-        #     j = 0
-        #     if not_in[i+1]:
-        #         while not_in[i+j+1]:
-        #             j += 1
-        #             if i+j >=n_smp-2:
-        #                 break
-        #         det = (et_in[i+j+1]-et_in[i])/(j+1)
-        #         for (ii, k) in enumerate(range(i+1, i+j+1)):
-        #             et_in[k] = et_in[i] + (ii+1) * det
-        #     i += j+1
-
-        et_med = et_in.copy()
-        et_med[:, 0] = signal.medfilt(et_in[:, 0], 5)
-        et_med[:, 1] = signal.medfilt(et_in[:, 1], 5)
+        n_smp = t.shape[0]
 
         vet_med = et_med.copy()
         vet_med[1:, 0] = (et_med[1:, 0] - et_med[:-1, 0]) / (t[1:] - t[:-1])
@@ -209,12 +233,43 @@ class EyeTrack(object):
 
         print(fix_merge2)
 
-        aoi = [[[0, 0], [0.33, 0.33]], [[0.33, 0], [0.66, 0.33]], [[0.66, 0], [1, 0.33]],
-               [[0, 0.33], [0.33, 0.66]], [[0.33, 0.33], [0.66, 0.66]], [[0.66, 0.33], [1, 0.66]],
-               [[0, 0.66], [0.33, 1]], [[0.33, 0.66], [0.66, 1]], [[0.66, 0.66], [1, 1]]]
+        ey.save([np.array(fix_merge2)], sampling_dir, ['fixations'])
+
+        wb = Workbook()
+        ws = wb.active
+        ws['A1'] = "# of fixation"
+        ws['B1'] = "start of fixation (sample)"
+        ws['C1'] = "fixation duration (sample)"
+        ws['D1'] = "start of fixation (sec)"
+        ws['E1'] = "fixation duration (sec)"
+        ws['F1'] = "fixation mean (x)"
+        ws['G1'] = "fixation mean (y)"
+        
+        for (i, f) in enumerate(fix_merge2):
+            ws[f'A{i+2}'] = i+1
+            ws[f'B{i+2}'] = f[0]
+            ws[f'C{i+2}'] = f[1]
+            ws[f'D{i+2}'] = f[2]
+            ws[f'E{i+2}'] = f[3]
+            ws[f'F{i+2}'] = f[4]
+            ws[f'G{i+2}'] = f[5]
+        
+        wb.save(sampling_dir + "FIXATIONS.xlsx")
+
+
+    @staticmethod
+    def get_fix_in_aoi(num, aoi=None):
+        sampling_dir = PATH2ROOT + f"subjects/{num}/" + "sampling/"
+
+        if not aoi:
+            aoi = [[[0, 0], [0.33, 0.33]], [[0.33, 0], [0.66, 0.33]], [[0.66, 0], [1, 0.33]],
+                   [[0, 0.33], [0.33, 0.66]], [[0.33, 0.33], [0.66, 0.66]], [[0.66, 0.33], [1, 0.66]],
+                   [[0, 0.66], [0.33, 1]], [[0.33, 0.66], [0.66, 1]], [[0.66, 0.66], [1, 1]]]
+
+        fix = ey.load(sampling_dir, ['fixations'])
 
         fix_aoi = []
-        for f in fix_merge2:
+        for f in fix:
             f1 = f.copy()
             xm = f[4]
             ym = f[5]
@@ -233,32 +288,16 @@ class EyeTrack(object):
 
         print(fs_in_aoi)
 
-        ey.save([et_med, fs_in_aoi], sampling_dir, ['et-flt', 'fix-in-aoi'])
+        ey.save([fs_in_aoi], sampling_dir, ['fix-in-aoi'])
 
-        wb1 = Workbook()
-        ws1 = wb1.active
-        ws1['A1'] = "# of Sample"
-        ws1['B1'] = "Time (sec)"
-        ws1['C1'] = "x (pixel/screen_width)"
-        ws1['D1'] = "y (pixel/screen_height)"
-        i = 0
-        while i < n_smp:
-            ws1[f'A{i+2}'] = i
-            ws1[f'B{i+2}'] = t[i]
-            ws1[f'C{i+2}'] = et_med[i, 0]
-            ws1[f'D{i+2}'] = et_med[i, 1]
-            i += 1
-
-        wb2 = Workbook()
-        ws2 = wb2.active
-        ws2['A1'] = "# of AOI"
-        ws2['B1'] = "# of Fixations in AOI"
-        ws2['C1'] = "Fixations Time in AOI"
-        for (i, f) in enumerate(fs_in_aoi):
-            ws2[f'A{i+2}'] = i+1
-            ws2[f'B{i+2}'] = f[0]
-            ws2[f'C{i+2}'] = f[1]
-
-        wb1.save(sampling_dir + "EYE-TRACK.xlsx")
-        wb2.save(sampling_dir + "FIXATIONS-IN-AOI.xlsx")
-
+        # wb = Workbook()
+        # ws = wb.active
+        # ws['A1'] = "# of AOI"
+        # ws['B1'] = "# of Fixations in AOI"
+        # ws['C1'] = "Fixations Time in AOI"
+        # for (i, f) in enumerate(fs_in_aoi):
+        #     ws[f'A{i+2}'] = i+1
+        #     ws[f'B{i+2}'] = f[0]
+        #     ws[f'C{i+2}'] = f[1]
+        
+        wb.save(sampling_dir + "FIXATIONS-IN-AOI.xlsx")

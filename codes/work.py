@@ -9,7 +9,6 @@ from codes.see_data import See
 class Worker(QObject, Camera, Calibration, Sampling, Tuning, EyeTrack, See):
     num = 0
     camera_id = 0
-    path2root = "../"
 
     cam = False
     clb = False
@@ -46,6 +45,7 @@ class Worker(QObject, Camera, Calibration, Sampling, Tuning, EyeTrack, See):
             print("\nCalibration")
             self.clb_started.emit()
             self.et(self.num, self.camera_id, self.info, self.clb_grid)
+        if self.clb and self.running:
             self.boi(self.num, self.camera_id, 20)
         if self.smp and self.running:
             print("\nSampling")
@@ -63,11 +63,11 @@ class Worker(QObject, Camera, Calibration, Sampling, Tuning, EyeTrack, See):
         if self.gp and self.running:
             print("\nGetting pixels")
             self.gp_started.emit()
-            self.raw_pixels(self.num)
+            self.get_pixels(self.num)
         if self.tst and self.gp and self.running:
             print("\nGetting test pixels")
             self.gp_started.emit()
-            self.raw_pixels(self.num, True)
+            self.get_pixels(self.num, True)
         if self.gf and self.running:
             print("\nGetting fixations")
             self.gf_started.emit()

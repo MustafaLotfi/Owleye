@@ -7,41 +7,36 @@ from joblib import dump as j_dump
 import pickle
 import numpy as np
 import os
+from codes.base import eyeing as ey
 
 
-PATH2ROOT = "../"
-
+PATH2ROOT_ABS = os.path.dirname(__file__) + "/../"
+PATH2ROOT = ""
 
 class Tuning(object):
     @staticmethod
-    def boi_mdl(num, selected_model_num=1, n_epochs=5, patience=2, trainable_layers=1, path2root0="../"):
-        print("Starting to retrain blink_out_in model...")
+    def boi_mdl(num, selected_model_num=1, n_epochs=5, patience=2, trainable_layers=1, delete_files=False):
+        print("\nStarting to retrain blink_out_in model...")
         subjects_fol = "subjects/"
         models_fol = "models/"
         models_boi_fol = "boi/"
         trained_fol = "trained/"
         data_boi_fol = "data-boi/"
         r_train = 0.8
-        chosen_inputs = [0, 1, 2, 6, 7, 8, 9]
 
-        trained_dir = path2root0 + models_fol + models_boi_fol + trained_fol
+        trained_dir = PATH2ROOT_ABS + models_fol + models_boi_fol + trained_fol
         public_model_dir = trained_dir + f"model{selected_model_num}"
         public_scalers_dir = trained_dir + f"scalers{selected_model_num}.bin"
         sbj_dir = PATH2ROOT + subjects_fol + f"{num}/"
 
         data_boi_dir = sbj_dir + data_boi_fol
-        print(f"\nLoading subject data in {data_boi_dir}")
-        with open(data_boi_dir + "x1.pickle", "rb") as f:
-            x1_load = pickle.load(f)
-        with open(data_boi_dir + "x2.pickle", "rb") as f:
-            x2_load = pickle.load(f)
-        with open(data_boi_dir + "y.pickle", "rb") as f:
-            y_load = pickle.load(f)
+        print(f"Loading subject data in {data_boi_dir}")
+        [x1_load, x2_load, y_load] = ey.load(data_boi_dir, ['x1', 'x2', 'y'])
         n_smp, frame_h, frame_w = x1_load.shape[:-1]
         print(f"Samples number: {n_smp}")
 
-        print("\nNormalizing data...")
-        x2_chs_inp = x2_load[:, chosen_inputs]
+        print("Normalizing data...")
+        x2_chs_inp = x2_load[:, ey.CHOSEN_INPUTS]
         scalers = j_load(public_scalers_dir)
         x1_scaler, x2_scaler = scalers
         x1 = x1_load / x1_scaler
@@ -49,10 +44,10 @@ class Tuning(object):
         scalers_dir = sbj_dir + "scalers-boi.bin"
         j_dump(scalers, scalers_dir)
 
-        print("\nShuffling data...")
+        print("Shuffling data...")
         x1_shf, x2_shf, y_shf = shuffle(x1, x2, y_load)
 
-        print("\nSplitting data to train and test...")
+        print("Splitting data to train and test...")
         n_train = int(r_train * n_smp)
         x1_train, x2_train = x1_shf[:n_train], x2_shf[:n_train]
         x1_test, x2_test = x1_shf[n_train:], x2_shf[n_train:]
@@ -68,13 +63,13 @@ class Tuning(object):
         x_train = [x1_train, x2_train]
         x_test = [x1_test, x2_test]
 
-        print("\nLoading public blink_out_in model...")
+        print("Loading public blink_out_in model...")
         cb = EarlyStopping(patience=patience, verbose=1, restore_best_weights=True)
         model = load_model(public_model_dir)
 
         for layer in model.layers[:-trainable_layers]:
             layer.trainable = False
-        print("\nModel summary:")
+        print("Model summary:")
         print(model.summary())
 
         print("\n--------model-blink_out_in-------")
@@ -87,9 +82,11 @@ class Tuning(object):
 
         model.save(sbj_dir + "model-boi")
         print("Saving model-boi in " + sbj_dir + "model-boi")
+        if delete_files:
+            ey.remove(data_boi_dir)
 
     @staticmethod
-    def et_mdl(num, selected_model_num=1, n_epochs=60, patience=12, trainable_layers=1, path2root0="../"):
+    def et_mdl(num, selected_model_num=1, n_epochs=60, patience=12, trainable_layers=1, delete_files=False):
         print("\nStarting to retrain eye_tracking model...")
         models_fol = "models/"
         models_et_fol = "et/"
@@ -99,21 +96,15 @@ class Tuning(object):
         sbj_scalers_boi_fol = "scalers-boi.bin"
         sbj_model_boi_fol = "model-boi"
         r_train = 0.8
-        chosen_inputs = [0, 1, 2, 6, 7, 8, 9]
 
         sbj_dir = PATH2ROOT + subjects_dir + f"{num}/"
-        trained_dir = path2root0 + models_fol + models_et_fol + trained_fol
+        trained_dir = PATH2ROOT_ABS + models_fol + models_et_fol + trained_fol
 
         # ### Retraining 'eye_tracking' model with subject calibration data
 
         data_et_dir = sbj_dir + data_et_fol
-        print(f"\nLoading subject data in {data_et_dir}")
-        with open(data_et_dir + "x1.pickle", "rb") as f:
-            x1_load = pickle.load(f)
-        with open(data_et_dir + "x2.pickle", "rb") as f:
-            x2_load = pickle.load(f)
-        with open(data_et_dir + "y.pickle", "rb") as f:
-            y_load = pickle.load(f)
+        print(f"Loading subject data in {data_et_dir}")
+        [x1_load, x2_load, y_load] = ey.load(data_et_dir, ['x1', 'x2', 'y'])
         n_smp, frame_h, frame_w = x1_load.shape[:-1]
         print(f"Samples number: {n_smp}")
 
@@ -121,18 +112,18 @@ class Tuning(object):
 
         # #### Getting those data that looking 'in' screen
 
-        print("\nNormalizing data...")
+        print("Normalizing data...")
         sbj_scalers_boi_dir = sbj_dir + sbj_scalers_boi_fol
-        x2_chs_inp = x2_load[:, chosen_inputs]
+        x2_chs_inp = x2_load[:, ey.CHOSEN_INPUTS]
         x1_scaler_boi, x2_scaler_boi = j_load(sbj_scalers_boi_dir)
         x1_boi = x1_load / x1_scaler_boi
         x2_boi = x2_scaler_boi.transform(x2_chs_inp)
 
-        print("\nLoading in_blink_out model...")
+        print("Loading in_blink_out model...")
         sbj_model_boi_dir = sbj_dir + sbj_model_boi_fol
         model_boi = load_model(sbj_model_boi_dir)
 
-        print("\nPredicting those data that looking 'in' screen.")
+        print("Predicting those data that looking 'in' screen.")
         yhat_boi = model_boi.predict([x1_boi, x2_boi]).argmax(1)
 
         # Choosing those data
@@ -153,9 +144,9 @@ class Tuning(object):
 
         # ### Preparing modified calibration data to feeding in eye_tracking model
 
-        print("\nNormalizing modified calibration data to feeding in eye_tracking model...")
+        print("Normalizing modified calibration data to feeding in eye_tracking model...")
         public_scalers_et_dir = trained_dir + f"scalers{selected_model_num}.bin"
-        x2_chs_inp_new = x2_new[:, chosen_inputs]
+        x2_chs_inp_new = x2_new[:, ey.CHOSEN_INPUTS]
         scalers_et = j_load(public_scalers_et_dir)
         x1_scaler_et, x2_scaler_et = scalers_et
 
@@ -211,5 +202,8 @@ class Tuning(object):
 
         model_hrz.save(sbj_dir + "model-et-hrz")
         model_vrt.save(sbj_dir + "model-et-vrt")
-        print("\nSaving model-et-hrz in " + sbj_dir + "model-et-hrz")
+        print("Saving model-et-hrz in " + sbj_dir + "model-et-hrz")
         print("Saving model-et-vrt in " + sbj_dir + "model-et-vrt")
+
+        if delete_files:
+            ey.remove(data_et_dir)

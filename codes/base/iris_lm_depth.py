@@ -1,3 +1,4 @@
+import os
 import cv2
 import numpy as np
 from codes.base.core import (
@@ -9,11 +10,15 @@ from codes.base.core import (
 )
 
 
+PATH2ROOT_ABS = os.path.dirname(__file__) + "/../../"
+
+
 def from_landmarks_to_depth(
-    frame_rgb, eye_landmarks, image_size, is_right_eye=False, focal_length=None, path2root0="../"
+    frame_rgb, eye_landmarks, image_size, is_right_eye=False, focal_length=None
 ):
     if focal_length is None:
         focal_length = frame_rgb.shape[1]
+
     detections = landmarks_to_detections(eye_landmarks)
     rect = detections_to_rect(detections, image_size, rotation_vector_start_end=(0, 1))
     roi = transform_rect(rect, image_size, scale_x=2.3, scale_y=2.3)
@@ -23,38 +28,48 @@ def from_landmarks_to_depth(
     eye_image = frame_rgb[slice(*slice_y), slice(*slice_x), :]
     position_in_frame = np.array((slice_x[0], slice_y[0], 0))
 
-    eye_contours, iris_landmarks, eye_frame_low = detect_iris(
-        eye_image.copy(), is_right_eye=is_right_eye, path2root0=path2root0
-    )
+    if eye_image.any():
+        success = True
+        eye_contours, iris_landmarks, eye_frame_low = detect_iris(
+            eye_image.copy(), is_right_eye=is_right_eye
+        )
 
-    iris_landmarks_respect = iris_landmarks.copy()
+        iris_landmarks_respect = iris_landmarks.copy()
 
-    eye_contours[:, 0] = eye_contours[:, 0] * eye_image.shape[0]
-    eye_contours[:, 1] = eye_contours[:, 1] * eye_image.shape[1]
-    eye_contours = eye_contours + position_in_frame
+        eye_contours[:, 0] = eye_contours[:, 0] * eye_image.shape[0]
+        eye_contours[:, 1] = eye_contours[:, 1] * eye_image.shape[1]
+        eye_contours = eye_contours + position_in_frame
 
-    eye_contours[:, 0] = eye_contours[:, 0] / frame_rgb.shape[1]
-    eye_contours[:, 1] = eye_contours[:, 1] / frame_rgb.shape[0]
+        eye_contours[:, 0] = eye_contours[:, 0] / frame_rgb.shape[1]
+        eye_contours[:, 1] = eye_contours[:, 1] / frame_rgb.shape[0]
 
-    iris_landmarks[:, 0] = iris_landmarks[:, 0] * eye_image.shape[0]
-    iris_landmarks[:, 1] = iris_landmarks[:, 1] * eye_image.shape[1]
-    iris_landmarks = iris_landmarks + position_in_frame
+        iris_landmarks[:, 0] = iris_landmarks[:, 0] * eye_image.shape[0]
+        iris_landmarks[:, 1] = iris_landmarks[:, 1] * eye_image.shape[1]
+        iris_landmarks = iris_landmarks + position_in_frame
 
-    iris_landmarks[:, 0] = iris_landmarks[:, 0] / frame_rgb.shape[1]
-    iris_landmarks[:, 1] = iris_landmarks[:, 1] / frame_rgb.shape[0]
+        iris_landmarks[:, 0] = iris_landmarks[:, 0] / frame_rgb.shape[1]
+        iris_landmarks[:, 1] = iris_landmarks[:, 1] / frame_rgb.shape[0]
 
-    depth, iris_size = calculate_iris_depth(iris_landmarks, image_size, focal_length)
+        depth, iris_size = calculate_iris_depth(iris_landmarks, image_size, focal_length)
+        
+    else:
+        success = False
+        depth = None
+        iris_size = None
+        iris_landmarks = None
+        eye_contours = None
+        iris_landmarks_respect = None
 
-    return depth, iris_size, iris_landmarks, eye_contours, iris_landmarks_respect
+    return success, depth, iris_size, iris_landmarks, eye_contours, iris_landmarks_respect
 
 
-def detect_iris(eye_frame, is_right_eye=False, path2root0="../"):
+def detect_iris(eye_frame, is_right_eye=False):
     side_low = 64
     eye_frame_low = cv2.resize(
         eye_frame, (side_low, side_low), interpolation=cv2.INTER_AREA
     )
 
-    model_path = path2root0 + "models/iris/iris_landmark.tflite"
+    model_path = PATH2ROOT_ABS + "models/iris/iris_landmark.tflite"
 
     if is_right_eye:
         eye_frame_low = np.fliplr(eye_frame_low)

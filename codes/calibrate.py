@@ -16,7 +16,7 @@ from sklearn.utils import shuffle
 
 INFO = ("Mostafa Lotfi", "M", 25, "Phone Number: +989368385420")
 CALIBRATION_GRID = (4, 200, 6, 100)
-path2root = "../"
+PATH2ROOT = ""
 
 
 class Calibration(object):
@@ -104,12 +104,12 @@ class Calibration(object):
         return points
 
 
-    def et(self, num, camera_id=0, info=INFO, clb_grid=CALIBRATION_GRID, path2root0="../"):
-        name, gender, age, description = info
-        path2root = self.path2root
+    def et(self, num, camera_id=0, info=INFO, clb_grid=CALIBRATION_GRID):
+        print("\nCalibration started!")
+        name, gender, age, descriptions = info
         subjects_fol = "subjects/"
         et_fol = "data-et-clb/"
-        sbj_dir = path2root + subjects_fol + f"{num}/"
+        sbj_dir = PATH2ROOT + subjects_fol + f"{num}/"
         if os.path.exists(sbj_dir):
             inp = input(f"\nThere is a subject in subjects/{num}/ folder. do you want to remove it (y/n)? ")
             if inp == 'n' or inp == 'N':
@@ -142,15 +142,13 @@ class Calibration(object):
 
         monitors = get_monitors()
         for (i_m, m) in enumerate(monitors):
-            if not self.running:
-                break
             win_name = f"Calibration-{i_m}"
             cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
             cv2.moveWindow(win_name, i_m * m.width, 0)
             cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
             for item in clb_points:
-                if not self.running:
+                if not self.running and (i_m != 0):
                     break
                 pnt = item[0]
                 ey.show_clb_win(win_name, pnt)
@@ -193,12 +191,16 @@ class Calibration(object):
                                     vector_inputs.append(features_vector)
                                     points_loc.append([pnt[0] + i_m, pnt[1]])
                                     break
+                        if not self.running:
+                            break
                     fps_vec.append(ey.get_time(s, t1))
+                if not self.running:
+                    break
             cv2.destroyWindow(win_name)
         cap.release()
 
         ey.get_time(0, t0, True)
-        print(f"\nMean FPS : {np.array(fps_vec).mean()}")
+        print(f"Mean FPS : {np.array(fps_vec).mean()}")
 
         x1 = np.array(eyes_data_gray)
         x2 = np.array(vector_inputs)
@@ -206,7 +208,7 @@ class Calibration(object):
 
         y[:, 0] = y[:, 0] / len(monitors)
 
-        subjects_dir = path2root + subjects_fol
+        subjects_dir = PATH2ROOT + subjects_fol
         if not os.path.exists(subjects_dir):
             os.mkdir(subjects_dir)
         if not os.path.exists(sbj_dir):
@@ -216,17 +218,15 @@ class Calibration(object):
             os.mkdir(et_dir)
 
         f = open(sbj_dir + "Information.txt", "w+")
-        f.write(name + "\n" + gender + "\n" + str(age) + "\n" + str(datetime.now())[:16] + "\n" + description)
+        f.write(name + "\n" + str(age) + "\n" + gender + "\n" + descriptions + "\n" + str(datetime.now())[:16])
         f.close()
 
         ey.save([x1, x2, y], et_dir, ["x1", "x2", "y"])
 
-        print("Calibration finished!!")
-
 
     @staticmethod
-    def integrate_bo_et(num, data_bo, path2root):
-        sbj_dir = path2root + f"subjects/{num}/"
+    def integrate_bo_et(num, data_bo):
+        sbj_dir = PATH2ROOT + f"subjects/{num}/"
         boi_fol = "data-boi/"
         et_fol = "data-et-clb/"
 
@@ -253,7 +253,8 @@ class Calibration(object):
         ey.save([x1_boi, x2_boi, y_boi], boi_dir, ['x1', 'x2', 'y'])
 
 
-    def boi(self, num, camera_id=0, n_smp_in_cls=300, path2root0="../"):
+    def boi(self, num, camera_id=0, n_smp_in_cls=300):
+        print("Getting blink-out data...")
         n_class = 2
 
         some_landmarks_ids = ey.get_some_landmarks_ids()
@@ -279,8 +280,6 @@ class Calibration(object):
         cap = ey.get_camera(camera_id, frame_size)
         ey.pass_frames(cap, 100)
         for j in range(n_class):
-            if not self.running:
-                break
             i = 0
             if j == 0:
                 input("Close your eyes then press ENTER: ")
@@ -307,8 +306,7 @@ class Calibration(object):
                         frame_size,
                         dst_cof,
                         some_landmarks_ids,
-                        False,
-                        path2root0
+                        False
                     )
                     if features_success:
                         eyes_data_gray.append(eyes_frame_gray)
@@ -322,17 +320,19 @@ class Calibration(object):
             print("Data collected")
             if os.name == "nt":
                 winsound.PlaySound("SystemExit", winsound.SND_ALIAS)
+            if not self.running:
+                break
         cap.release()
         cv2.destroyAllWindows()
         ey.get_time(0, t0, True)
-        print(f"\nMean FPS : {np.array(fps_vec).mean()}")
+        print(f"Mean FPS : {np.array(fps_vec).mean()}")
 
         x1 = np.array(eyes_data_gray)
         x2 = np.array(vector_inputs)
         y = np.array(output_class)
 
-        print("\nData collection finished!!")
+        print("Data collection finished!")
 
-        self.integrate_bo_et(num, [x1, x2, y], self.path2root)
+        self.integrate_bo_et(num, [x1, x2, y])
 
 

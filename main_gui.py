@@ -4,7 +4,7 @@ from codes.work import Worker
 import os
 
 
-path2root = os.path.dirname(__file__) + "/../"
+PATH2ROOT = os.path.dirname(__file__) + "/"
 
 
 class Ui_MainWindow(object):
@@ -12,7 +12,7 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(323, 477)
         MainWindow.setAcceptDrops(True)
-        # MainWindow.setWindowIcon(QtGui.QIcon("../docs/images/logo.png"))
+        MainWindow.setWindowIcon(QtGui.QIcon(PATH2ROOT + "docs/images/logo.png"))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -319,7 +319,6 @@ class Ui_MainWindow(object):
             self.gender = "F"
 
         self.worker = Worker()
-        self.worker.path2root = path2root
 
         self.worker.num = self.num
         self.worker.camera_id = self.cam_id
