@@ -1,10 +1,10 @@
 import os
 from codes.show import Camera
-from codes.calibrate import Calibration
-from codes.do_sampling import Smp
-from codes.tune_model_pars import Tuning
+from codes.calibration import Clb
+from codes.sampling import Smp
+from codes.tune_models_params import Tuning
 from codes.get_eye_track import EyeTrack
-from codes.get_model import Modeling
+from codes.get_models import Modeling
 from codes.see_data import See
 
 
@@ -25,7 +25,7 @@ CAMERA_ID = 2
 # CALIBRATION_GRID = 2, 10
 # INFO = (NAME, GENDER, AGE, Descriptions)
 
-# clb = Calibration()
+# clb = Clb()
 # clb.et(NUMBER, CAMERA_ID, INFO, CALIBRATION_GRID)
 # clb.boi(NUMBER, CAMERA_ID, 20)
 
