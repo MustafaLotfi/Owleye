@@ -11,7 +11,8 @@ from codes.base import eyeing as ey
 
 
 PATH2ROOT_ABS = os.path.dirname(__file__) + "/../"
-PATH2ROOT = ""
+ey.PATH2ROOT = ""
+
 
 class Tuning(object):
     @staticmethod
@@ -27,7 +28,7 @@ class Tuning(object):
         trained_dir = PATH2ROOT_ABS + models_fol + models_boi_fol + trained_fol
         public_model_dir = trained_dir + f"model{selected_model_num}"
         public_scalers_dir = trained_dir + f"scalers{selected_model_num}.bin"
-        sbj_dir = PATH2ROOT + subjects_fol + f"{num}/"
+        sbj_dir = ey.PATH2ROOT + subjects_fol + f"{num}/"
 
         data_boi_dir = sbj_dir + data_boi_fol
         print(f"Loading subject data in {data_boi_dir}")
@@ -97,7 +98,7 @@ class Tuning(object):
         sbj_model_boi_fol = "model-boi"
         r_train = 0.8
 
-        sbj_dir = PATH2ROOT + subjects_dir + f"{num}/"
+        sbj_dir = ey.PATH2ROOT + subjects_dir + f"{num}/"
         trained_dir = PATH2ROOT_ABS + models_fol + models_et_fol + trained_fol
 
         # ### Retraining 'eye_tracking' model with subject calibration data
@@ -186,16 +187,16 @@ class Tuning(object):
 
         print("\n--------horizontally eye_tracking model-------")
         model_hrz.fit(x_train,
-                      y_hrz_train,
-                      validation_data=(x_test, y_hrz_test),
+                      y_hrz_train * ey.Y_SCALE,
+                      validation_data=(x_test, y_hrz_test * ey.Y_SCALE),
                       epochs=n_epochs,
                       callbacks=cb)
         print("End of training")
 
         print("\n--------vertically eye_tracking model-------")
         model_vrt.fit(x_train,
-                      y_vrt_train,
-                      validation_data=(x_test, y_vrt_test),
+                      y_vrt_train * ey.Y_SCALE,
+                      validation_data=(x_test, y_vrt_test * ey.Y_SCALE),
                       epochs=n_epochs,
                       callbacks=cb)
         print("End of training")

@@ -14,6 +14,7 @@ STATIC_IMAGE_MODE = False
 MIN_TRACKING_CONFIDENCE = 0.5
 MIN_DETECTION_CONFIDENCE = 0.5
 CHOSEN_INPUTS = [0, 1, 2, 6, 7, 8, 9]
+Y_SCALE = 1000.0
 
 
 def get_clb_win_prp(clb_win_align=(0, 0)):

@@ -16,7 +16,6 @@ from sklearn.utils import shuffle
 
 INFO = ("Mostafa Lotfi", "M", 25, "Phone Number: +989368385420")
 CALIBRATION_GRID = (4, 200, 6, 100)
-PATH2ROOT = ""
 
 
 class Calibration(object):
@@ -109,7 +108,7 @@ class Calibration(object):
         name, gender, age, descriptions = info
         subjects_fol = "subjects/"
         et_fol = "data-et-clb/"
-        sbj_dir = PATH2ROOT + subjects_fol + f"{num}/"
+        sbj_dir = ey.PATH2ROOT + subjects_fol + f"{num}/"
         if os.path.exists(sbj_dir):
             inp = input(f"\nThere is a subject in subjects/{num}/ folder. do you want to remove it (y/n)? ")
             if inp == 'n' or inp == 'N':
@@ -208,7 +207,7 @@ class Calibration(object):
 
         y[:, 0] = y[:, 0] / len(monitors)
 
-        subjects_dir = PATH2ROOT + subjects_fol
+        subjects_dir = ey.PATH2ROOT + subjects_fol
         if not os.path.exists(subjects_dir):
             os.mkdir(subjects_dir)
         if not os.path.exists(sbj_dir):
@@ -226,7 +225,7 @@ class Calibration(object):
 
     @staticmethod
     def integrate_bo_et(num, data_bo):
-        sbj_dir = PATH2ROOT + f"subjects/{num}/"
+        sbj_dir = ey.PATH2ROOT + f"subjects/{num}/"
         boi_fol = "data-boi/"
         et_fol = "data-et-clb/"
 

@@ -43,14 +43,14 @@ CAMERA_ID = 2
 # see.data_features(NUMBER, "tst")
 
 # # *********************** MODELING *************************
-# Tuning().boi_mdl(NUMBER, 1, 1, 1, 1, delete_files=True)
-# Tuning().et_mdl(NUMBER, 1, 1, 1, 1, delete_files=True)
+# Tuning().boi_mdl(NUMBER, 1, 1, 1, 1)
+# Tuning().et_mdl(NUMBER, 1, 1, 1, 1)
 
 # # *********************** GET PIXELS ***********************
 # EyeTrack().get_pixels(NUMBER)
 
 # # ******************* GET TESTING PIXELS *******************
-# EyeTrack().get_pixels(NUMBER, True, delete_files=True)
+# EyeTrack().get_pixels(NUMBER, True)
 
 # # ******************** GET FIXATIONS ***********************
 # EyeTrack().get_fixations(NUMBER)

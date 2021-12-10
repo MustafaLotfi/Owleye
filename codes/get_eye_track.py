@@ -8,13 +8,10 @@ from openpyxl import Workbook
 import os
 
 
-PATH2ROOT = ""
-
-
 class EyeTrack(object):
     @staticmethod
     def get_pixels(num, testing=False, delete_files=False):
-        sbj_dir = PATH2ROOT + f"subjects/{num}/"
+        sbj_dir = ey.PATH2ROOT + f"subjects/{num}/"
         model_boi_dir = sbj_dir + "model-boi"
         scalers_boi_dir = sbj_dir + "scalers-boi.bin"
         model_et_hrz_dir = sbj_dir + "model-et-hrz"
@@ -100,7 +97,9 @@ class EyeTrack(object):
 
         wb.save(sampling_dir + "EYE-TRACK.xlsx")
 
-        if delete_files:
+        if testing and delete_files:
+            ey.remove(sampling_dir, ['x1', 'x2'])
+        elif delete_files:
             ey.remove(model_boi_dir)
             os.remove(scalers_boi_dir)
             ey.remove(model_et_hrz_dir)
@@ -130,7 +129,7 @@ class EyeTrack(object):
         else:
             sampling_fol = "sampling/"
 
-        sampling_dir = PATH2ROOT + f"subjects/{num}/" + sampling_fol
+        sampling_dir = ey.PATH2ROOT + f"subjects/{num}/" + sampling_fol
 
         t, et_med = ey.load(sampling_dir, ['t', 'et-flt-in'])
 
@@ -259,7 +258,7 @@ class EyeTrack(object):
 
     @staticmethod
     def get_fix_in_aoi(num, aoi=None):
-        sampling_dir = PATH2ROOT + f"subjects/{num}/" + "sampling/"
+        sampling_dir = ey.PATH2ROOT + f"subjects/{num}/" + "sampling/"
 
         if not aoi:
             aoi = [[[0, 0], [0.33, 0.33]], [[0.33, 0], [0.66, 0.33]], [[0.66, 0], [1, 0.33]],

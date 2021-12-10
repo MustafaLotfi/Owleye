@@ -6,14 +6,14 @@ from screeninfo import get_monitors
 
 
 monitors = get_monitors()
-PATH2ROOT = ""
+
 
 class See(object):
     running = True
 
     @staticmethod
     def data_features(num, target_fol="et"):
-        sbj_dir = PATH2ROOT + f"subjects/{num}/"
+        sbj_dir = ey.PATH2ROOT + f"subjects/{num}/"
         if target_fol == "et":
             target_fol = "data-et-clb/"
             target_dir = sbj_dir + target_fol
@@ -63,7 +63,7 @@ class See(object):
 
 
     def pixels(self, num, y_name='et-flt-in', n_monitors_data=1, show_in_all_monitors=False):
-        smp_dir = PATH2ROOT + f"subjects/{num}/sampling/"
+        smp_dir = ey.PATH2ROOT + f"subjects/{num}/sampling/"
         [t_vec, y_hat_et] = ey.load(smp_dir, ['t', y_name])
 
         if show_in_all_monitors:
@@ -109,8 +109,8 @@ class See(object):
         cv2.destroyAllWindows()
 
 
-    def pixels_test(self, num, y_name='et-flt-in', n_monitors_data=1, show_in_all_monitors=False):
-        smp_dir = PATH2ROOT + f"subjects/{num}/testing/"
+    def pixels_test(self, num, y_name='et-flt-in', n_monitors_data=1, show_in_all_monitors=False, delete_files=False):
+        smp_dir = ey.PATH2ROOT + f"subjects/{num}/testing/"
         [t_vec, y_hat_et, y_et] = ey.load(smp_dir, ['t', y_name, 'y-et'])
         if show_in_all_monitors:
             mns_x = 0
@@ -158,3 +158,5 @@ class See(object):
                 break
 
         cv2.destroyAllWindows()
+        if delete_files:
+            ey.remove(smp_dir)

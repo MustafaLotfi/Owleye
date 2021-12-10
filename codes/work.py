@@ -20,8 +20,7 @@ class Worker(QObject, Camera, Calibration, Smp, Tuning, EyeTrack, See):
     mdl = False
     gp = False
     gf = False
-    see_smp = False
-    see_tst = False
+    see = False
 
     running = True
         
@@ -32,8 +31,7 @@ class Worker(QObject, Camera, Calibration, Smp, Tuning, EyeTrack, See):
     mdl_started = pyqtSignal()
     gp_started = pyqtSignal()
     gf_started = pyqtSignal()
-    see_smp_started = pyqtSignal()
-    see_tst_started = pyqtSignal()
+    see_started = pyqtSignal()
     finished = pyqtSignal()
 
     def __init__(self):
@@ -63,32 +61,32 @@ class Worker(QObject, Camera, Calibration, Smp, Tuning, EyeTrack, See):
             self.mdl_started.emit()
             self.boi_mdl(self.num, 1, 1, 1, 1, delete_files=True)
             self.et_mdl(self.num, 1, 1, 1, 1, delete_files=True)
-        if self.gp and self.running:
+        if self.gp and self.smp and self.running:
             print("\nGetting pixels")
             self.gp_started.emit()
             self.get_pixels(self.num, delete_files=True)
-        if self.tst and self.gp and self.running:
+        if self.gp and self.tst and self.running:
             print("\nGetting test pixels")
             self.gp_started.emit()
             self.get_pixels(self.num, True, delete_files=True)
-        if self.gf and self.running:
+        if self.gf and self.smp and self.running:
             print("\nGetting fixations")
             self.gf_started.emit()
             self.get_fixations(
                 self.num,False, self.dft, self.mfr, self.mfr, self.st, self.st)
-        if self.tst and self.gf and self.running:
+        if self.gf and self.tst and self.running:
             print("\nGetting test fixations")
             self.gf_started.emit()
             self.get_fixations(
                 self.num, True, self.dft, self.mfr, self.mfr, self.st, self.st)
-        if self.see_smp and self.running:
+        if self.see and self.smp and self.running:
             print("\nSeeing sampling data")
-            self.see_smp_started.emit()
+            self.see_started.emit()
             self.pixels(self.num)
-        if self.see_tst and self.running:
+        if self.see and self.tst and self.running:
             print("\nSeeing testing data")
-            self.see_tst_started.emit()
-            self.pixels_test(self.num)
+            self.see_started.emit()
+            self.pixels_test(self.num, delete_files=True)
 
         print("\nEye Tracking finished!")
         self.finished.emit()
