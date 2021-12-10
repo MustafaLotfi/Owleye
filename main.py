@@ -9,50 +9,54 @@ from codes.see_data import See
 
 
 # *********************** PARAMETERS ***********************
-NUMBER = 16
+NUMBER = 17
 CAMERA_ID = 2
 
-# *********************** SEE CAMERA ***********************
-# Camera().raw(CAMERA_ID)
-# Camera().features(CAMERA_ID)
+# # *********************** SEE CAMERA ***********************
+# cam = Camera()
+# cam.raw(CAMERA_ID)
+# cam.features(CAMERA_ID)
 
-# *********************** CALIBRATION **********************
+# # *********************** CALIBRATION **********************
 # NAME = "Mostafa Lotfi"
 # GENDER = "M"
 # AGE = 25
 # Descriptions = "3 monitors"
 # CALIBRATION_GRID = 2, 10
 # INFO = (NAME, GENDER, AGE, Descriptions)
-# Calibration().et(NUMBER, CAMERA_ID, INFO, CALIBRATION_GRID)
-# Calibration().boi(NUMBER, CAMERA_ID, 20)
+
+# clb = Calibration()
+# clb.et(NUMBER, CAMERA_ID, INFO, CALIBRATION_GRID)
+# clb.boi(NUMBER, CAMERA_ID, 20)
 
 # # *********************** SAMPLING *************************
 # Smp().sampling(NUMBER, CAMERA_ID)
 
 # # *********************** TESTING **************************
-# Smp().testing(NUMBER, CAMERA_ID)
+# Smp().testing(NUMBER, CAMERA_ID, clb_grid=(2, 2, 15))
 
 # # ********************* SEE FEATURES ***********************
-# See().data_features(NUMBER, "et")
-# See().data_features(NUMBER, "boi")
-# See().data_features(NUMBER, "smp")
-# See().data_features(NUMBER, "tst")
+# see = See()
+# see.data_features(NUMBER, "et")
+# see.data_features(NUMBER, "boi")
+# see.data_features(NUMBER, "smp")
+# see.data_features(NUMBER, "tst")
 
 # # *********************** MODELING *************************
-# Tuning().boi_mdl(NUMBER, 2, 2, 1, 1, delete_files=True)
-# Tuning().et_mdl(NUMBER, 2, 2, 1, 1, delete_files=True)
+Tuning().boi_mdl(NUMBER, 1, 1, 1, 1, delete_files=True)
+Tuning().et_mdl(NUMBER, 1, 1, 1, 1, delete_files=True)
 
-# # *********************** GET PIXELS ***********************
-# EyeTrack().get_pixels(NUMBER)
+# *********************** GET PIXELS ***********************
+EyeTrack().get_pixels(NUMBER)
 
-# # ******************* GET TESTING PIXELS *******************
-# EyeTrack().get_pixels(NUMBER, True, delete_files=True)
+# ******************* GET TESTING PIXELS *******************
+EyeTrack().get_pixels(NUMBER, True, delete_files=True)
 
-# # ******************** GET FIXATIONS ***********************
-# EyeTrack().get_fixations(NUMBER)
+# ******************** GET FIXATIONS ***********************
+EyeTrack().get_fixations(NUMBER)
 
-# # ***************** GET TESTINGT FIXATIONS *****************
-# EyeTrack().get_fixations(NUMBER, True)
+# ***************** GET TESTINGT FIXATIONS *****************
+EyeTrack().get_fixations(NUMBER, True)
 
 # ***************** SEE SAMPLING PIXELS ********************
 See().pixels(NUMBER)
@@ -60,9 +64,12 @@ See().pixels(NUMBER)
 # ***************** SEE TESTING PIXELS *********************
 See().pixels_test(NUMBER)
 
-# ***************** CREATE PUBLIC MODELS *******************
+# # ***************** CREATE PUBLIC MODELS *******************
+mdl = Modeling()
+mdl.create_boi()
+mdl.create_et()
+
+# ****************** TRAIN PUBLIC MODELS *******************
 # mdl = Modeling()
-# mdl.create_boi()
-# mdl.create_et()
-# mdl.train_boi(subjects=[1], n_epochs=2, patience=1)
-# mdl.train_et(subjects=[1], n_epochs=2, patience=1)
+# mdl.train_boi(subjects=[1], n_epochs=1, patience=1)
+# mdl.train_et(subjects=[1], n_epochs=1, patience=1)

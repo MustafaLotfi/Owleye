@@ -1,14 +1,17 @@
 from PyQt5.QtCore import pyqtSignal, QObject
 from codes.show import Camera
 from codes.calibrate import Calibration
-from codes.do_sampling import Sampling
+from codes.do_sampling import Smp
 from codes.tune_model_pars import Tuning
 from codes.get_eye_track import EyeTrack
 from codes.see_data import See
 
-class Worker(QObject, Camera, Calibration, Sampling, Tuning, EyeTrack, See):
+class Worker(QObject, Camera, Calibration, Smp, Tuning, EyeTrack, See):
     num = 0
     camera_id = 0
+    mfr = 0.0
+    dft = 0.0
+    st = 0.0
 
     cam = False
     clb = False
@@ -50,32 +53,34 @@ class Worker(QObject, Camera, Calibration, Sampling, Tuning, EyeTrack, See):
         if self.smp and self.running:
             print("\nSampling")
             self.smp_started.emit()
-            self.get_sample(self.num, self.camera_id)
+            self.sampling(self.num, self.camera_id)
         if self.tst and self.running:
             print("\nTesting")
             self.tst_started.emit()
-            self.test(self.num, self.camera_id)
+            self.testing(self.num, self.camera_id)
         if self.mdl and self.running:
             print("\nTuning params")
             self.mdl_started.emit()
-            self.boi_mdl(self.num, 2, 2, 1, 1)
-            self.et_mdl(self.num, 2, 2, 1, 1)
+            self.boi_mdl(self.num, 1, 1, 1, 1, delete_files=True)
+            self.et_mdl(self.num, 1, 1, 1, 1, delete_files=True)
         if self.gp and self.running:
             print("\nGetting pixels")
             self.gp_started.emit()
-            self.get_pixels(self.num)
+            self.get_pixels(self.num, delete_files=True)
         if self.tst and self.gp and self.running:
             print("\nGetting test pixels")
             self.gp_started.emit()
-            self.get_pixels(self.num, True)
+            self.get_pixels(self.num, True, delete_files=True)
         if self.gf and self.running:
             print("\nGetting fixations")
             self.gf_started.emit()
-            self.filtration_fixations(self.num)
+            self.get_fixations(
+                self.num,False, self.dft, self.mfr, self.mfr, self.st, self.st)
         if self.tst and self.gf and self.running:
             print("\nGetting test fixations")
             self.gf_started.emit()
-            self.filtration_fixations(self.num, True)
+            self.get_fixations(
+                self.num, True, self.dft, self.mfr, self.mfr, self.st, self.st)
         if self.see_smp and self.running:
             print("\nSeeing sampling data")
             self.see_smp_started.emit()
