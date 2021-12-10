@@ -137,17 +137,17 @@ media/
 subjects/
 build/
 dist/
-gui.spec
 codes/p1.py
 codes/.ipynb_checkpoints/
 codes/__pycache__/
 codes/backup_codes/
 models/boi/raw/
 models/boi/trained/*
-!models/boi/trained/model1/
-!models/boi/trained/scalers1.bin
+# !models/boi/trained/model1/
+# !models/boi/trained/scalers1.bin
 models/et/raw/
 models/et/trained/*
-!models/et/trained/model1-hrz/
-!models/et/trained/model1-vrt/
-!models/et/trained/scalers1.bin
+# !models/et/trained/model1-hrz/
+# !models/et/trained/model1-vrt/
+# !models/et/trained/scalers1.bin
+!main_gui.spec
