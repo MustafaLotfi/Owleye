@@ -150,7 +150,7 @@ class Modeling():
 
         model = Model(inputs=input_layers, outputs=out)
 
-        model.compile(optimizer='adam', loss='mae')
+        model.compile(optimizer='adam', loss='mse')
 
         print(model.summary())
 
