@@ -150,4 +150,4 @@ models/et/trained/*
 # !models/et/trained/model1-hrz/
 # !models/et/trained/model1-vrt/
 # !models/et/trained/scalers1.bin
-!main_gui.spec
+!crt_exe.spec
