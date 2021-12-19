@@ -32,10 +32,20 @@ class Clb(object):
             dx = (1 - points_in_row * point_ratio) / (points_in_row - 1)
 
             for j in range(rows):
-                p_y = j * (point_ratio + dy_rows) + point_ratio / 2
+                if j == 0:
+                    p_y = j * (point_ratio + dy_rows) + 4.0 * point_ratio / 3.0
+                elif j == rows-1:
+                    p_y = j * (point_ratio + dy_rows) - point_ratio / 3.0
+                else:
+                    p_y = j * (point_ratio + dy_rows) + point_ratio / 2
                 smp_in_p = []
                 for i in range(points_in_row):
-                    p_x = i * (point_ratio + dx) + point_ratio / 2
+                    if i == 0:
+                        p_x = i * (point_ratio + dx) + point_ratio
+                    elif i == points_in_row - 1:
+                        p_x = i * (point_ratio + dx)
+                    else:
+                        p_x = i * (point_ratio + dx) + point_ratio / 2
                     smp_in_p.append([p_x, p_y])
                 if j % 2 == 0:
                     points.append(smp_in_p)
@@ -52,9 +62,19 @@ class Clb(object):
             dx = (1 - cols * point_ratio) / (cols - 1)
 
             for j in range(rows):
-                p_y = j * (point_ratio + dy) + point_ratio / 2
+                if j == 0:
+                    p_y = j * (point_ratio + dy) + 4.0 * point_ratio / 3.0
+                elif j == rows - 1:
+                    p_y = j * (point_ratio + dy) - point_ratio / 3.0
+                else:
+                    p_y = j * (point_ratio + dy) + point_ratio / 2
                 for i in range(cols):
-                    p_x = i * (point_ratio + dx) + point_ratio / 2
+                    if i == 0:
+                        p_x = i * (point_ratio + dx) + point_ratio
+                    elif i == cols - 1:
+                        p_x = i * (point_ratio + dx)
+                    else:
+                        p_x = i * (point_ratio + dx) + point_ratio / 2
                     smp_in_p = []
                     for k in range(smp_in_pnt):
                         smp_in_p.append([p_x, p_y])
@@ -73,10 +93,20 @@ class Clb(object):
             dy = (1 - points_in_col * point_ratio) / (points_in_col - 1)
 
             for j in range(rows):
-                p_y = j * (point_ratio + d_rows) + point_ratio / 2
+                if j == 0:
+                    p_y = j * (point_ratio + d_rows) + 4.0 * point_ratio / 3.0
+                elif j == rows - 1:
+                    p_y = j * (point_ratio + d_rows) - point_ratio / 3.0
+                else:
+                    p_y = j * (point_ratio + d_rows) + point_ratio / 2
                 smp_in_p = []
                 for i in range(points_in_row):
-                    p_x = i * (point_ratio + dx) + point_ratio / 2
+                    if i == 0:
+                        p_x = i * (point_ratio + dx) + point_ratio
+                    elif i == points_in_row - 1:
+                        p_x = i * (point_ratio + dx)
+                    else:
+                        p_x = i * (point_ratio + dx) + point_ratio / 2
                     smp_in_p.append([p_x, p_y])
                 if j % 2 == 0:
                     points.append(smp_in_p)
@@ -84,10 +114,20 @@ class Clb(object):
                     smp_in_p.reverse()
                     points.append(smp_in_p)
             for i in range(cols):
-                p_x = i * (point_ratio + d_cols) + point_ratio / 2
+                if i == 0:
+                    p_x = i * (point_ratio + d_cols) + point_ratio
+                elif i == cols - 1:
+                    p_x = i * (point_ratio + d_cols)
+                else:
+                    p_x = i * (point_ratio + d_cols) + point_ratio / 2
                 smp_in_p = []
                 for j in range(points_in_col):
-                    p_y = j * (point_ratio + dy) + point_ratio / 2
+                    if j == 0:
+                        p_y = j * (point_ratio + dy) + 4.0 * point_ratio / 3.0
+                    elif j == points_in_col - 1:
+                        p_y = j * (point_ratio + dy) - point_ratio / 3.0
+                    else:
+                        p_y = j * (point_ratio + dy) + point_ratio / 2
                     smp_in_p.append([p_x, p_y])
                 if i % 2 == 0:
                     points.append(smp_in_p)

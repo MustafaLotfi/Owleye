@@ -16,7 +16,7 @@ ey.PATH2ROOT = ""
 
 class Tuning(object):
     @staticmethod
-    def boi_mdl(num, selected_model_num=1, n_epochs=5, patience=2, trainable_layers=1, delete_files=False):
+    def boi_mdl(num, selected_model_num=1, n_epochs=30, patience=5, trainable_layers=1, delete_files=False):
         print("\nStarting to retrain blink_out_in model...")
         subjects_fol = "subjects/"
         models_fol = "models/"

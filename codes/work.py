@@ -47,7 +47,7 @@ class Worker(QObject, Camera, Clb, Smp, Tuning, EyeTrack, See):
             self.clb_started.emit()
             self.et(self.num, self.camera_id, self.info, self.clb_grid)
         if self.clb and self.running:
-            self.boi(self.num, self.camera_id, 20)
+            self.boi(self.num, self.camera_id, 2000)
         if self.smp and self.running:
             print("\nSampling")
             self.smp_started.emit()
@@ -59,8 +59,8 @@ class Worker(QObject, Camera, Clb, Smp, Tuning, EyeTrack, See):
         if self.mdl and self.running:
             print("\nTuning params")
             self.mdl_started.emit()
-            self.boi_mdl(self.num, 1, 1, 1, 1, delete_files=True)
-            self.et_mdl(self.num, 1, 1, 1, 1, delete_files=True)
+            self.boi_mdl(self.num, delete_files=True)
+            self.et_mdl(self.num, delete_files=True)
         if self.gp and self.smp and self.running:
             print("\nGetting pixels")
             self.gp_started.emit()

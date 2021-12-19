@@ -4,7 +4,7 @@ from codes.calibration import Clb
 from codes.sampling import Smp
 from codes.tune_models_params import Tuning
 from codes.get_eye_track import EyeTrack
-from codes.get_models import Modeling
+from codes.crt_train_models import Modeling
 from codes.see_data import See
 
 
@@ -18,15 +18,15 @@ CAMERA_ID = 2
 # cam.features(CAMERA_ID)
 
 # # *********************** CALIBRATION **********************
-# NAME = "Mostafa Lotfi"
-# GENDER = "M"
-# AGE = 25
-# Descriptions = "3 monitors"
-# CALIBRATION_GRID = 2, 10
-# INFO = (NAME, GENDER, AGE, Descriptions)
+NAME = "Mostafa Lotfi"
+GENDER = "M"
+AGE = 25
+Descriptions = "3 monitors"
+CALIBRATION_GRID = 3, 20, 3, 20
+INFO = (NAME, GENDER, AGE, Descriptions)
 
-# clb = Clb()
-# clb.et(NUMBER, CAMERA_ID, INFO, CALIBRATION_GRID)
+clb = Clb()
+clb.et(NUMBER, CAMERA_ID, INFO, CALIBRATION_GRID)
 # clb.boi(NUMBER, CAMERA_ID, 20)
 
 # # *********************** SAMPLING *************************
@@ -65,11 +65,11 @@ CAMERA_ID = 2
 # See().pixels_test(NUMBER)
 
 # # ***************** CREATE PUBLIC MODELS *******************
-mdl = Modeling()
-mdl.create_boi()
-mdl.create_et()
+# mdl = Modeling()
+# mdl.create_boi()
+# mdl.create_et()
 
 # ****************** TRAIN PUBLIC MODELS *******************
-mdl = Modeling()
-mdl.train_boi(subjects=[1], n_epochs=1, patience=1)
-mdl.train_et(subjects=[1], n_epochs=1, patience=1)
+# mdl = Modeling()
+# mdl.train_boi(subjects=[1], n_epochs=1, patience=1)
+# mdl.train_et(subjects=[1], n_epochs=1, patience=1)
