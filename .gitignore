@@ -150,5 +150,5 @@ models/et/trained/*
 !models/et/trained/mdl1-hrz.h5
 !models/et/trained/mdl1-vrt.h5
 !models/et/trained/mdl1.pickle
-!crt_exe.spec
+!crt_exe_gui.spec
 dataset/
