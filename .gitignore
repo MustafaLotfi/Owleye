@@ -144,9 +144,11 @@ codes/backup_codes/
 models/io/raw/
 models/io/trained/*
 !models/io/trained/mdl1.h5
+!models/io/trained/mdl1.pickle
 models/et/raw/
 models/et/trained/*
 !models/et/trained/mdl1-hrz.h5
 !models/et/trained/mdl1-vrt.h5
+!models/et/trained/mdl1.pickle
 !crt_exe.spec
 dataset/
