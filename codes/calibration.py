@@ -1,17 +1,16 @@
 import numpy as np
 import cv2
 import time
-import mediapipe as mp
 from codes.base import eyeing as ey
 import pickle
 import os
 from datetime import datetime
-from screeninfo import get_monitors
 if os.name == "nt":
     import winsound
 elif os.name == "posix":
     pass
 from sklearn.utils import shuffle
+import math
 
 
 INFO = ("Mostafa Lotfi", "M", 25, "Phone Number: +989368385420")
@@ -145,156 +144,180 @@ class Clb(object):
 
     def et(self, num, camera_id=0, info=INFO, clb_grid=CALIBRATION_GRID):
         print("\nCalibration started!")
-        name, gender, age, descriptions = info
-        subjects_fol = "subjects/"
-        et_fol = "data-et-clb/"
-        sbj_dir = ey.PATH2ROOT + subjects_fol + f"{num}/"
+        name, descriptions = info
+        tx0 = [["Track WHITE point", (0.05, 0.25), 1.5, ey.RED, 3],
+        ["SPACE --> start", (0.05, 0.5), 1.5, ey.RED, 3],
+        ["ESC --> Stop", (0.05, 0.75), 1.5, ey.RED, 3]]
+        run_app = True
+
+        sbj_dir = ey.subjects_dir + f"{num}/"
         if os.path.exists(sbj_dir):
-            inp = input(f"\nThere is a subject in subjects/{num}/ folder. do you want to remove it (y/n)? ")
-            if inp == 'n' or inp == 'N':
-                quit()
+            tx1 = [["There is a subject in", (0.05, 0.2), 1.3, ey.RED, 2],
+            [f"{sbj_dir}.", (0.05, 0.4), 1.3, ey.RED, 2],
+            ["Do you want to", (0.05, 0.6), 1.3, ey.RED, 2],
+            ["remove it (y/n)?", (0.05, 0.8), 1.3, ey.RED, 2]]
 
-        clb_points = self.create_grid(clb_grid)
-
-        some_landmarks_ids = ey.get_some_landmarks_ids()
-
-        (
-            frame_size,
-            camera_matrix,
-            dst_cof,
-            pcf
-        ) = ey.get_camera_properties(camera_id)
-
-        print("Configuring face detection model...")
-        face_mesh = mp.solutions.face_mesh.FaceMesh(
-            static_image_mode=ey.STATIC_IMAGE_MODE,
-            min_tracking_confidence=ey.MIN_TRACKING_CONFIDENCE,
-            min_detection_confidence=ey.MIN_DETECTION_CONFIDENCE)
-
-        fps_vec = []
-        eyes_data_gray = []
-        vector_inputs = []
-        points_loc = []
-        t0 = time.perf_counter()
-        cap = ey.get_camera(camera_id, frame_size)
-        ey.pass_frames(cap, 100)
-
-        monitors = get_monitors()
-        for (i_m, m) in enumerate(monitors):
-            win_name = f"Calibration-{i_m}"
-            cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
-            cv2.moveWindow(win_name, i_m * m.width, 0)
-            cv2.setWindowProperty(win_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-
-            for item in clb_points:
-                if not self.running and (i_m != 0):
-                    break
-                pnt = item[0]
-                ey.show_clb_win(win_name, pnt)
-
-                button = cv2.waitKey(0)
-                if button == 27:
-                    break
-                elif button == ord(' '):
-                    ey.pass_frames(cap)
-                    t1 = time.perf_counter()
-                    s = len(item)
-                    for pnt in item:
-                        ey.show_clb_win(win_name, pnt)
-                        button = cv2.waitKey(1)
-                        if button == 27:
-                            break
-                        while True:
-                            frame_success, frame, frame_rgb = ey.get_frame(cap)
-                            if frame_success:
-                                results = face_mesh.process(frame_rgb)
-                                (
-                                    features_success,
-                                    _,
-                                    eyes_frame_gray,
-                                    features_vector
-                                ) = ey.get_model_inputs(
-                                    frame,
-                                    frame_rgb,
-                                    results,
-                                    camera_matrix,
-                                    pcf,
-                                    frame_size,
-                                    dst_cof,
-                                    some_landmarks_ids,
-                                    False,
-
-                                )
-                                if features_success:
-                                    eyes_data_gray.append(eyes_frame_gray)
-                                    vector_inputs.append(features_vector)
-                                    points_loc.append([pnt[0] + i_m, pnt[1]])
-                                    break
-                        if not self.running:
-                            break
-                    fps_vec.append(ey.get_time(s, t1))
-                if not self.running:
-                    break
+            win_name = "Subject exists"
+            ey.big_win(win_name, 0)
+            ey.show_clb_win(win_name, texts=tx1, win_color=ey.WHITE)
+            button = cv2.waitKey(0)
+            if button == 27 or (button == ord("q")) or (button == ord("Q")) or (button == ord("n")) or (button == ord("N")):
+                run_app = False
             cv2.destroyWindow(win_name)
-        cap.release()
 
-        ey.get_time(0, t0, True)
-        print(f"Mean FPS : {np.array(fps_vec).mean()}")
+        if run_app:
+            sbj_dir = ey.create_dir([sbj_dir])
+            clb_points = self.create_grid(clb_grid)
 
-        x1 = np.array(eyes_data_gray)
-        x2 = np.array(vector_inputs)
-        y = np.array(points_loc)
+            some_landmarks_ids = ey.get_some_landmarks_ids()
 
-        y[:, 0] = y[:, 0] / len(monitors)
+            (
+                frame_size,
+                camera_matrix,
+                dst_cof,
+                pcf
+            ) = ey.get_camera_properties(camera_id)
 
-        subjects_dir = ey.PATH2ROOT + subjects_fol
-        if not os.path.exists(subjects_dir):
-            os.mkdir(subjects_dir)
-        if not os.path.exists(sbj_dir):
-            os.mkdir(sbj_dir)
-        et_dir = sbj_dir + et_fol
-        if not os.path.exists(et_dir):
-            os.mkdir(et_dir)
+            face_mesh = ey.get_mesh()
 
-        f = open(sbj_dir + "Information.txt", "w+")
-        f.write(name + "\n" + str(age) + "\n" + gender + "\n" + descriptions + "\n" + str(datetime.now())[:16])
-        f.close()
+            fps_vec = []
+            t_mat = []
+            eyes_mat = []
+            inp_scalars_mat = []
+            points_loc_mat = []
+            eyes_ratio_mat = []
 
-        ey.save([x1, x2, y], et_dir, ["x1", "x2", "y"])
+            t0 = time.perf_counter()
+            cap = ey.get_camera(camera_id, frame_size)
+            ey.pass_frames(cap, 100)
+
+            win_name = "Information"
+            ey.big_win(win_name, math.floor(len(ey.monitors) / 2)*ey.monitors[0].width)
+            ey.show_clb_win(win_name, texts=tx0, win_color=ey.WHITE)
+            cv2.waitKey(10000)
+            cv2.destroyWindow(win_name)
+            for (i_m, m) in enumerate(ey.monitors):
+                win_name = f"Calibration-{i_m}"
+                ey.big_win(win_name, i_m * m.width)
+                for item in clb_points:
+                    if not self.running and (i_m != 0):
+                        break
+                    t_vec = []
+                    eyes_vec = []
+                    inp_scalars_vec = []
+                    points_loc_vec = []
+                    eyes_ratio_vec = []
+                    
+                    pnt = item[0]
+                    ey.show_clb_win(win_name, pnt, win_color=ey.GRAY)
+                    button = cv2.waitKey(0)
+                    if button == 27 or (button == ord("q")) or (button == ord("Q")):
+                        break
+                    elif button == ord(' '):
+                        ey.pass_frames(cap)
+                        t1 = time.perf_counter()
+                        s = len(item)
+                        for pnt in item:
+                            ey.show_clb_win(win_name, pnt)
+                            button = cv2.waitKey(1)
+                            if button == 27:
+                                break
+                            while True:
+                                frame_success, frame, frame_rgb = ey.get_frame(cap)
+                                if frame_success:
+                                    results = face_mesh.process(frame_rgb)
+                                    (
+                                        features_success,
+                                        _,
+                                        eyes_frame_gray,
+                                        features_vector,
+                                        eyes_ratio,
+                                        _
+                                    ) = ey.get_model_inputs(
+                                        frame,
+                                        frame_rgb,
+                                        results,
+                                        camera_matrix,
+                                        pcf,
+                                        frame_size,
+                                        dst_cof,
+                                        some_landmarks_ids
+                                    )
+                                    if features_success:
+                                        t_vec.append(round(time.perf_counter() - t1, 3))
+                                        eyes_vec.append(eyes_frame_gray)
+                                        inp_scalars_vec.append(features_vector)
+                                        points_loc_vec.append([(pnt[0] + i_m)/len(ey.monitors), pnt[1]])
+                                        eyes_ratio_vec.append(eyes_ratio)
+                                        break
+                            if not self.running:
+                                break
+                        fps_vec.append(ey.get_time(s, t1))
+                        t_mat.append(np.array(t_vec))
+                        eyes_mat.append(np.array(eyes_vec))
+                        inp_scalars_mat.append(np.array(inp_scalars_vec))
+                        points_loc_mat.append(np.array(points_loc_vec))
+                        eyes_ratio_mat.append(np.array(eyes_ratio_vec))
+                        
+                    if not self.running:
+                        break
+                    if button == 27 or (button == ord("q")) or (button == ord("Q")):
+                        break
+                if button == 27 or (button == ord("q")) or (button == ord("Q")):
+                    break
+                cv2.destroyWindow(win_name)
+            cap.release()
+            cv2.destroyAllWindows()
+
+            if button != 27 and (button != ord("q")) and (button != ord("Q")):
+                ey.get_time(0, t0, True)
+                print(f"Mean FPS : {np.array(fps_vec).mean()}")
+
+                f = open(sbj_dir + "Information.txt", "w+")
+                f.write(name + "\n" + descriptions + "\n" + str(datetime.now())[:16])
+                f.close()
+
+                et_dir = ey.create_dir([sbj_dir, ey.CLB])
+                ey.save([t_mat, eyes_mat, inp_scalars_mat, points_loc_mat, eyes_ratio_mat], et_dir, [ey.T, ey.X1, ey.X2, ey.Y, ey.ER])
+
+        else:
+            self.running = False
 
 
     @staticmethod
-    def integrate_bo_et(num, data_bo):
-        sbj_dir = ey.PATH2ROOT + f"subjects/{num}/"
-        boi_fol = "data-boi/"
-        et_fol = "data-et-clb/"
+    def make_io(num, data_out):
+        sbj_dir = ey.create_dir([ey.subjects_dir, f"{num}"])
+        et_dir = ey.create_dir([sbj_dir, ey.CLB])
 
-        et_dir = sbj_dir + et_fol
+        x1_et0, x2_et0 = ey.load(et_dir, [ey.X1, ey.X2])
+        x1_et = []
+        x2_et = []
+        for (x1_vec, x2_vec) in zip(x1_et0, x2_et0):
+            for (x10, x20) in zip(x1_vec, x2_vec):
+                x1_et.append(x10)
+                x2_et.append(x20)
+        x1_et = np.array(x1_et)
+        x2_et = np.array(x2_et)
 
-        x1_et, x2_et = ey.load(et_dir, ['x1', 'x2'])
-        x1_bo, x2_bo, y_bo = data_bo
-
-        smp_in_cls = int(x1_bo.shape[0] / 2)
+        x1_o, x2_o, y_o = data_out
+        smp_in_cls = int(x1_o.shape[0])
 
         x1_et_shf, x2_et_shf = shuffle(x1_et, x2_et)
 
-        x1_in, x2_in = x1_et_shf[:smp_in_cls], x2_et_shf[:smp_in_cls]
-        y_in = np.ones((smp_in_cls,)) * 2
+        x1_i, x2_i = x1_et_shf[:smp_in_cls], x2_et_shf[:smp_in_cls]
+        y_i = np.zeros((smp_in_cls,))
 
-        x1_boi = np.concatenate((x1_in, x1_bo))
-        x2_boi = np.concatenate((x2_in, x2_bo))
-        y_boi = np.concatenate((y_in, y_bo))
+        x1_io = [np.concatenate((x1_i, x1_o))]
+        x2_io = [np.concatenate((x2_i, x2_o))]
+        y_io = [np.concatenate((y_i, y_o))]
 
-        boi_dir = sbj_dir + boi_fol
-        if not os.path.exists(boi_dir):
-            os.mkdir(boi_dir)
-
-        ey.save([x1_boi, x2_boi, y_boi], boi_dir, ['x1', 'x2', 'y'])
+        io_dir = ey.create_dir([sbj_dir, ey.IO])
+        ey.save([x1_io, x2_io, y_io], io_dir, [ey.X1, ey.X2, ey.Y])
 
 
-    def boi(self, num, camera_id=0, n_smp_in_cls=300):
-        print("Getting blink-out data...")
-        n_class = 2
+    def out(self, num, camera_id=0, n_smp_in_cls=300):
+        print("Getting out data...")
+        out_class_num = 1
 
         some_landmarks_ids = ey.get_some_landmarks_ids()
 
@@ -305,11 +328,7 @@ class Clb(object):
             pcf
         ) = ey.get_camera_properties(camera_id)
 
-        print("Configuring face detection model...")
-        face_mesh = mp.solutions.face_mesh.FaceMesh(
-            static_image_mode=ey.STATIC_IMAGE_MODE,
-            min_tracking_confidence=ey.MIN_TRACKING_CONFIDENCE,
-            min_detection_confidence=ey.MIN_DETECTION_CONFIDENCE)
+        face_mesh = ey.get_mesh()
 
         t0 = time.perf_counter()
         eyes_data_gray = []
@@ -318,49 +337,55 @@ class Clb(object):
         fps_vec = []
         cap = ey.get_camera(camera_id, frame_size)
         ey.pass_frames(cap, 100)
-        for j in range(n_class):
-            i = 0
-            if j == 0:
-                input("Close your eyes then press ENTER: ")
-            elif j == 1:
-                input("Look everywhere 'out' of screen and press ENTER: ")
-            ey.pass_frames(cap)
-            t1 = time.perf_counter()
-            while True:
-                frame_success, frame, frame_rgb = ey.get_frame(cap)
-                if frame_success:
-                    results = face_mesh.process(frame_rgb)
+        tx0 = [["Look everywhere ", (0.05, 0.25), 1.3, ey.RED, 3],
+        ["'out' of screen", (0.05, 0.5), 1.3, ey.RED, 3],
+        ["SPACE --> start sampling", (0.05, 0.75), 1.3, ey.RED, 3]]
 
-                    (
-                        features_success,
-                        _,
-                        eyes_frame_gray,
-                        features_vector
-                    ) = ey.get_model_inputs(
-                        frame,
-                        frame_rgb,
-                        results,
-                        camera_matrix,
-                        pcf,
-                        frame_size,
-                        dst_cof,
-                        some_landmarks_ids,
-                        False
-                    )
-                    if features_success:
-                        eyes_data_gray.append(eyes_frame_gray)
-                        vector_inputs.append(features_vector)
-                        output_class.append(j)
+        win_name = "out of screen"
+        ey.big_win(win_name, 0)
+        ey.show_clb_win(win_name, texts=tx0, win_color=ey.WHITE)
+        button = cv2.waitKey(0)
+        if button == 27 or (button == ord("q")) or (button == ord("Q")):
+            quit()
+        cv2.destroyWindow(win_name)
+        i = 0
+        ey.pass_frames(cap)
+        t1 = time.perf_counter()
+        while True:
+            frame_success, frame, frame_rgb = ey.get_frame(cap)
+            if frame_success:
+                results = face_mesh.process(frame_rgb)
 
-                        i += 1
-                        if i == n_smp_in_cls:
-                            break
-            fps_vec.append(ey.get_time(i, t1))
-            print("Data collected")
-            if os.name == "nt":
-                winsound.PlaySound("SystemExit", winsound.SND_ALIAS)
-            if not self.running:
-                break
+                (
+                    features_success,
+                    _,
+                    eyes_frame_gray,
+                    features_vector,
+                    _,
+                    _
+                ) = ey.get_model_inputs(
+                    frame,
+                    frame_rgb,
+                    results,
+                    camera_matrix,
+                    pcf,
+                    frame_size,
+                    dst_cof,
+                    some_landmarks_ids
+                )
+                if features_success:
+                    eyes_data_gray.append(eyes_frame_gray)
+                    vector_inputs.append(features_vector)
+                    output_class.append(out_class_num)
+
+                    i += 1
+                    if i == n_smp_in_cls:
+                        break
+        fps_vec.append(ey.get_time(i, t1))
+        print("Data collected")
+        if os.name == "nt":
+            winsound.PlaySound("SystemExit", winsound.SND_ALIAS)
+
         cap.release()
         cv2.destroyAllWindows()
         ey.get_time(0, t0, True)
@@ -372,6 +397,105 @@ class Clb(object):
 
         print("Data collection finished!")
 
-        self.integrate_bo_et(num, [x1, x2, y])
+        self.make_io(num, [x1, x2, y])
+
+    def calculate_threshold(self, num, camera_id=0):
+        print("\nGetting eyes ratio...")
+        tx0 = [["Look somewhere", (0.02, 0.3), 1.1, ey.RED, 2],
+        ["SPACE --> start/pause", (0.02, 0.6), 1.1, ey.RED, 2]]
+        tx1 = [["Blink", (0.39, 0.5), 1.6, ey.RED, 3]]
+        some_landmarks_ids = ey.get_some_landmarks_ids()
+
+        (
+            frame_size,
+            camera_matrix,
+            dst_cof,
+            pcf
+        ) = ey.get_camera_properties(camera_id)
+
+        face_mesh = ey.get_mesh()
+
+        fps_vec = []
+        eyes_ratio_mat = []
+        t_mat = []
+        t0 = time.perf_counter()
+        cap = ey.get_camera(camera_id, frame_size)
+        ey.pass_frames(cap, 100)
+
+        i = 0
+        while self.running:
+            win_name = f"Calibration-{i}"
+            ey.big_win(win_name, math.floor(len(ey.monitors) / 2)*ey.monitors[0].width)
+
+            eyes_ratio_vec = []
+            t_vec = []
+            ey.show_clb_win(win_name, win_color=ey.WHITE, texts=tx0)
+
+            button = cv2.waitKey(0)
+            if (button == ord('q')) or (button == ord('Q')) or (button == 27):
+                break
+            elif button == ord(' '):
+                ey.pass_frames(cap)
+                t1 = time.perf_counter()
+                while self.running:
+                    ey.show_clb_win(win_name, texts=tx1, win_color=ey.GRAY)
+                    button = cv2.waitKey(1)
+                    if (button == ord('q')) or (button == ord('Q')) or (button == 27) or (button == ord(' ')):
+                        break
+                    frame_success, frame, frame_rgb = ey.get_frame(cap)
+                    if frame_success:
+                        results = face_mesh.process(frame_rgb)
+                        (
+                            features_success,
+                            _,
+                            _,
+                            _,
+                            eyes_ratio,
+                            _
+                        ) = ey.get_model_inputs(
+                            frame,
+                            frame_rgb,
+                            results,
+                            camera_matrix,
+                            pcf,
+                            frame_size,
+                            dst_cof,
+                            some_landmarks_ids,
+                            False,
+
+                        )
+                        if features_success:
+                            t_vec.append(round(time.perf_counter() - t1, 3))
+                            eyes_ratio_vec.append(eyes_ratio)
+                            
+                    if not self.running:
+                        break
+            t_mat.append(np.array(t_vec))
+            eyes_ratio_mat.append(np.array(eyes_ratio_vec))
+            if (button == ord('q')) or (button == ord('Q')) or (button == 27):
+                break
+            if not self.running:
+                break
+            cv2.destroyWindow(win_name)
+        cap.release()
+        cv2.destroyAllWindows()
+        ey.get_time(0, t0, True)
+
+        eyes_ratio_v_mat = ey.get_blinking(t_mat, eyes_ratio_mat)[0]
+
+        offered_threshold = ey.DEFAULT_BLINKING_THRESHOLD
+        if len(eyes_ratio_v_mat) > 1:
+            max_values = []
+            for eyes_ratio_v_vec in eyes_ratio_v_mat:
+                max_values.append(eyes_ratio_v_vec.max())
+            offered_threshold = min(max_values) * 0.99
+        else:
+            if eyes_ratio_v_mat:
+                offered_threshold = eyes_ratio_v_mat[0].max() * 0.6
+        print(f"Offered Threshold: {offered_threshold}")
+            
+        er_dir = ey.create_dir([ey.subjects_dir, f"{num}", ey.ER])
+
+        ey.save([t_mat, eyes_ratio_mat, offered_threshold], er_dir, [ey.T, ey.ER, "oth_app"])
 
 

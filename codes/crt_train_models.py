@@ -12,205 +12,113 @@ from sklearn.utils import shuffle
 from joblib import dump as j_dump
 from joblib import load as j_load
 import random
-
-
-PATH2ROOT = ""
-CHOSEN_INPUTS = [0, 1, 2, 6, 7, 8, 9]
-Y_SCALE = 1000.0
+from codes.base import eyeing as ey
+from openpyxl import Workbook
 
 
 class Modeling():
     @staticmethod
-    def create_boi():
-        print("Starting to create an empty blink_out_in model...")
-        subjects_fol = "subjects/"
-        data_boi_fol = "data-boi/"
-        models_fol = "models/"
-        models_boi_fol = "boi/"
-        raw_fol = "raw/"
+    def create_io():
+        print("Starting to create an empty in_out model...")
+        inp1_shape = (ey.EYE_SIZE[0], ey.EYE_SIZE[1]*2, 1)
+        x2_chosen_features = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+        inp2_shape = (len(x2_chosen_features),)
 
-        data_boi_dir = PATH2ROOT + subjects_fol + f"{1}/" + data_boi_fol
-
-        with open(data_boi_dir + "x1.pickle", "rb") as f:
-            x1 = pickle.load(f)
-        with open(data_boi_dir + "x2.pickle", "rb") as f:
-            x2 = pickle.load(f)
-        with open(data_boi_dir + "y.pickle", "rb") as f:
-            y = pickle.load(f)
-
-        x2_chs_inp = x2[:, CHOSEN_INPUTS]
-
-        inp1 = Input(x1.shape[1:])
-        layer = Conv2D(16, (5, 5), (1, 1), "same", activation="relu")(inp1)
+        inp1 = Input(inp1_shape)
+        layer = Conv2D(16, (11, 11), (1, 1), 'same', activation='relu')(inp1)
         layer = MaxPooling2D((2, 2), (2, 2))(layer)
-
-        layer = Conv2D(32, (5, 5), (1, 1), "same", activation="relu")(layer)
+        layer = Conv2D(32, (7, 7), (1, 1), 'same', activation='relu')(layer)
         layer = MaxPooling2D((2, 2), (2, 2))(layer)
-
-        layer = Conv2D(64, (3, 3), (1, 1), activation="relu")(layer)
+        layer = Conv2D(64, (5, 5), (1, 1), 'same', activation='relu')(layer)
         layer = MaxPooling2D((2, 2), (2, 2))(layer)
-
+        layer = Conv2D(128, (3, 3), (1, 1), activation='relu')(layer)
+        layer = MaxPooling2D((2, 2), (2, 2))(layer)
         layer = Flatten()(layer)
-
-        layer = Dense(256, "relu")(layer)
-
-        inp2 = Input(x2_chs_inp.shape[1:])
+        inp2 = Input(inp2_shape)
         layer = Concatenate()([layer, inp2])
-
-        layer = Dense(128, "relu")(layer)
-
-        layer = Dense(32, "relu")(layer)
-
-        layer = Dense(16, "relu")(layer)
-
-        layer = Dense(3, "relu")(layer)
-
-        output_layer = Dense(y.max() + 1, "softmax")(layer)
-
+        layer = Dense(256, 'relu')(layer)
+        layer = Dense(128, 'relu')(layer)
+        layer = Dense(32, 'relu')(layer)
+        layer = Dense(8, 'relu')(layer)
+        output_layer = Dense(1, "sigmoid")(layer)
         input_layers = [inp1, inp2]
-
         model = Model(inputs=input_layers, outputs=output_layer)
-
-        model.compile(optimizer="adam", loss="categorical_crossentropy", metrics="acc")
-
+        model.compile(optimizer="adam", loss="binary_crossentropy", metrics="acc")
         print(model.summary())
+        n_weights = np.sum([np.prod(v.get_shape()) for v in model.trainable_weights])
 
-        models_dir = PATH2ROOT + models_fol
-        if not os.path.exists(models_dir):
-            os.mkdir(models_dir)
-
-        models_boi_dir = models_dir + models_boi_fol
-        if not os.path.exists(models_boi_dir):
-            os.mkdir(models_boi_dir)
-
-        raw_dir = models_boi_dir + raw_fol
-        if not os.path.exists(raw_dir):
-            os.mkdir(raw_dir)
-
-        models_numbers = []
-        models_name = os.listdir(raw_dir)
-        if models_name:
-            for model_name in models_name:
-                model_num = int(model_name[5:6])
-                models_numbers.append(model_num)
-            max_num = max(models_numbers)
-        else:
-            max_num = 0
-
-        model.save(raw_dir + f"model{max_num + 1}")
-        print("\nEmpty blink_out_in model created and saved to " + raw_dir + f"model{max_num + 1}")
+        mdl_num = ey.find_max_mdl(ey.io_raw_dir) + 1
+        info = {"n_weights": n_weights,
+                "input1_shape": inp1_shape,
+                "input2_shape": inp2_shape,
+                "x2_chosen_features": x2_chosen_features}
+        mdl_name = ey.MDL + f"{mdl_num}"
+        mdl_dir = ey.io_raw_dir + mdl_name + ".h5"
+        model.save(mdl_dir)
+        ey.save([info], ey.io_raw_dir, [mdl_name])
+        print("\nEmpty in_out model created and saved to " + mdl_dir)
 
 
     @staticmethod
     def create_et():
         print("Starting to create empty eye_tracking models...")
-        subjects_fol = "subjects/"
-        data_et_fol = "data-et-clb/"
-        models_fol = "models/"
-        models_et_fol = "et/"
-        raw_fol = "raw/"
+        inp1_shape = (ey.EYE_SIZE[0], ey.EYE_SIZE[1]*2, 1)
+        x2_chosen_features = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+        inp2_shape = (len(x2_chosen_features),)
 
-        data_et_dir = PATH2ROOT + subjects_fol + f"{1}/" + data_et_fol
-
-        with open(data_et_dir + "x1.pickle", "rb") as f:
-            x1 = pickle.load(f)
-        with open(data_et_dir + "x2.pickle", "rb") as f:
-            x2 = pickle.load(f)
-
-        x2_chs_inp = x2[:, CHOSEN_INPUTS]
-
-        inp1 = Input(x1.shape[1:])
-        layer = Conv2D(16, (5, 5), (1, 1), 'same', activation='relu')(inp1)
+        inp1 = Input(inp1_shape)
+        layer = Conv2D(16, (11, 11), (1, 1), 'same', activation='relu')(inp1)
         layer = MaxPooling2D((2, 2), (2, 2))(layer)
-
-        layer = Conv2D(32, (5, 5), (1, 1), 'same', activation='relu')(layer)
+        layer = Conv2D(32, (7, 7), (1, 1), 'same', activation='relu')(layer)
         layer = MaxPooling2D((2, 2), (2, 2))(layer)
-
-        layer = Conv2D(64, (3, 3), (1, 1), activation='relu')(layer)
+        layer = Conv2D(64, (5, 5), (1, 1), 'same', activation='relu')(layer)
         layer = MaxPooling2D((2, 2), (2, 2))(layer)
-
+        layer = Conv2D(128, (3, 3), (1, 1), activation='relu')(layer)
+        layer = MaxPooling2D((2, 2), (2, 2))(layer)
         layer = Flatten()(layer)
-
-        layer = Dense(400, 'relu')(layer)
-
-        inp2 = Input(x2_chs_inp.shape[1:])
+        inp2 = Input(inp2_shape)
         layer = Concatenate()([layer, inp2])
-
-        layer = Dense(180, 'relu')(layer)
-
-        layer = Dense(50, 'relu')(layer)
-
-        layer = Dense(16, 'relu')(layer)
-
-        layer = Dense(2, 'relu')(layer)
-
+        layer = Dense(256, 'relu')(layer)
+        layer = Dense(128, 'relu')(layer)
+        layer = Dense(32, 'relu')(layer)
+        layer = Dense(8, 'relu')(layer)
         out = Dense(1, 'linear')(layer)
-
         input_layers = [inp1, inp2]
-
         model = Model(inputs=input_layers, outputs=out)
-
         model.compile(optimizer='adam', loss='mse')
-
         print(model.summary())
+        n_weights = np.sum([np.prod(v.get_shape()) for v in model.trainable_weights])
 
-        models_dir = PATH2ROOT + models_fol
-        if not os.path.exists(models_dir):
-            os.mkdir(models_dir)
+        mdl_num = ey.find_max_mdl(ey.et_raw_dir) + 1
+        info = {"n_weights": n_weights,
+                "input1_shape": inp1_shape,
+                "input2_shape": inp2_shape,
+                "x2_chosen_features": x2_chosen_features}
 
-        models_et_dir = models_dir + models_et_fol
-        if not os.path.exists(models_et_dir):
-            os.mkdir(models_et_dir)
-
-        raw_dir = models_et_dir + raw_fol
-        if not os.path.exists(raw_dir):
-            os.mkdir(raw_dir)
-
-        models_numbers = []
-        models_name = os.listdir(raw_dir)
-        if models_name:
-            for model_name in models_name:
-                model_num = int(model_name[5:6])
-                models_numbers.append(model_num)
-            max_num = max(models_numbers)
-        else:
-            max_num = 0
-
-        max_num += 1
-        model.save(raw_dir + f"model{max_num}-hrz")
-        model.save(raw_dir + f"model{max_num}-vrt")
-
-        print("\nEmpty horizontally eye_tracking model created and saved to " + raw_dir + f"model{max_num}-hrz")
-        print("\nEmpty vertically eye_tracking model created and saved to " + raw_dir + f"model{max_num}-vrt")
+        mdl_name = ey.MDL + f"{mdl_num}"
+        mdl_dir = ey.et_raw_dir + mdl_name + ".h5"
+        model.save(mdl_dir)
+        ey.save([info], ey.et_raw_dir, [mdl_name])
+        print("\nEmpty eye_tracking model created and saved to " + mdl_dir)
 
     @staticmethod
-    def train_boi(subjects=(1, 2, 3, 4, 5), selected_model_num=1, n_epochs=100, patience=15):
-        print("Starting to train blink_out_in model...")
-        models_fol = "models/"
-        models_boi_fol = "boi/"
-        raw_fol = "raw/"
-        trained_fol = "trained/"
-        subjects_fol = "subjects/"
-        data_boi_fol = "data-boi/"
-        r_train = 0.85
-        min_brightness_ratio = 0.6
-        max_brightness_ratio = 1.6
-
+    def train_io(
+        subjects,
+        models_list,
+        min_max_brightness_ratio=[[0.65, 1.45]],
+        r_train_list=[0.85],
+        n_epochs_patience=[[160, 10]],
+        save_scaler=False,
+        show_model=False
+        ):
+        print("Starting to train in_out model...")
         x1_load = []
         x2_load = []
         y_load = []
-
-        subjects_dir = PATH2ROOT + subjects_fol
-
         for sbj in subjects:
-            data_boi_dir = subjects_dir + f"{sbj}/" + data_boi_fol
-            with open(data_boi_dir + "x1.pickle", "rb") as f:
-                x1_load0 = pickle.load(f)
-            with open(data_boi_dir + "x2.pickle", "rb") as f:
-                x2_load0 = pickle.load(f)
-            with open(data_boi_dir + "y.pickle", "rb") as f:
-                y_load0 = pickle.load(f)
-            for (x10, x20, y10) in zip(x1_load0, x2_load0, y_load0):
+            data_io_dir = ey.create_dir([ey.subjects_dir, f"{sbj}", ey.IO])
+            x1_load0, x2_load0, y_load0 = ey.load(data_io_dir, [ey.X1, ey.X2, ey.Y])
+            for (x10, x20, y10) in zip(x1_load0[0], x2_load0[0], y_load0[0]):
                 x1_load.append(x10)
                 x2_load.append(x20)
                 y_load.append(y10)
@@ -222,207 +130,347 @@ class Modeling():
         n_smp = x1_load.shape[0]
         print(f"\nNumber of samples : {n_smp}")
 
-        x2_chs_inp = x2_load[:, CHOSEN_INPUTS]
-
         # changing brightness
-        x1_chg_bri = x1_load.copy()
-        for (i, _) in enumerate(x1_chg_bri):
-            r = random.uniform(min_brightness_ratio, max_brightness_ratio)
-            x1_chg_bri[i] = (x1_chg_bri[i] * r).astype(np.uint8)
+        j = 1
+        for mbr in min_max_brightness_ratio:
+            x1_new = x1_load.copy()
+            for (i, _) in enumerate(x1_load):
+                r = random.uniform(mbr[0], mbr[1])
+                x1_new[i] = (x1_new[i] * r).astype(np.uint8)
 
-        x1_scaler = 255
-        x1 = x1_chg_bri / x1_scaler
+            for raw_mdl_num in models_list:
+                info = ey.load(ey.io_raw_dir, [ey.MDL + f"{raw_mdl_num}"])[0]
+                x2_chosen_features = info["x2_chosen_features"]
+                x2_new = x2_load[:, x2_chosen_features]
 
-        x2_scaler = StandardScaler()
-        x2 = x2_scaler.fit_transform(x2_chs_inp)
+                x1_shf, x2_shf, y_shf = shuffle(x1_new, x2_new, y_load)
 
-        scalers = [x1_scaler, x2_scaler]
+                x1_scaler = ey.X1_SCALER
+                x1 = x1_shf / x1_scaler
 
-        x1_shf, x2_shf, y_shf = shuffle(x1, x2, y_load)
+                x2_scaler = StandardScaler()
+                x2 = x2_scaler.fit_transform(x2_shf)
 
-        n_train = int(r_train * n_smp)
-        x1_train, x2_train = x1_shf[:n_train], x2_shf[:n_train]
-        x1_test, x2_test = x1_shf[n_train:], x2_shf[n_train:]
-        y_train = y_shf[:n_train]
-        y_test = y_shf[n_train:]
-        print("\nTrain and test data shape:")
-        print(x1_train.shape, x1_test.shape, x2_train.shape, x2_test.shape,
-              y_train.shape, y_test.shape)
+                scalers = [x1_scaler, x2_scaler]
+                if save_scaler:
+                    j_dump(scalers, ey.scalers_dir + f"scl_io_{len(x2_chosen_features)}.bin")
 
-        y_train_ctg = to_categorical(y_train)
-        y_test_ctg = to_categorical(y_test)
+                for rt in r_train_list:
+                    n_train = int(rt * n_smp)
+                    x1_train, x2_train = x1[:n_train], x2[:n_train]
+                    x1_val, x2_val = x1[n_train:], x2[n_train:]
+                    
+                    y_train = y_shf[:n_train]
+                    y_val = y_shf[n_train:]
+                    print("\nTrain and val data shape:")
+                    print(x1_train.shape, x1_val.shape, x2_train.shape, x2_val.shape,
+                          y_train.shape, y_val.shape)
 
-        x_train_list = [x1_train, x2_train]
-        x_test_list = [x1_test, x2_test]
+                    x_train = [x1_train, x2_train]
+                    x_val = [x1_val, x2_val]
 
-        cb = EarlyStopping(patience=patience, verbose=1, restore_best_weights=True)
+                    for nep in n_epochs_patience:
+                        info["min_max_brightness_ratio"] = mbr
+                        info["r_train"] = rt
+                        info["n_epochs_patience"] = nep
+                        cb = EarlyStopping(patience=nep[1], verbose=1, restore_best_weights=True)
 
-        raw_model_dir = PATH2ROOT + models_fol + models_boi_fol + raw_fol + f"model{selected_model_num}"
+                        raw_model_dir = ey.io_raw_dir + ey.MDL + f"{raw_mdl_num}.h5"
+                        print("\nLoading blink_in_out model from " + raw_model_dir)
+                        model = load_model(raw_model_dir)
+                        if show_model:
+                            print(model.summary())
 
-        print("\nLoading blink_in_out model from " + raw_model_dir)
-        model = load_model(raw_model_dir)
-        print(model.summary())
+                        print(f"\n<<<<<<< {j}-model:{raw_mdl_num}-min_max_ratio:{mbr}-r_train:{rt}-epoch_patience:{nep} >>>>>>>>")
+                        model.fit(x_train,
+                                  y_train,
+                                  validation_data=(x_val, y_val),
+                                  epochs=nep[0],
+                                  callbacks=cb)
+                        train_loss = model.evaluate(x_train, y_train)
+                        val_loss = model.evaluate(x_val, y_val)
 
-        print("\n--------blink_out_in model-------")
-        model.fit(x_train_list,
-                  y_train_ctg,
-                  validation_data=(x_test_list, y_test_ctg),
-                  epochs=n_epochs,
-                  callbacks=cb)
+                        info["train_loss"] = train_loss
+                        info["val_loss"] = val_loss
 
-        trained_dir = PATH2ROOT + models_fol + models_boi_fol + trained_fol
-        if not os.path.exists(trained_dir):
-            os.mkdir(trained_dir)
-
-        models_numbers = []
-        models_name = os.listdir(trained_dir)
-        if models_name:
-            for mn in models_name:
-                if mn[:5] == "model":
-                    mn0 = int(mn[5:6])
-                    models_numbers.append(mn0)
-            max_num = max(models_numbers)
-        else:
-            max_num = 0
-
-        max_num += 1
-        model.save(trained_dir + f"model{max_num}")
-        print("\nSaving blink_out_in model in " + trained_dir + f"model{max_num}")
-        scalers_dir = PATH2ROOT + models_fol + models_boi_fol + trained_fol + f"scalers{max_num}.bin"
-        j_dump(scalers, scalers_dir)
-
+                        trained_mdl_num = ey.find_max_mdl(ey.io_trained_dir) + 1
+                        mdl_name = ey.MDL + f'{trained_mdl_num}'
+                        ey.save([info], ey.io_trained_dir, [mdl_name])
+                        mdl_tr_dir = ey.io_trained_dir + mdl_name + ".h5"
+                        model.save(mdl_tr_dir)
+                        print("\nSaving in_out model in " + mdl_tr_dir)
+                        j += 1
+        
 
     @staticmethod
-    def train_et(subjects=(1, 2, 3, 4, 5), selected_model_num=1, n_epochs=100, patience=15):
+    def train_et(
+        subjects,
+        models_list,
+        min_max_brightness_ratio=[[0.65, 1.45]],
+        r_train_list=[0.8],
+        n_epochs_patience=[[100, 15]],
+        shift_samples=None,
+        blinking_threshold="d",
+        save_scaler=False,
+        show_model=False
+        ):
         print("Starting to train eye_tracking models...")
-        models_fol = "models/"
-        models_et_fol = "et/"
-        raw_fol = "raw/"
-        trained_fol = "trained/"
-        subjects_fol = "subjects/"
-        sbj_scalers_boi_name = "scalers-boi.bin"
-        sbj_model_boi_name = "model-boi"
-        data_et_fol = "data-et-clb/"
-        r_train = 0.85
-        min_brightness_ratio = 0.6
-        max_brightness_ratio = 1.6
-
         x1_load = []
         x2_load = []
         y_load = []
-        subjects_dir = PATH2ROOT + subjects_fol
-
+        kk = 0
         for sbj in subjects:
-            sbj_dir = subjects_dir + f"{sbj}/"
-            sbj_model_boi_dir = sbj_dir + sbj_model_boi_name
-            sbj_scalers_boi_dir = sbj_dir + sbj_scalers_boi_name
-            data_et_dir = sbj_dir + data_et_fol
+            sbj_dir = ey.create_dir([ey.subjects_dir, f"{sbj}"])
+            sbj_clb_dir = ey.create_dir([sbj_dir, ey.CLB])
 
-            with open(data_et_dir + "x1.pickle", "rb") as f:
-                sbj_x1_load = pickle.load(f)
-            with open(data_et_dir + "x2.pickle", "rb") as f:
-                sbj_x2_load = pickle.load(f)
-            with open(data_et_dir + "y.pickle", "rb") as f:
-                sbj_y_load = pickle.load(f)
+            (
+                sbj_x1_load,
+                sbj_x2_load,
+                sbj_y_load,
+                sbj_t_mat,
+                sbj_eyes_ratio
+            ) = ey.load(sbj_clb_dir, [ey.X1, ey.X2, ey.Y, ey.T, ey.ER])
 
-            sbj_x2_chs_inp = sbj_x2_load[:, CHOSEN_INPUTS]
-            sbj_scalers_boi = j_load(sbj_scalers_boi_dir)
-            sbj_x1_scaler_boi, sbj_x2_scaler_boi = sbj_scalers_boi
-            sbj_x1 = sbj_x1_load / sbj_x1_scaler_boi
-            sbj_x2 = sbj_x2_scaler_boi.transform(sbj_x2_chs_inp)
+            if shift_samples:
+                if shift_samples[kk]:
+                    ii = 0
+                    for (x11, x21, y1, t1, eyr1) in zip(sbj_x1_load, sbj_x2_load, sbj_y_load, sbj_t_mat, sbj_eyes_ratio):
+                        sbj_t_mat[ii] = t1[:-shift_samples[kk]]
+                        sbj_x1_load[ii] = x11[shift_samples[kk]:]
+                        sbj_x2_load[ii] = x21[shift_samples[kk]:]
+                        sbj_y_load[ii] = y1[:-shift_samples[kk]]
+                        sbj_eyes_ratio[ii] = eyr1[shift_samples[kk]:]
+                        ii += 1
 
-            sbj_model_boi = load_model(sbj_model_boi_dir)
+            kk += 1
+            sbj_er_dir = ey.create_dir([sbj_dir, ey.ER])
+            sbj_blinking_threshold = ey.get_threshold(sbj_er_dir, blinking_threshold)
 
-            sbj_yhat_boi = sbj_model_boi.predict([sbj_x1, sbj_x2]).argmax(1)
+            sbj_blinking = ey.get_blinking(sbj_t_mat, sbj_eyes_ratio, sbj_blinking_threshold)[1]
 
-            for (x10, x20, y0, yht0) in zip(sbj_x1_load, sbj_x2_load, sbj_y_load, sbj_yhat_boi):
-                if True:  # yht0 != 0:
-                    x1_load.append(x10)
-                    x2_load.append(x20)
-                    y_load.append(y0)
-
+            for (x11, x21, y1, b1) in zip(sbj_x1_load, sbj_x2_load, sbj_y_load, sbj_blinking):
+                for (x10, x20, y0, b0) in zip(x11, x21, y1, b1):
+                    if not b0:
+                        x1_load.append(x10)
+                        x2_load.append(x20)
+                        y_load.append(y0)
         x1_load = np.array(x1_load)
         x2_load = np.array(x2_load)
         y_load = np.array(y_load)
-
         n_smp = x1_load.shape[0]
         print(f"\nNumber of samples : {n_smp}")
+        j = 1
+        for mbr in min_max_brightness_ratio:
+            x1_new = x1_load.copy()
+            for (i, _) in enumerate(x1_load):
+                r = random.uniform(mbr[0], mbr[1])
+                x1_new[i] = (x1_new[i] * r).astype(np.uint8)
 
-        x1_chg_bri = x1_load.copy()
-        for (i, _) in enumerate(x1_chg_bri):
-            r = random.uniform(min_brightness_ratio, max_brightness_ratio)
-            x1_chg_bri[i] = (x1_chg_bri[i] * r).astype(np.uint8)
+            for raw_mdl_num in models_list:
+                info = ey.load(ey.et_raw_dir, [ey.MDL + f"{raw_mdl_num}"])[0]
+                x2_chosen_features = info["x2_chosen_features"]
+                x2_new = x2_load[:, x2_chosen_features]
 
-        x2_chs_inp = x2_load[:, CHOSEN_INPUTS]
+                x1_shf, x2_shf, y_hrz_shf, y_vrt_shf = shuffle(x1_new, x2_new, y_load[:, 0], y_load[:, 1])
 
-        x1_scaler = 255
-        x1 = x1_chg_bri / x1_scaler
+                x1_scaler = ey.X1_SCALER
+                x1 = x1_shf / x1_scaler
 
-        x2_scaler = StandardScaler()
-        x2 = x2_scaler.fit_transform(x2_chs_inp)
+                x2_scaler = StandardScaler()
+                x2 = x2_scaler.fit_transform(x2_shf)
+                y_scaler = ey.Y_SCALER
 
-        scalers = [x1_scaler, x2_scaler]
+                scalers = [x1_scaler, x2_scaler, y_scaler]
 
-        x1_shf, x2_shf, y_hrz_shf, y_vrt_shf = shuffle(x1, x2, y_load[:, 0], y_load[:, 1])
+                if save_scaler:
+                    j_dump(scalers, ey.scalers_dir + f"scl_et_{len(x2_chosen_features)}.bin")
 
-        n_train = int(r_train * n_smp)
-        x1_train, x2_train = x1_shf[:n_train], x2_shf[:n_train]
-        x1_test, x2_test = x1_shf[n_train:], x2_shf[n_train:]
-        y_hrz_train, y_vrt_train = y_hrz_shf[:n_train], y_vrt_shf[:n_train]
-        y_hrz_test, y_vrt_test = y_hrz_shf[n_train:], y_vrt_shf[n_train:]
+                for rt in r_train_list:
+                    n_train = int(rt * n_smp)
+                    x1_train, x2_train = x1[:n_train], x2[:n_train]
+                    x1_val, x2_val = x1[n_train:], x2[n_train:]
+                    
+                    y_hrz_train, y_vrt_train = y_hrz_shf[:n_train], y_vrt_shf[:n_train]
+                    y_hrz_val, y_vrt_val = y_hrz_shf[n_train:], y_vrt_shf[n_train:]
+                    print("\nTrain and val data shape:")
+                    print(x1_train.shape, x1_val.shape, x2_train.shape, x2_val.shape,
+                          y_hrz_train.shape, y_hrz_val.shape, y_vrt_train.shape, y_vrt_val.shape)
 
-        x_train_list = [x1_train, x2_train]
-        x_test_list = [x1_test, x2_test]
+                    x_train = [x1_train, x2_train]
+                    x_val = [x1_val, x2_val]
 
-        print("\nTrain and test data shape:")
-        print(x1_train.shape, x1_test.shape, x2_train.shape, x2_test.shape,
-              y_hrz_train.shape, y_hrz_test.shape, y_vrt_train.shape, y_vrt_test.shape)
+                    for nep in n_epochs_patience:
+                        info["min_max_brightness_ratio"] = mbr
+                        info["r_train"] = rt
+                        info["n_epochs_patience"] = nep
+                        cb = EarlyStopping(patience=nep[1], verbose=1, restore_best_weights=True)
 
-        cb = EarlyStopping(patience=patience, verbose=1, restore_best_weights=True)
+                        raw_model_dir = ey.et_raw_dir + ey.MDL + f"{raw_mdl_num}.h5"
+                        print("\nLoading eye_tracking model from " + raw_model_dir)
+                        model_hrz = load_model(raw_model_dir)
+                        model_vrt = load_model(raw_model_dir)
+                        if show_model:  
+                            print(model_hrz.summary())
 
-        raw_models_dir = PATH2ROOT + models_fol + models_et_fol + raw_fol
-        print("\nLoading horizontally eye_tracking model from " + raw_models_dir + f"model{selected_model_num}-hrz")
-        print("Loading vertically eye_tracking model from " + raw_models_dir + f"model{selected_model_num}-vrt")
-        model_hrz = load_model(raw_models_dir + f"model{selected_model_num}-hrz")
-        model_vrt = load_model(raw_models_dir + f"model{selected_model_num}-vrt")
-        print(model_hrz.summary())
+                        trained_mdl_num = ey.find_max_mdl(ey.et_trained_dir, b=-7) + 1
 
-        print("\n--------horizontally eye_tracking model-------")
-        model_hrz.fit(x_train_list,
-                      y_hrz_train * Y_SCALE,
-                      validation_data=(x_test_list, y_hrz_test * Y_SCALE),
-                      epochs=n_epochs,
-                      callbacks=cb)
+                        print(f"\n<<<<<<< {j}-model-hrz:{raw_mdl_num}-min_max_ratio:{mbr}-r_train:{rt}-epoch_patience:{nep} >>>>>>>>")
+                        model_hrz.fit(x_train,
+                                      y_hrz_train * y_scaler,
+                                      validation_data=(x_val, y_hrz_val * y_scaler),
+                                      epochs=nep[0],
+                                      callbacks=cb)
+                        mdl_name = ey.MDL + f"{trained_mdl_num}"
+                        mdl_hrz_tr_dir = ey.et_trained_dir + mdl_name + "-hrz.h5"
+                        print("\nSaving horizontally eye_tracking model in " + mdl_hrz_tr_dir)
+                        model_hrz.save(mdl_hrz_tr_dir)
+                        hrz_train_loss = model_hrz.evaluate(x_train, y_hrz_train * y_scaler)
+                        hrz_val_loss = model_hrz.evaluate(x_val, y_hrz_val * y_scaler)
+                        info["hrz_train_loss"] = hrz_train_loss
+                        info["hrz_val_loss"] = hrz_val_loss
 
-        print("\n--------vertically eye_tracking model-------")
-        model_vrt.fit(x_train_list,
-                      y_vrt_train * Y_SCALE,
-                      validation_data=(x_test_list, y_vrt_test * Y_SCALE),
-                      epochs=n_epochs,
-                      callbacks=cb)
+                        print(f"\n<<<<<<< {j}-model-vrt:{raw_mdl_num}-min_max_ratio:{mbr}-r_train:{rt}-epoch_patience:{nep} >>>>>>>>")
+                        model_vrt.fit(x_train,
+                                      y_vrt_train * y_scaler,
+                                      validation_data=(x_val, y_vrt_val * y_scaler),
+                                      epochs=nep[0],
+                                      callbacks=cb)
+                        tr_model_vrt_dir = ey.et_trained_dir + mdl_name + f"-vrt.h5"
+                        print("Saving vertically eye_tracking model in " + tr_model_vrt_dir)
+                        model_vrt.save(tr_model_vrt_dir)
+                        vrt_train_loss = model_vrt.evaluate(x_train, y_vrt_train * y_scaler)
+                        vrt_val_loss = model_vrt.evaluate(x_val, y_vrt_val * y_scaler)
+                        info["vrt_train_loss"] = vrt_train_loss
+                        info["vrt_val_loss"] = vrt_val_loss
 
-        trained_dir = PATH2ROOT + models_fol + models_et_fol + trained_fol
-        if not os.path.exists(trained_dir):
-            os.mkdir(trained_dir)
+                        ey.save([info], ey.et_trained_dir, [mdl_name])
 
-        models_numbers = []
-        models_name = os.listdir(trained_dir)
-        if models_name:
-            for mn in models_name:
-                if mn[:5] == "model":
-                    mn0 = int(mn[5:6])
-                    models_numbers.append(mn0)
-            max_num = max(models_numbers)
+                        j += 1
+
+
+    @staticmethod
+    def get_models_information(io=True, raw=True, show_model=False):
+        wb = Workbook()
+        ws = wb.active
+        ws['A1'] = "# of model"
+        ws['B1'] = "# of weights"
+        ws['C1'] = "input 1 shape"
+        ws['D1'] = "input 2 shape"
+        ws['E1'] = "x2 chosen features"
+        if io:
+            if raw:
+                files_name = os.listdir(ey.io_raw_dir)
+                if files_name:
+                    for fn in files_name:
+                        if fn[-7:] == ".pickle":
+                            mdl_num = int(fn[3:-7])
+                            mdl_name = ey.MDL + f"{mdl_num}"
+                            if show_model:
+                                mdl_dir = ey.io_raw_dir + mdl_name + ".h5"
+                                mdl = load_model(mdl_dir)
+                                print(f"<<<<<<<<<<<<<< {mdl_dir} >>>>>>>>>>>>>>")
+                                print(mdl.summary())
+                            info = ey.load(ey.io_raw_dir, [mdl_name])[0]
+
+                            ws[f'A{mdl_num+1}'] = str(mdl_num)
+                            ws[f'B{mdl_num+1}'] = str(info['n_weights'])
+                            ws[f'C{mdl_num+1}'] = str(info['input1_shape'])
+                            ws[f'D{mdl_num+1}'] = str(info['input2_shape'])
+                            ws[f'E{mdl_num+1}'] = str(info['x2_chosen_features'])
+            else:
+                ws['F1'] = "min-Max brightness ratio"
+                ws['G1'] = "r_train"
+                ws['H1'] = "# of epochs and patience"
+                ws['I1'] = "train loss"
+                ws['J1'] = "val loss"
+
+                files_name = os.listdir(ey.io_trained_dir)
+                if files_name:
+                    for fn in files_name:
+                        if fn[-7:] == ".pickle":
+                            mdl_num = int(fn[3:-7])
+                            mdl_name = ey.MDL + f"{mdl_num}"
+                            if show_model:
+                                mdl_dir = ey.io_trained_dir + mdl_name + ".h5"
+                                mdl = load_model(mdl_dir)
+                                print(f"<<<<<<<<<<<<<< {mdl_dir} >>>>>>>>>>>>>>")
+                                print(mdl.summary())
+                            info = ey.load(ey.io_trained_dir, [mdl_name])[0]
+
+                            ws[f'A{mdl_num+1}'] = str(mdl_num)
+                            ws[f'B{mdl_num+1}'] = str(info['n_weights'])
+                            ws[f'C{mdl_num+1}'] = str(info['input1_shape'])
+                            ws[f'D{mdl_num+1}'] = str(info['input2_shape'])
+                            ws[f'E{mdl_num+1}'] = str(info['x2_chosen_features'])
+                            ws[f'F{mdl_num+1}'] = str(info['min_max_brightness_ratio'])
+                            ws[f'G{mdl_num+1}'] = str(info['r_train'])
+                            ws[f'H{mdl_num+1}'] = str(info['n_epochs_patience'])
+                            ws[f'I{mdl_num+1}'] = str(info['train_loss'])
+                            ws[f'J{mdl_num+1}'] = str(info['val_loss'])
+
         else:
-            max_num = 0
+            if raw:
+                files_name = os.listdir(ey.et_raw_dir)
+                if files_name:
+                    for fn in files_name:
+                        if fn[-7:] == ".pickle":
+                            mdl_num = int(fn[3:-7])
+                            mdl_name = ey.MDL + f"{mdl_num}"
+                            if show_model:
+                                mdl_dir = ey.et_raw_dir + mdl_name + ".h5"
+                                mdl = load_model(mdl_dir)
+                                print(f"<<<<<<<<<<<<<< {mdl_dir} >>>>>>>>>>>>>>")
+                                print(mdl.summary())
+                            info = ey.load(ey.et_raw_dir, [mdl_name])[0]
 
-        max_num += 1
+                            ws[f'A{mdl_num+1}'] = str(mdl_num)
+                            ws[f'B{mdl_num+1}'] = str(info['n_weights'])
+                            ws[f'C{mdl_num+1}'] = str(info['input1_shape'])
+                            ws[f'D{mdl_num+1}'] = str(info['input2_shape'])
+                            ws[f'E{mdl_num+1}'] = str(info['x2_chosen_features'])
 
-        print("\nSaving horizontally eye_tracking model in " + trained_dir + f"model{max_num}-hrz")
-        print("Saving vertically eye_tracking model in " + trained_dir + f"model{max_num}-vrt")
+            else:
+                ws['F1'] = "min-Max brightness ratio"
+                ws['G1'] = "r_train"
+                ws['H1'] = "# of epochs and patience"
+                ws['I1'] = "model-hrz train loss"
+                ws['J1'] = "model-hrz val loss"
+                ws['K1'] = "model-vrt train loss"
+                ws['L1'] = "model-vrt val loss"
 
-        model_hrz.save(trained_dir + f"model{max_num}-hrz")
-        model_vrt.save(trained_dir + f"model{max_num}-vrt")
+                files_name = os.listdir(ey.et_trained_dir)
+                if files_name:
+                    for fn in files_name:
+                        if fn[-7:] == ".pickle":
+                            mdl_num = int(fn[3:-7])
+                            mdl_name = ey.MDL + f"{mdl_num}"
+                            if show_model:
+                                mdl_dir = ey.et_trained_dir + mdl_name + "-hrz.h5"
+                                mdl = load_model(mdl_dir)
+                                print(f"<<<<<<<<<<<<<< {mdl_dir} >>>>>>>>>>>>>>")
+                                print(mdl.summary())
+                            info = ey.load(ey.et_trained_dir, [mdl_name])[0]
 
-        scalers_dir = PATH2ROOT + models_fol + models_et_fol + trained_fol + f"scalers{max_num}.bin"
-        j_dump(scalers, scalers_dir)
+                            ws[f'A{mdl_num+1}'] = str(mdl_num)
+                            ws[f'B{mdl_num+1}'] = str(info['n_weights'])
+                            ws[f'C{mdl_num+1}'] = str(info['input1_shape'])
+                            ws[f'D{mdl_num+1}'] = str(info['input2_shape'])
+                            ws[f'E{mdl_num+1}'] = str(info['x2_chosen_features'])
+                            ws[f'F{mdl_num+1}'] = str(info['min_max_brightness_ratio'])
+                            ws[f'G{mdl_num+1}'] = str(info['r_train'])
+                            ws[f'H{mdl_num+1}'] = str(info['n_epochs_patience'])
+                            ws[f'I{mdl_num+1}'] = str(info['hrz_train_loss'])
+                            ws[f'J{mdl_num+1}'] = str(info['hrz_val_loss'])
+                            ws[f'K{mdl_num+1}'] = str(info['vrt_train_loss'])
+                            ws[f'L{mdl_num+1}'] = str(info['vrt_val_loss'])
+
+        if io and raw:
+            info_name = "info_io_raw"
+        elif io and not raw:
+            info_name = "info_io_trained"
+        elif not io and raw:
+            info_name = "info_et_raw"
+        else:
+            info_name = "info_et_trained"
+
+        wb.save(ey.files_dir + info_name + ".xlsx")
