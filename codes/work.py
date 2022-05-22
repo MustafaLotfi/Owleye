@@ -93,7 +93,7 @@ class Worker(QObject, Camera, Clb, Smp, Tuning, EyeTrack, See):
             self.et_mdl(
                 subjects=[self.num],
                 shift_samples=[self.ss],
-                delete_files=True
+                delete_files=False
                 )
         if self.gps and self.running:
             print("\nGetting pixels")
@@ -102,7 +102,7 @@ class Worker(QObject, Camera, Clb, Smp, Tuning, EyeTrack, See):
                 subjects=[self.num],
                 shift_samples=[self.ss],
                 use_io=self.uio,
-                delete_files=True
+                delete_files=False
                 )
         if self.gpa and self.running:
             print("\nGetting test pixels")
@@ -112,7 +112,7 @@ class Worker(QObject, Camera, Clb, Smp, Tuning, EyeTrack, See):
                 target_fol="acc",
                 shift_samples=[self.ss],
                 use_io=True,
-                delete_files=True
+                delete_files=False
                 )
         if self.sps and self.running:
             print("\nSeeing sampling data")

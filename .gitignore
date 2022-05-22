@@ -138,6 +138,7 @@ subjects/
 build/
 dist/
 codes/p1.py
+codes/temp1.py
 codes/.ipynb_checkpoints/
 codes/__pycache__/
 codes/backup_codes/
@@ -152,3 +153,5 @@ models/et/trained/*
 !models/et/trained/mdl1.pickle
 !crt_exe_gui.spec
 dataset/
+codes/jupyter_notebook/FinalPlots.ipynb
+codes/jupyter_notebook/temp1.ipynb

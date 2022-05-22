@@ -7,7 +7,7 @@ from codes.tune_models_params import Tuning
 from codes.eye_track import EyeTrack
 
 # *********************** PARAMETERS ***********************
-NUMBER = 10
+NUMBER = 1
 TRAINING_SUBJECTS = range(1, 10)
 CAMERA_ID = 2
 SHIFT_SAMPLES = 0
@@ -19,7 +19,7 @@ SHIFT_SAMPLES = 0
 # # *********************** CALIBRATION **********************
 NAME = "Mostafa Lotfi"
 Descriptions = "Test for shifting"
-CALIBRATION_GRID = 4, 200, 6, 100
+CALIBRATION_GRID = 4, 150, 5, 70
 INFO = [NAME, Descriptions]
 
 # Clb().et(num=NUMBER, camera_id=CAMERA_ID, info=INFO, clb_grid=CALIBRATION_GRID)
@@ -41,10 +41,10 @@ INFO = [NAME, Descriptions]
 # See().data_features(num=NUMBER, target_fol="smp")
 # See().data_features(num=NUMBER, target_fol="acc")
 # See().data_features(num=NUMBER, target_fol="ltn")
-# See().user_face(num=NUMBER, threshold=4.5, save_threshold=False)
+# See().user_face(num=NUMBER, threshold=5, save_threshold=True)
 # See().blinks_plot(num=NUMBER, target_fol="er")
 # See().blinks_plot(num=NUMBER, threshold="ao", target_fol="clb")
-# See().blinks_plot(num=NUMBER, threshold='uo', target_fol="smp")
+# See().blinks_plot(num=NUMBER, threshold=9, target_fol="smp")
 # See().blinks_plot(num=NUMBER, threshold=4.5, target_fol="acc")
 
 # # ***************** CREATE PUBLIC MODELS *******************
@@ -78,7 +78,7 @@ INFO = [NAME, Descriptions]
 # Tuning().et_mdl(subjects=[NUMBER],
 # 	models_list=[1],
 #     r_train_list=[0.99],
-#     n_epochs_patience=[[5, 5]],
+#     n_epochs_patience=[[3, 3]],
 #     trainable_layers=[1],
 #     shift_samples=[SHIFT_SAMPLES],
 #     blinking_threshold='uo',
@@ -108,7 +108,7 @@ INFO = [NAME, Descriptions]
 # EyeTrack().get_pixels(subjects=[NUMBER], models_list=[1], target_fol="ltn", shift_samples=[1])
 
 # # ***************** SEE SAMPLING PIXELS ********************
-# See().pixels_smp(num=NUMBER)
+See().pixels_smp(num=NUMBER, n_monitors_data=3, show_in_all_monitors=True)
 
 # # ***************** SEE ACCURACY PIXELS *********************
 # See().pixels_acc(num=NUMBER, n_monitors_data=1)
