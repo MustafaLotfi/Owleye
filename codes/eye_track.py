@@ -43,12 +43,13 @@ class EyeTrack(object):
             target_dir = ey.create_dir([sbj_dir, target_fol])
             if ey.file_existing(target_dir, ey.X1+".pickle"):
                 if tfn == 1:
-                    t_load, x1_load, x2_load, eyes_ratio = ey.load(target_dir, [ey.T, ey.X1, ey.X2, ey.ER])
+                    t_load, sys_time_load, x1_load, x2_load, eyes_ratio = ey.load(target_dir, [ey.T, "sys_time", ey.X1, ey.X2, ey.ER])
                     if shift_samples:
                         if shift_samples[kk]:
                             ii = 0
-                            for (x11, x21, t1, eyr1) in zip(x1_load, x2_load, t_load, eyes_ratio):
+                            for (x11, x21, t1, st1, eyr1) in zip(x1_load, x2_load, t_load, sys_time_load, eyes_ratio):
                                 t_load[ii] = t1[:-shift_samples[kk]]
+                                sys_time_load[ii] = st1[:-shift_samples[kk]]
                                 x1_load[ii] = x11[shift_samples[kk]:]
                                 x2_load[ii] = x21[shift_samples[kk]:]
                                 eyes_ratio[ii] = eyr1[shift_samples[kk]:]
@@ -187,25 +188,29 @@ class EyeTrack(object):
 
                             if tfn == 1:
                                 t = []
-                                for t1 in t_load:
-                                    for t0 in t1:
+                                sys_time = []
+                                for (t1, st1) in zip(t_load, sys_time_load):
+                                    for (t0, st0) in zip(t1, st1):
                                         t.append(t0)
+                                        sys_time.append(st0)
                                 t = np.array(t)
                                 wb = Workbook()
                                 ws = wb.active
                                 ws['A1'] = "Sample number"
                                 ws['B1'] = "Time (sec)"
-                                ws['C1'] = "x (pixel/screen_width)"
-                                ws['D1'] = "y (pixel/screen_height)"
-                                ws['E1'] = "Condition"
-                                ws['E2'] = "start"
+                                ws['C1'] = "System time"
+                                ws['D1'] = "x (pixel/screen_width)"
+                                ws['E1'] = "y (pixel/screen_height)"
+                                ws['F1'] = "Condition"
+                                ws['F2'] = "start"
                                 for i in range(y_prd_fnl.shape[0]):
                                     ws[f'A{i+2}'] = i
                                     ws[f'B{i+2}'] = t[i]
-                                    ws[f'C{i+2}'] = y_prd_fnl[i, 0]
-                                    ws[f'D{i+2}'] = y_prd_fnl[i, 1]
-                                ws[f'E{i+2}'] = "stop"
-                                wb.save(target_dir + "EYE TRACK.xlsx")
+                                    ws[f'C{i+2}'] = sys_time[i]
+                                    ws[f'D{i+2}'] = y_prd_fnl[i, 0]
+                                    ws[f'E{i+2}'] = y_prd_fnl[i, 1]
+                                ws[f'F{i+2}'] = "stop"
+                                wb.save(target_dir + "eye_track.xlsx")
                                 ey.save([t, y_prd_fnl], target_dir, ["t_vec", "y_prd"])
 
                                 if delete_files:
@@ -222,7 +227,7 @@ class EyeTrack(object):
 
                                 losses = np.sum(((y_prd_fnl-y_vec)*y_scaler)**2, 0) / y_vec.shape[0]
 
-                                print(f"Lossess for 2 hrz and vrt models: {losses}")
+                                print(f"Lossess for two hrz and vrt models: {losses}")
 
                                 info["hrz_retrain_test_loss"] = losses[0]
                                 info["vrt_retrain_test_loss"] = losses[1]
@@ -263,8 +268,8 @@ class EyeTrack(object):
         for num in subjects:
             smp_dir = ey.create_dir([ey.subjects_dir, f"{num}", ey.SMP])
 
-            if ey.file_existing(smp_dir, "EYE TRACK.xlsx"):
-                wb = load_workbook(smp_dir + "EYE TRACK.xlsx")
+            if ey.file_existing(smp_dir, "eye_track.xlsx"):
+                wb = load_workbook(smp_dir + "eye_track.xlsx")
                 sheet = wb["Sheet"]
                 i = 1
                 et_xl = []
@@ -273,9 +278,9 @@ class EyeTrack(object):
                         et_xl.append(
                             [int(sheet[f"A{i}"].value),
                              float(sheet[f"B{i}"].value),
-                             float(sheet[f"C{i}"].value),
                              float(sheet[f"D{i}"].value),
-                             sheet[f"E{i}"].value]
+                             float(sheet[f"E{i}"].value),
+                             sheet[f"F{i}"].value]
                         )
                     i += 1
                 n_smp_all = len(et_xl)
@@ -546,7 +551,7 @@ class EyeTrack(object):
                         ws[f'G{i+2}'] = str(f[5])
                         i += 1
                 
-                wb.save(smp_dir + "FIXATIONS.xlsx")
+                wb.save(smp_dir + "fixations.xlsx")
             else:
                 print(f"Data does not exist in {smp_dir}")
 

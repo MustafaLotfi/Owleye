@@ -38,6 +38,7 @@ class Smp(object):
 
         print("Sampling started...")
         t_mat = []
+        sys_time_mat = []
         eyes_mat = []
         inp_scalars_mat = []
         eyes_ratio_mat = []
@@ -50,7 +51,6 @@ class Smp(object):
         cv2.destroyWindow(win_name)
 
         t0 = time.perf_counter()
-        windowstime = str(datetime.now())[-15:-3]
         while self.running:
             j = 0
             ey.big_win(win_name, math.floor(len(ey.monitors) / 2)*ey.monitors[0].width)
@@ -61,6 +61,7 @@ class Smp(object):
                 break
             elif button == ord(' '):
                 t_vec = []
+                sys_time_vec = []
                 eyes_vec = []
                 inp_scalars_vec = []
                 eyes_ratio_vec = []
@@ -93,6 +94,7 @@ class Smp(object):
                         )
                         if features_success:
                             t_vec.append(round(time.perf_counter() - t0, 3))
+                            sys_time_vec.append(str(datetime.now())[-15:-3])
                             eyes_vec.append(eyes_frame_gray)
                             inp_scalars_vec.append(features_vector)
                             eyes_ratio_vec.append(eyes_ratio)
@@ -106,6 +108,7 @@ class Smp(object):
                                     break
             fps_vec.append(ey.get_time(j, t1, True))
             t_mat.append(np.array(t_vec))
+            sys_time_mat.append(sys_time_vec)
             eyes_mat.append(np.array(eyes_vec))
             inp_scalars_mat.append(np.array(inp_scalars_vec))
             eyes_ratio_mat.append(np.array(eyes_ratio_vec))
@@ -125,12 +128,9 @@ class Smp(object):
 
         smp_dir = ey.create_dir([ey.subjects_dir, f"{num}", ey.SMP])
         ey.save(
-            [t_mat, eyes_mat, inp_scalars_mat, eyes_ratio_mat, [np.array(face_vec)]],
+            [t_mat, sys_time_mat, eyes_mat, inp_scalars_mat, eyes_ratio_mat, [np.array(face_vec)]],
             smp_dir,
-            [ey.T, ey.X1, ey.X2, ey.ER, ey.FV])
-        f = open(smp_dir + "WindowsTime.txt", "w+")
-        f.write(windowstime)
-        f.close()
+            [ey.T, "sys_time", ey.X1, ey.X2, ey.ER, ey.FV])
 
 
     def accuracy(self, num, camera_id=0, clb_grid=(2, 2, 10)):

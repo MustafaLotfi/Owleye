@@ -8,7 +8,7 @@ from codes.eye_track import EyeTrack
 
 # *********************** PARAMETERS ***********************
 NUMBER = 1
-TRAINING_SUBJECTS = range(1, 10)
+TRAINING_SUBJECTS = range(1, 4)
 CAMERA_ID = 2
 SHIFT_SAMPLES = 0
 
@@ -19,7 +19,7 @@ SHIFT_SAMPLES = 0
 # # *********************** CALIBRATION **********************
 NAME = "Mostafa Lotfi"
 Descriptions = "Test for shifting"
-CALIBRATION_GRID = 4, 150, 5, 70
+CALIBRATION_GRID = 4, 150, 5, 80
 INFO = [NAME, Descriptions]
 
 # Clb().et(num=NUMBER, camera_id=CAMERA_ID, info=INFO, clb_grid=CALIBRATION_GRID)
@@ -75,22 +75,22 @@ INFO = [NAME, Descriptions]
 # Modeling().get_models_information(io=False, raw=False, show_model=False)
 
 # # *********************** Tuning *************************
-# Tuning().et_mdl(subjects=[NUMBER],
+# Tuning().et_mdl(subjects=TRAINING_SUBJECTS,
 # 	models_list=[1],
 #     r_train_list=[0.99],
 #     n_epochs_patience=[[3, 3]],
 #     trainable_layers=[1],
-#     shift_samples=[SHIFT_SAMPLES],
+#     shift_samples=[SHIFT_SAMPLES] * len(TRAINING_SUBJECTS),
 #     blinking_threshold='uo',
 #     show_model=False,
 #     delete_files=False)
 
 # # *********************** GET PIXELS-Sampling ***********************
 # EyeTrack().get_pixels(
-#     subjects=[NUMBER],
+#     subjects=TRAINING_SUBJECTS,
 #     models_list=[1],
 #     target_fol="smp",
-#     shift_samples=[SHIFT_SAMPLES],
+#     shift_samples=[SHIFT_SAMPLES] * len(TRAINING_SUBJECTS),
 #     blinking_threshold="uo"
 #     )
 
@@ -108,7 +108,7 @@ INFO = [NAME, Descriptions]
 # EyeTrack().get_pixels(subjects=[NUMBER], models_list=[1], target_fol="ltn", shift_samples=[1])
 
 # # ***************** SEE SAMPLING PIXELS ********************
-See().pixels_smp(num=NUMBER, n_monitors_data=3, show_in_all_monitors=True)
+See().pixels_smp(num=3, n_monitors_data=1, show_in_all_monitors=False)
 
 # # ***************** SEE ACCURACY PIXELS *********************
 # See().pixels_acc(num=NUMBER, n_monitors_data=1)
