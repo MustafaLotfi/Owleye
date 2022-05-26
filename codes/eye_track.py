@@ -196,20 +196,19 @@ class EyeTrack(object):
                                 t = np.array(t)
                                 wb = Workbook()
                                 ws = wb.active
-                                ws['A1'] = "Sample number"
-                                ws['B1'] = "Time (sec)"
-                                ws['C1'] = "System time"
-                                ws['D1'] = "x (pixel/screen_width)"
-                                ws['E1'] = "y (pixel/screen_height)"
-                                ws['F1'] = "Condition"
-                                ws['F2'] = "start"
+                                ws['A1'] = "Time"
+                                ws['A2'] = "sec"
+                                ws['B1'] = "SystemTime"
+                                ws['C1'] = "EyeTrack"
+                                ws['C2'] = "(p_x/scr_w,p_y/scr_h)"
+                                ws['D1'] = "Condition"
+                                ws['D2'] = "{start,stop}"
+                                ws['D3'] = "start"
                                 for i in range(y_prd_fnl.shape[0]):
-                                    ws[f'A{i+2}'] = i
-                                    ws[f'B{i+2}'] = t[i]
-                                    ws[f'C{i+2}'] = sys_time[i]
-                                    ws[f'D{i+2}'] = y_prd_fnl[i, 0]
-                                    ws[f'E{i+2}'] = y_prd_fnl[i, 1]
-                                ws[f'F{i+2}'] = "stop"
+                                    ws[f'A{i+3}'] = f"{t[i]}"
+                                    ws[f'B{i+3}'] = sys_time[i]
+                                    ws[f'C{i+3}'] = f"({round(y_prd_fnl[i, 0] * 10000)/10000},{round(y_prd_fnl[i, 1] * 10000)/10000})"
+                                ws[f'D{i+3}'] = "stop"
                                 wb.save(target_dir + "eye_track.xlsx")
                                 ey.save([t, y_prd_fnl], target_dir, ["t_vec", "y_prd"])
 
@@ -254,9 +253,9 @@ class EyeTrack(object):
     def get_fixations(
             subjects,
             n_monitors_data=1,
-            t_discard=0.3,
-            x_merge=0.25/2,
-            y_merge=0.33/2,
+            t_discard=0.1,
+            x_merge=0.2/2,
+            y_merge=0.25/2,
             vx_thr=2.5,
             vy_thr=2.5
     ):
@@ -269,63 +268,69 @@ class EyeTrack(object):
             smp_dir = ey.create_dir([ey.subjects_dir, f"{num}", ey.SMP])
 
             if ey.file_existing(smp_dir, "eye_track.xlsx"):
-                wb = load_workbook(smp_dir + "eye_track.xlsx")
-                sheet = wb["Sheet"]
-                i = 1
+                sheet = load_workbook(smp_dir + "eye_track.xlsx")["Sheet"]
+                max_row = sheet.max_row
                 et_xl = []
-                while sheet[f"A{i}"].value != None:
-                    if i != 1:
-                        et_xl.append(
-                            [int(sheet[f"A{i}"].value),
-                             float(sheet[f"B{i}"].value),
-                             float(sheet[f"D{i}"].value),
-                             float(sheet[f"E{i}"].value),
-                             sheet[f"F{i}"].value]
+                for i in range(3, max_row+1):
+                    et_cell_list = sheet[f"C{i}"].value[1:-1].split(',')
+                    et_xl.append(
+                        [float(sheet[f"A{i}"].value),
+                         sheet[f"B{i}"].value,
+                         float(et_cell_list[0]),
+                         float(et_cell_list[1]),
+                         sheet[f"D{i}"].value]
                         )
-                    i += 1
                 n_smp_all = len(et_xl)
 
                 i = 0
                 t_mat_seq = []
+                t_sys_mat_seq = []
                 et_mat_seq = []
                 while i < n_smp_all:
                     if (et_xl[i][4] == "start") or (et_xl[i][4] == "Start"):
                         t1 = []
+                        ts1 = []
                         et1 = []
                         j = 0
                         while True:
-                            t1.append([et_xl[i+j][1]])
+                            t1.append([et_xl[i+j][0]])
+                            ts1.append([et_xl[i+j][1]])
                             et1.append([et_xl[i+j][2], et_xl[i+j][3]])
                             if et_xl[i+j][4] == "stop" or et_xl[i+j][4] == "Stop":
                                 break
                             j += 1
                         t_mat_seq.append(np.array(t1).reshape((len(t1),)))
+                        t_sys_mat_seq.append(ts1)
                         et_mat_seq.append(np.array(et1))
                         i += j
                     i += 1
 
                 t = t_mat_seq[0]
+                t_sys = t_sys_mat_seq[0]
                 et = et_mat_seq[0]
                 for (i, t1) in enumerate(t_mat_seq):
                     if i == 0:
                         continue
                     t = np.concatenate([t, t1])
+                    t_sys += t_sys_mat_seq[i]
                     et = np.concatenate([et, et_mat_seq[i]])
 
                 t_mat = []
+                t_sys_mat = []
                 et_mat = []
-                for (t1, et1) in zip(t_mat_seq, et_mat_seq):
+                for (t1, ts1, et1) in zip(t_mat_seq, t_sys_mat_seq, et_mat_seq):
                     n_smp1 = t1.shape[0]
                     blinking_out = (et1[:, 0] == -1)
                     t_mat1 = []
+                    ts_mat1 = []
                     et_mat1 = []
                     i = 0
                     while i < (n_smp1):
-                        t0 = []
+                        t0 = [t1[i]]
+                        ts0 = [ts1[i]]
                         bo_vec = []
                         in_vec = []
                         now = blinking_out[i]
-                        t0.append(t1[i])
                         if now:
                             bo_vec.append(et1[i])
                         else:
@@ -334,6 +339,7 @@ class EyeTrack(object):
                         if (i+j) < n_smp1:
                             while blinking_out[i+j] == now:
                                 t0.append(t1[i+j])
+                                ts0.append(ts1[i+j])
                                 if now:
                                     bo_vec.append(et1[i+j])
                                 else:
@@ -342,12 +348,14 @@ class EyeTrack(object):
                                 if (i+j) >= n_smp1:
                                     break
                         t_mat1.append(np.array(t0))
+                        ts_mat1.append(ts0)
                         if now:
                             et_mat1.append(np.array(bo_vec))
                         else:
                             et_mat1.append(np.array(in_vec))
                         i += j
                     t_mat.append(t_mat1)
+                    t_sys_mat.append(ts_mat1)
                     et_mat.append(et_mat1)
 
                 saccades = []
@@ -395,51 +403,55 @@ class EyeTrack(object):
 
                 sac_mat_new = []
                 t_mat_new = []
+                t_sys_mat_new = []
                 et_mat_new = []
-                for (t_mat1, et_mat1, saccades1) in zip(t_mat, et_mat, saccades):
+                for (t_mat1, ts_mat1, et_mat1, saccades1) in zip(t_mat, t_sys_mat, et_mat, saccades):
                     k = 0
                     sac_mat_new1 = []
                     t_mat_new1 = []
+                    t_sys_mat_new1 = []
                     et_mat_new1 = []
-                    for (t1, et1, sac1) in zip(t_mat1, et_mat1, saccades1):
+                    for (t1, ts1, et1, sac1) in zip(t_mat1, ts_mat1, et_mat1, saccades1):
                         if et1[0, 0] != -1:
                             n_smp = t1.shape[0]
                             i = 0
                             while i < (n_smp):
-                                s0 = []
-                                t0 = []
-                                et0 = []
+                                s0 = [sac1[i]]
+                                t0 = [t1[i]]
+                                ts0 = [ts1[i]]
+                                et0 = [et1[i]]
                                 now = sac1[i]
-                                s0.append(sac1[i])
-                                t0.append(t1[i])
-                                et0.append(et1[i])
                                 j = 1
                                 if (i+j) < n_smp:
                                     while sac1[i+j] == now:
                                         s0.append(sac1[i+j])
                                         t0.append(t1[i+j])
+                                        ts0.append(ts1[i+j])
                                         et0.append(et1[i+j])
                                         j += 1
                                         if (i+j) >= n_smp:
                                             break
                                 sac_mat_new1.append(np.array(s0))
                                 t_mat_new1.append(np.array(t0))
+                                t_sys_mat_new1.append(ts0)
                                 et_mat_new1.append(np.array(et0))
                                 i += j
                         else:
                             sac_mat_new1.append(sac1)
                             t_mat_new1.append(t1)
+                            t_sys_mat_new1.append(ts1)
                             et_mat_new1.append(et1)
                     sac_mat_new.append(sac_mat_new1)
                     t_mat_new.append(t_mat_new1)
+                    t_sys_mat_new.append(t_sys_mat_new1)
                     et_mat_new.append(et_mat_new1)
 
 
                 fix = []
                 k = 0
-                for (sac_mat_new1, t_mat_new1, et_mat_new1) in zip(sac_mat_new, t_mat_new, et_mat_new):
+                for (sac_mat_new1, t_mat_new1, t_sys_mat_new1, et_mat_new1) in zip(sac_mat_new, t_mat_new, t_sys_mat_new, et_mat_new):
                     fix1 = []
-                    for (s1, t1, et1) in zip(sac_mat_new1, t_mat_new1, et_mat_new1):
+                    for (s1, t1, ts1, et1) in zip(sac_mat_new1, t_mat_new1, t_sys_mat_new1, et_mat_new1):
                         sac_shp = s1.shape
                         if s1[0] == False:
                             if not s1[0]:
@@ -448,12 +460,11 @@ class EyeTrack(object):
                                              t1[0],
                                              round(t1[-1]-t1[0], 2),
                                              round(et1[:, 0].mean(), 4),
-                                             round(et1[:, 1].mean(), 4)])
+                                             round(et1[:, 1].mean(), 4),
+                                             ts1[0]])
                         k += sac_shp[0]
-                    fix.append(np.array(fix1))
+                    fix.append(fix1)
 
-
-                n_monitors_data = 1
                 fix_mrg_one = []
                 for fix1 in fix:
                     fix_mrg1 = []
@@ -471,7 +482,8 @@ class EyeTrack(object):
                                          f_new[2],
                                          round(f_new[3] + fj[3], 2),
                                          round((f_new[4]*f_new[1]+fj[4]*fj[1])/(f_new[1]+fj[1]), 4),
-                                         round((f_new[5]*f_new[1]+fj[5]*fj[1])/(f_new[1]+fj[1]), 4)]
+                                         round((f_new[5]*f_new[1]+fj[5]*fj[1])/(f_new[1]+fj[1]), 4),
+                                         f_new[-1]]
                                 if (i+j) == n_fix-1:
                                     fix_mrg1.append(f_new)
                                 not_joined = False
@@ -484,7 +496,7 @@ class EyeTrack(object):
                     if not_joined:
                         fix_mrg1.append(fix1[-1])
                         
-                    fix_mrg_one.append(np.array(fix_mrg1))
+                    fix_mrg_one.append(fix_mrg1)
 
 
                 fix_dcd = []
@@ -493,7 +505,7 @@ class EyeTrack(object):
                     for f in fix_mrg1:
                         if f[3] >= t_discard:
                             fix_dcd1.append(f)
-                    fix_dcd.append(np.array(fix_dcd1))
+                    fix_dcd.append(fix_dcd1)
 
 
                 fix_mrg_two = []
@@ -513,7 +525,8 @@ class EyeTrack(object):
                                          f_new[2],
                                          round(f_new[3] + fj[3], 2),
                                          round((f_new[4]*f_new[1]+fj[4]*fj[1])/(f_new[1]+fj[1]), 4),
-                                         round((f_new[5]*f_new[1]+fj[5]*fj[1])/(f_new[1]+fj[1]), 4)]
+                                         round((f_new[5]*f_new[1]+fj[5]*fj[1])/(f_new[1]+fj[1]), 4),
+                                         f_new[-1]]
                                 if (i+j) == n_fix-1:
                                     fix_mrg1.append(f_new)
                                 not_joined = False
@@ -528,27 +541,24 @@ class EyeTrack(object):
                     if not_joined:
                         fix_mrg1.append(fix1[-1])
                         
-                    fix_mrg_two.append(np.array(fix_mrg1))
+                    fix_mrg_two.append(fix_mrg1)
 
                 wb = Workbook()
                 ws = wb.active
-                ws['A1'] = "# of fixation"
-                ws['B1'] = "start of fixation (sample)"
-                ws['C1'] = "fixation duration (sample)"
-                ws['D1'] = "start of fixation (sec)"
-                ws['E1'] = "fixation duration (sec)"
-                ws['F1'] = "fixation mean (x)"
-                ws['G1'] = "fixation mean (y)"
+                ws['A1'] = "FixationTime"
+                ws['A2'] = "sec"
+                ws['B1'] = "FixationSystemTime"
+                ws['C1'] = "FixationDuration"
+                ws['C2'] = "sec"
+                ws['D1'] = "FixationLocation"
+                ws['D2'] = "(p_x/scr_w,p_y/scr_h)"
                 i = 0
                 for f_seq in fix_mrg_two:
                     for f in f_seq:
-                        ws[f'A{i+2}'] = str(i+1)
-                        ws[f'B{i+2}'] = str(f[0])
-                        ws[f'C{i+2}'] = str(f[1])
-                        ws[f'D{i+2}'] = str(f[2])
-                        ws[f'E{i+2}'] = str(f[3])
-                        ws[f'F{i+2}'] = str(f[4])
-                        ws[f'G{i+2}'] = str(f[5])
+                        ws[f'A{i+3}'] = f"{f[2]}"
+                        ws[f'B{i+3}'] = f[6][0]
+                        ws[f'C{i+3}'] = f"{f[3]}"
+                        ws[f'D{i+3}'] = f"({f[4]},{f[5]})"
                         i += 1
                 
                 wb.save(smp_dir + "fixations.xlsx")

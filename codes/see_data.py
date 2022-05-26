@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import math
+from openpyxl import load_workbook
 
 
 class See(object):
@@ -65,55 +66,94 @@ class See(object):
         cv2.destroyAllWindows()
 
 
-    def pixels_smp(self, num, n_monitors_data=len(ey.monitors), show_in_all_monitors=False):
+    def pixels_smp(self, num, n_monitors_data=len(ey.monitors), show_in_all_monitors=False, win_size=(1280,720), show_fixations=False):
+        little_win = False
         smp_dir = ey.create_dir([ey.subjects_dir, f"{num}", ey.SMP])
-        if ey.file_existing(smp_dir, 't_vec.pickle'):
-            [t_vec, y_prd_et] = ey.load(smp_dir, ['t_vec', 'y_prd'])
+        try:
+            sheet_et = load_workbook(smp_dir + "eye_track.xlsx")["Sheet"]
+            prd_et = []
+            for i in range(3,sheet_et.max_row+1):
+                et_splited = sheet_et[f"C{i}"].value[1:-1].split(',')
+                prd_et.append([float(sheet_et[f"A{i}"].value), float(et_splited[0]), float(et_splited[1])])
+            prd_et = np.array(prd_et)
+
+            if show_fixations:
+                sheet_fxn = load_workbook(smp_dir + "fixations.xlsx")["Sheet"]
+                fixations = []
+                for i in range(3, sheet_fxn.max_row+1):
+                    fxn_splited = sheet_fxn[f"D{i}"].value[1:-1].split(',')
+                    fixations.append([float(sheet_fxn[f"A{i}"].value), float(sheet_fxn[f"C{i}"].value),
+                        float(fxn_splited[0]), float(fxn_splited[1])])
+                fixations = np.array(fixations)
+
             if show_in_all_monitors:
                 win_names = []
                 for (i, m) in enumerate(ey.monitors):
                     win_name = f"Calibration-{i}"
                     ey.big_win(win_name, i * m.width)
                     win_names.append(win_name)
+            elif (n_monitors_data == 1):
+                win_name = "Calibration"
+                ey.big_win(win_name, math.floor(len(ey.monitors)/2)*ey.monitors[0].width)
             else:
                 win_name = "Calibration"
-                ey.big_win(win_name, math.floor(len(ey.monitors) / 2)*ey.monitors[0].width)
+                little_win = True
 
-            for (t0, y_prd0) in zip(t_vec, y_prd_et):
+            for prd1 in prd_et:
+                t0 = prd1[0]
+                fxn_exist = False
+                if show_fixations:
+                    time_comparision = t0 - fixations[:, 0]
+                    time_comparision[time_comparision<0] = 1000
+                    matched_t_fxn_arg = time_comparision.argmin()
+                    if (t0 > fixations[matched_t_fxn_arg, 0]) and (t0 < (fixations[matched_t_fxn_arg, 0]+fixations[matched_t_fxn_arg, 1])):
+                        fxn_exist = True
+                prd0 = prd1[1:]
                 tx0 = [[f"time: {t0} sec", (0.05, 0.25), 1, ey.GREEN, 2]]
                 if show_in_all_monitors:
                     y_prd_show = [None] * len(ey.monitors)
                     texts = y_prd_show.copy()
                     texts[math.floor(len(ey.monitors) / 2)] = tx0
-                    pw_prd = y_prd0[0] * n_monitors_data
+                    pw_prd = prd0[0] * n_monitors_data
                     for (i, _) in enumerate(ey.monitors):
-                        if y_prd0[0] != -1:
+                        if prd0[0] != -1:
                             win_color = ey.WHITE
                             if i != 1:
                                 t0 = None
                             if (pw_prd > i) and (pw_prd < (i + 1)):
-                                y_prd_show[i] = y_prd0
+                                y_prd_show[i] = prd0
                                 y_prd_show[i][0] = pw_prd - i
                         else:
-                            y_prd0 = None
+                            prd0 = None
                             win_color = ey.GRAY
                         ey.show_clb_win(win_names[i], pnt_prd=y_prd_show[i], texts=texts[i], win_color=win_color)
                 else:
-                    if y_prd0[0] != -1:
+                    if prd0[0] != -1:
                         win_color = ey.WHITE
                     else:
-                        y_prd0 = None
+                        prd0 = None
                         win_color = ey.GRAY
-                    ey.show_clb_win(win_name, pnt_prd=y_prd0, texts=tx0, win_color=win_color)
+                    if little_win:
+                        if fxn_exist:
+                            ey.show_clb_win(win_name, pnt=fixations[matched_t_fxn_arg,2:],
+                                pnt_prd=prd0, texts=tx0, win_color=win_color, win_size=win_size, pnt_color=ey.RED)
+                        else:
+                            ey.show_clb_win(win_name, pnt_prd=prd0, texts=tx0, win_color=win_color, win_size=win_size)
+                        cv2.moveWindow(win_name, 0, 0)
+                    else:
+                        if fxn_exist:
+                            ey.show_clb_win(win_name, pnt=fixations[matched_t_fxn_arg,2:],
+                                pnt_prd=prd0, texts=tx0, win_color=win_color, pnt_color=ey.RED)
+                        else:
+                            ey.show_clb_win(win_name, pnt_prd=prd0, texts=tx0, win_color=win_color)
 
                 q = cv2.waitKey(50)
                 if q == ord('q') or q == ord('Q'):
                     break
                 if not self.running:
                     break
-
             cv2.destroyAllWindows()
-        else:
+        except FileNotFoundError:
             print(f"Data does not exist in {smp_dir}")
 
 

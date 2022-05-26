@@ -107,11 +107,13 @@ INFO = [NAME, Descriptions]
 # # ******************** GET PIXELS-Latency *****************************
 # EyeTrack().get_pixels(subjects=[NUMBER], models_list=[1], target_fol="ltn", shift_samples=[1])
 
+# # ******************** GET FIXATIONS ***********************
+# EyeTrack().get_fixations(subjects=TRAINING_SUBJECTS, n_monitors_data=3)
+
 # # ***************** SEE SAMPLING PIXELS ********************
-See().pixels_smp(num=3, n_monitors_data=1, show_in_all_monitors=False)
+See().pixels_smp(num=1, n_monitors_data=3, show_in_all_monitors=False, win_size=(3 * 1280, 720), show_fixations=True)
 
 # # ***************** SEE ACCURACY PIXELS *********************
 # See().pixels_acc(num=NUMBER, n_monitors_data=1)
 
-# # ******************** GET FIXATIONS ***********************
-# EyeTrack().get_fixations(subjects=[NUMBER])
+
