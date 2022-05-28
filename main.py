@@ -7,7 +7,7 @@ from codes.tune_models_params import Tuning
 from codes.eye_track import EyeTrack
 
 # *********************** PARAMETERS ***********************
-NUMBER = 1
+NUMBER = 2
 TRAINING_SUBJECTS = range(1, 4)
 CAMERA_ID = 2
 SHIFT_SAMPLES = 0
@@ -108,10 +108,10 @@ INFO = [NAME, Descriptions]
 # EyeTrack().get_pixels(subjects=[NUMBER], models_list=[1], target_fol="ltn", shift_samples=[1])
 
 # # ******************** GET FIXATIONS ***********************
-# EyeTrack().get_fixations(subjects=TRAINING_SUBJECTS, n_monitors_data=3)
+EyeTrack().get_fixations(subjects=[NUMBER], n_monitors_data=3, x_merge=0.15/2, y_merge=0.18/2, vx_thr=0.8, vy_thr=0.8, t_discard=0.1)
 
 # # ***************** SEE SAMPLING PIXELS ********************
-See().pixels_smp(num=1, n_monitors_data=3, show_in_all_monitors=False, win_size=(3 * 1280, 720), show_fixations=True)
+See().pixels_smp(num=NUMBER, n_monitors_data=3, show_in_all_monitors=False, win_size=(3 * 1280, 720), show_fixations=True)
 
 # # ***************** SEE ACCURACY PIXELS *********************
 # See().pixels_acc(num=NUMBER, n_monitors_data=1)
