@@ -1,5 +1,5 @@
 # Eye-Tracker
-This repository is for my MSc thesis in the field of ADAS and Autonomous Driving.
+The aim of this repository is creating an accurate, reliable and also free Eye Tracker.
 ___
 ## How to run
-In eye_tracking folder
+run `main.py`
