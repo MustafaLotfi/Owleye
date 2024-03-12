@@ -51,7 +51,7 @@ or if you have downloaded the Owleye.exe, run it.
 
 So, a window will be opened.
 
-In the opened window, there are some parameters that you can change.
+In the opened window, there are some parameters that you can change:
 
 
 ## Limitations and future works
