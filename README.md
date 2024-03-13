@@ -45,8 +45,16 @@ In the opened window, there are some parameters that you can change:
 
 
 ## Method
+While the camera is streaming, Owleye gets the images and extracts the user's face rotation (r1, r2, r3) and position (x, y, z) vectors using mediapipe and opencv. Also it extracts the driver's iris positions (x1, y1), (x2, y2). Alongside with this, Owleye extract the eyes images and add them together. So, an input of one image (two eyes) and one vector (10 scalar) is ready to calculate the location that the user is looking. To do this, two Convolutional Neural Network models (CNNs) are used to predict the user's eye view point in the horizonal and vertical directions on the monitor. These models are trained on 221000 samples (images and vectors).
 
-In Owleye two Convolutional Neural Network models (CNN) are used to predict the user's eye view point in the horizonal and vertical directions on the monitor. These models are trained on 
+### Dataset
+221000 samples (eye images and vectors) are collected from 20 subjects. The subjects were told look at the red point.
+
+### Modeling
+
+### Calibration
+The calibration process consists of looking at a circle in the screen at a certain time.
+
 
 ## Limitations and future works
 **1) Recunstructing whole code:** The structure of the code is terrible. Owleye is made in 2021. Therefore, a lot of things have changed since then. The structure of the code totally can be redesigned to reach a better performance. The code can be more object oriented. the libraries (mediapipe and tensorflow) have changed a lot. So, the algorithm can be rewritten considering the changes.
