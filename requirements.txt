@@ -62,7 +62,7 @@ tensorflow-io-gcs-filesystem==0.31.0
 termcolor==2.3.0
 threadpoolctl==3.2.0
 typing-extensions==4.8.0
-urllib3==2.0.6
+urllib3==2.0.7
 werkzeug==3.0.1
 wrapt==1.14.1
 zipp==3.17.0
