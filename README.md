@@ -17,7 +17,7 @@ make a virtual environment:     `python -m venv env` or `virtualenv env`
 
 activate the virtual environment:
 
-Windows: `./env/Scripts/activate`
+Windows: `.\env\Scripts\activate`
 
 Linux: `source env/bin/activate`
 
@@ -41,7 +41,8 @@ or if you have downloaded the Owleye.exe, run it.
 
 In the opened window, there are some parameters that you can change:
 
-![Screenshot 2024-03-12 191947](https://github.com/MustafaLotfi/Owleye/assets/53625380/f7f14723-0dd4-4fea-b4ae-ff51b0a59654)
+![Screenshot 2024-03-13 013738](https://github.com/MustafaLotfi/Owleye/assets/53625380/9e0996ed-560b-4329-b101-1496e51ffb17)
+
 
 
 ## Method
@@ -53,7 +54,7 @@ While the camera is streaming, Owleye gets the images and extracts the user's fa
 ### Modeling
 
 ### Calibration
-The calibration process consists of looking at a circle in the screen at a certain time.
+The calibration process consists of looking at a circle in the screen for a certain time. Then the position of the point would change. This process repeats until the calibration process ends. During this procedure, Owleye collects data. The data contains inputs (the images of the eyes and the location vector) and the outputs (aligned location of the point in the screen). It means each sample consists of one image, one vector and one location point.
 
 
 ## Limitations and future works
