@@ -48,17 +48,16 @@ In the opened window, there are some parameters that you can change:
 
 ## Method
 
-While the camera is streaming, Owleye gets the images and extracts head and eyes features. Then it feeds these data to the neural networks models to calculate the user's eye view point.
+While the camera is streaming, Owleye gets the images and extracts head and eyes features. Then it feeds this data to the neural networks models to calculate the user's eye view point.
 
 ### Input
 
-Owleye receives the user's images and extracts their face 478 landmarks/keypoints using Mediapipe library. It's done by canonical face model which is in the world coordinates. Then Owleye extracts below data using the landmarks:
+Owleye receives the user's images during time and extracts their face 478 landmarks/keypoints using Mediapipe library. It's done by canonical face model which is in the world coordinates. Then Owleye extracts below data using the landmarks:
 - **Head rotation and position vectors:** (r1, r2, r3), (x, y, z) are calculated using Opencv library
 - **Left and right eyes iris:** (xl, yl), (xr, yr). These are calculated respect to the eyes
 - **Eyes images:** Two images are concatenated together in rows.
 
 Now, an input of one image (two eyes) and one vector (10 scalar) is ready to calculate the target.
-
 
 ### Output
 
@@ -70,10 +69,14 @@ The output of Owleye is a vector of user's eye view points on screen during time
 
 ### Modeling
 
-Two Convolutional Neural Network models (CNNs) are used to predict the user's eye view point in the horizonal and vertical directions on the monitor.
+Two Convolutional Neural Network (CNNs) models are used to predict the user's eye view point in the horizonal and vertical directions on the monitor.
+
+### Fine-tuning
+
+There are two CNN models that
 
 ### Calibration
-The calibration process consists of looking at a white point in a black screen for a certain time. Then the position of the point changes and the user must look at it again. This process is repeated until the calibration ends. During this procedure, Owleye collects data. The data contains the inputs and the outputs (aligned location of the point in the screen). It means each sample entails one image, one vector and one location point.
+The calibration process consists of looking at a white point in a black screen for a certain time. Then, the point's position changes and the user must look at it again. This process is repeated until the calibration ends. During this procedure, Owleye collects data (input and output). It means each sample data entails one image, one vector and one location point.
 
 
 ## Limitations and future works
