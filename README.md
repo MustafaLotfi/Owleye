@@ -57,6 +57,9 @@ Owleye receives the user's images during time and extracts their face 478 landma
 - **Left and right eyes iris:** (xl, yl), (xr, yr). These are calculated respect to the eyes
 - **Eyes images:** Two images are concatenated together in rows.
 
+![Screenshot 2024-03-14 034920](https://github.com/MustafaLotfi/Owleye/assets/53625380/b1f44929-a867-45eb-b5be-211c5f41f08c)
+
+
 Now, an input of one image (two eyes) and one vector (10 scalar) is ready to calculate the target.
 
 ### Output
@@ -69,11 +72,11 @@ The output of Owleye is a vector of user's eye view points on screen during time
 
 ### Modeling
 
-Two Convolutional Neural Network (CNNs) models are used to predict the user's eye view point in the horizonal and vertical directions on the monitor.
+Two Convolutional Neural Network (CNNs) models are used to predict the user's eye view point in the horizonal and vertical directions on the monitor. These models are trained using the dataset. We called them "base models".
 
 ### Fine-tuning
 
-There are two CNN models that
+To customize two base models for each person, we considered a retraining process. During this, data is collected from the person who we want to track their point of view. the amount of data collected is not as much as the main dataset. this data is just for calibrating the models on the person. We considered to just change the weights of the last layer based on the new collected data.
 
 ### Calibration
 The calibration process consists of looking at a white point in a black screen for a certain time. Then, the point's position changes and the user must look at it again. This process is repeated until the calibration ends. During this procedure, Owleye collects data (input and output). It means each sample data entails one image, one vector and one location point.
