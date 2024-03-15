@@ -66,9 +66,12 @@ Now, an input of one image (two eyes) and one vector (10 scalar) is ready to cal
 
 The output of Owleye is a vector of user's eye view points on screen during time.
 
+### Calibration
+The calibration process consists of looking at a white point in a black screen for a certain time. Then, the point's position changes and the user must look at it again. This process is repeated until the calibration ends. During this procedure, Owleye collects data (input and output). It means each sample data entails one image, one vector and one location point.
+
 ### Dataset
 
-221000 samples (eye images and vectors) are collected from 20 male subjects. The subjects were told look at the red point.
+We implemented calibration on 20 male subjects and collected 221000 samples (eye images and vectors).
 
 ### Modeling
 
@@ -76,15 +79,11 @@ Two Convolutional Neural Network (CNNs) models are used to predict the user's ey
 
 ### Fine-tuning
 
-To customize two base models for each person, we considered a retraining process. During this, data is collected from the person who we want to track their point of view. the amount of data collected is not as much as the main dataset. this data is just for calibrating the models on the person. We considered to just change the weights of the last layer based on the new collected data.
-
-### Calibration
-The calibration process consists of looking at a white point in a black screen for a certain time. Then, the point's position changes and the user must look at it again. This process is repeated until the calibration ends. During this procedure, Owleye collects data (input and output). It means each sample data entails one image, one vector and one location point.
-
+To customize two base models for each person, we considered a retraining process. During this, data is collected from the person who we want to track their point of view. the amount of data collected is not as much as the main dataset. So, the last layer's weights change based on the new collected data. In this way, the network retains its original shape and just is calibrated a little for each person.
 
 ## Limitations and future works
-**1) Recunstructing whole code:** The structure of the code is terrible. Owleye is made in 2021. Therefore, a lot of things have changed since then. The structure of the code totally can be redesigned to reach a better performance. The code can be more object oriented. the libraries (mediapipe and tensorflow) have changed a lot. So, the algorithm can be rewritten considering the changes.
+**1) Recunstructing whole code:** The structure of the code is terrible:)) Owleye is made in 2021. Therefore, a lot of things have changed since then. The structure of the code totally can be redesigned to reach a better performance. The code can be more object oriented. the libraries (mediapipe and tensorflow) have changed a lot. So, the algorithm can be rewritten considering the changes.
 
-**2) Changing the calibration algorithm:** The calibration duration time is really long. Using methods like image morphing makes it unnecessary to collect images from all positions and angles.
+**2) Changing the calibration algorithm:** The calibration duration time is really long. Using methods like image morphing makes it unnecessary to collect images in all positions and angles of the head and eyes.
 
-**3) Changing the fine-tuning method:** In the current method, to retrain the algorithm, we considered to just change the weights in the last layer of the network. In this way, the network keeps the original shape of itself and just changes the last layer's weights to customize the network for each subject. But, this fine-tuning process can be improved by implementing better solutions.
+**3) Changing the fine-tuning method:** In the current method, to retrain the algorithm, we considered to just change the weights in the last layer of the network. This fine-tuning process can be improved by implementing better solutions.
