@@ -1,6 +1,6 @@
 # Owleye
 ## Intro
-Owleye gives you the posibiliy to transform your webcam to an eye tracker. Owleye is a subsection of my master thesis: "Driver's Hazard Perception Assessment in a Driving Simulator".y
+Owleye gives you the posibiliy to transform your webcam to an eye tracker. Owleye is a subsection of my master thesis: "Driver's Hazard Perception Assessment in a Driving Simulator".
 At first, you should calibrate your camera, then the program tells you which point you are looking on your monitor. Indeed, this is a top-table eye tracker.
 ___
 ## Installation
@@ -46,13 +46,23 @@ In the opened window, there are some parameters that you can change:
 
 
 ## Method
-While the camera is streaming, Owleye gets the images and extracts the user's face rotation (r1, r2, r3) and position (x, y, z) vectors using mediapipe and opencv. Also it extracts the driver's iris positions (x1, y1), (x2, y2). Alongside with this, Owleye extract the eyes images and add them together. So, an input of one image (two eyes) and one vector (10 scalar) is ready to calculate the location that the user is looking. To do this, two Convolutional Neural Network models (CNNs) are used to predict the user's eye view point in the horizonal and vertical directions on the monitor. These models are trained on 221000 samples (images and vectors).
+
+While the camera is streaming, Owleye gets the images and extracts head and eyes features. Then it feeds these data to the neural networks models to calculate the user's eye view point.
+
+### Input
+
+Owleye receives the user's images and extracts the their face 478 landmarks/keypoints using Mediapipe library. It's done by canonical face model which is in the world coordinates. Then Owleye extracts below data using the landmarks:
+- **Head rotation and position vectors:** (r1, r2, r3), (x, y, z) are calculated using Opencv library
+- **Left and right eyes iris:** (xl, yl), (xr, yr). These are calculated respect to the eyes
+- **Eyes images:** Two images are concatenated together in rows.
+
+These data are used to calculate the user's eye view point on the screen. So, an input of one image (two eyes) and one vector (10 scalar) is ready to calculate the target.
 
 ### Dataset
 221000 samples (eye images and vectors) are collected from 20 subjects. The subjects were told look at the red point.
 
 ### Modeling
-
+two Convolutional Neural Network models (CNNs) are used to predict the user's eye view point in the horizonal and vertical directions on the monitor.
 ### Calibration
 The calibration process consists of looking at a circle in the screen for a certain time. Then the position of the point would change. This process repeats until the calibration process ends. During this procedure, Owleye collects data. The data contains inputs (the images of the eyes and the location vector) and the outputs (aligned location of the point in the screen). It means each sample consists of one image, one vector and one location point.
 
