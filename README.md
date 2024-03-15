@@ -44,8 +44,6 @@ In the opened window, there are some parameters that you can change:
 
 ![Screenshot 2024-03-13 013738](https://github.com/MustafaLotfi/Owleye/assets/53625380/9e0996ed-560b-4329-b101-1496e51ffb17)
 
-
-
 ## Method
 
 While the camera is streaming, Owleye gets the images and extracts head and eyes features. Then it feeds this data to the neural networks models to calculate the user's eye view point.
@@ -76,6 +74,11 @@ We implemented calibration on 20 male subjects and collected 221000 samples (eye
 ### Modeling
 
 Two Convolutional Neural Network (CNNs) models are used to predict the user's eye view point in the horizonal and vertical directions on the monitor. These models are trained using the dataset. We called them "base models".
+
+**Network architecture:**
+![Screenshot 2024-03-14 055238](https://github.com/MustafaLotfi/Owleye/assets/53625380/a8473c71-d49f-443a-ae4c-ddde2b004009)
+
+
 
 ### Fine-tuning
 
