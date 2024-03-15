@@ -7,34 +7,35 @@ ___
 
 ### 1.Use source code:
 
-Open terminal, download the repo:     `git clone <repo address>`
+Open terminal, download the repo:
+`git clone <repo address>`
 
 (or just download the zip file)
 
-Go to the project directory:     `cd Owleye`
+Go to the project directory:
+`cd Owleye`
 
-make a virtual environment:     `python -m venv env` or `virtualenv env`
+make a virtual environment:
+`python -m venv env` or `virtualenv env`
 
 activate the virtual environment:
 
-Windows: `.\env\Scripts\activate`
+Windows:
+`.\env\Scripts\activate`
 
-Linux: `source env/bin/activate`
+Linux:
+`source env/bin/activate`
 
-Install required libraries:    `pip install -r requirements.txt`
-
-Run the program:     `python main.py`
+Install required libraries:
+`pip install -r requirements.txt`
 
 ### 2. Use .exe file
 
 Download the release file. It is tested on Windows 10.
 
-Run Owleye.exe
-
 ## Usage
 
-After activating virtual environment, run main.py
-
+If you are using the source code, after activating the virtual environment, run main.py:
 `python main.py`
 
 or if you have downloaded the Owleye.exe, run it.
@@ -51,20 +52,28 @@ While the camera is streaming, Owleye gets the images and extracts head and eyes
 
 ### Input
 
-Owleye receives the user's images and extracts the their face 478 landmarks/keypoints using Mediapipe library. It's done by canonical face model which is in the world coordinates. Then Owleye extracts below data using the landmarks:
+Owleye receives the user's images and extracts their face 478 landmarks/keypoints using Mediapipe library. It's done by canonical face model which is in the world coordinates. Then Owleye extracts below data using the landmarks:
 - **Head rotation and position vectors:** (r1, r2, r3), (x, y, z) are calculated using Opencv library
 - **Left and right eyes iris:** (xl, yl), (xr, yr). These are calculated respect to the eyes
 - **Eyes images:** Two images are concatenated together in rows.
 
-These data are used to calculate the user's eye view point on the screen. So, an input of one image (two eyes) and one vector (10 scalar) is ready to calculate the target.
+Now, an input of one image (two eyes) and one vector (10 scalar) is ready to calculate the target.
+
+
+### Output
+
+The output of Owleye is a vector of user's eye view points on screen during time.
 
 ### Dataset
-221000 samples (eye images and vectors) are collected from 20 subjects. The subjects were told look at the red point.
+
+221000 samples (eye images and vectors) are collected from 20 male subjects. The subjects were told look at the red point.
 
 ### Modeling
-two Convolutional Neural Network models (CNNs) are used to predict the user's eye view point in the horizonal and vertical directions on the monitor.
+
+Two Convolutional Neural Network models (CNNs) are used to predict the user's eye view point in the horizonal and vertical directions on the monitor.
+
 ### Calibration
-The calibration process consists of looking at a circle in the screen for a certain time. Then the position of the point would change. This process repeats until the calibration process ends. During this procedure, Owleye collects data. The data contains inputs (the images of the eyes and the location vector) and the outputs (aligned location of the point in the screen). It means each sample consists of one image, one vector and one location point.
+The calibration process consists of looking at a white point in a black screen for a certain time. Then the position of the point changes and the user must look at it again. This process is repeated until the calibration ends. During this procedure, Owleye collects data. The data contains the inputs and the outputs (aligned location of the point in the screen). It means each sample entails one image, one vector and one location point.
 
 
 ## Limitations and future works
