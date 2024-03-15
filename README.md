@@ -87,3 +87,5 @@ To customize two base models for each person, we considered a retraining process
 **2) Changing the calibration algorithm:** The calibration duration time is really long. Using methods like image morphing makes it unnecessary to collect images in all positions and angles of the head and eyes.
 
 **3) Changing the fine-tuning method:** In the current method, to retrain the algorithm, we considered to just change the weights in the last layer of the network. This fine-tuning process can be improved by implementing better solutions.
+
+**4) Adding camera calibration:** The computed head angles and positions are meaningful since the camera is no calibrated. By calibrating and having angles and positions of the head, we can calculate the real eyes' angles and positions. So, using these parameters, implement better methods for reaching to the eyes view point. Maybe just with a simple linear regression model and real parameters of the head and eyes we could reach to the target.
