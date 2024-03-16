@@ -76,7 +76,8 @@ We implemented calibration on 20 male subjects and collected 221000 samples (eye
 Two Convolutional Neural Network (CNNs) models are used to predict the user's eye view point in the horizonal and vertical directions on the monitor. These models are trained using the dataset. We called them "base models".
 
 **Network architecture:**
-![Screenshot 2024-03-14 055238](https://github.com/MustafaLotfi/Owleye/assets/53625380/a8473c71-d49f-443a-ae4c-ddde2b004009)
+![Screenshot 2024-03-16 163427](https://github.com/MustafaLotfi/Owleye/assets/53625380/02d196c2-c9c2-497d-b1e5-d3d7b2a29160)
+
 
 
 
@@ -92,3 +93,7 @@ To customize two base models for each person, we considered a retraining process
 **3) Changing the fine-tuning method:** In the current method, to retrain the algorithm, we considered to just change the weights in the last layer of the network. This fine-tuning process can be improved by implementing better solutions.
 
 **4) Adding camera calibration:** The computed head angles and positions are meaningful since the camera is no calibrated. By calibrating and having angles and positions of the head, we can calculate the real eyes' angles and positions. So, using these parameters, implement better methods for reaching to the eyes view point. Maybe just with a simple linear regression model and real parameters of the head and eyes we could reach to the target.
+
+**5) Creating a python library:** It can be desired to create a package from the code. So, everybody could just install and import the library and use it as they want.
+
+**6) Providing real-time usage:** For now, it isn't possible to use the program in real-time. Because the FPS goes down in this way. the program's FPS for a camera that is 30 FPS reaches to 15. So, by optimizing some packages, we can get to a better result.
