@@ -61,7 +61,7 @@ Now, an input of one image (two eyes) and one vector (10 scalar) is ready to cal
 
 ### Output
 
-The output of Owleye is a vector of user's eye view points on screen (xp, yp) during time. They are normalized between 0 and 1.
+The output of Owleye is matrix of user's eye view points on screen (xp, yp) during time. The matrix's shape is n by 2. The values are normalized between 0 and 1. For example, the program tracks the user for 10 seconds, with an FPS of 15, we have a matirx with a shape of 150 by 2. The first column is for the horizontal direction and the second is for the vertical direction.
 
 ### Calibration
 The calibration process consists of looking at a white point in a black screen for a certain time. Then, the point's position changes and the user must look at it again. This process is repeated until the calibration ends. During this procedure, Owleye collects data (input and output). It means each sample data entails one image, one vector and one location point.
