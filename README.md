@@ -54,10 +54,9 @@ Owleye receives the user's images during time and extracts their face 478 landma
 - **Left and right eyes iris:** (xl, yl), (xr, yr). These are calculated respect to the eyes
 - **Eyes images:** Two images are concatenated together in rows.
 
+**Now, one image (two eyes) and one vector (10 scalars) are ready to calculate the target.**
+
 ![Screenshot 2024-03-14 034920](https://github.com/MustafaLotfi/Owleye/assets/53625380/b1f44929-a867-45eb-b5be-211c5f41f08c)
-
-
-Now, an input of one image (two eyes) and one vector (10 scalar) is ready to calculate the target.
 
 ### Output
 
@@ -96,7 +95,7 @@ Indeed, while the user is blinking, they aren't seeing anywhere. So, the data in
 
 
 ## Limitations and future works
-**1) Recunstructing whole code:** The structure of the code is terrible:)) Owleye is made in 2021 and I have not dedicated so much time to improve it since then. Therefore, a lot of things have changed since then. The structure of the code totally can be redesigned to reach a better performance. The code can be more object oriented. the libraries (mediapipe and tensorflow) have changed a lot. So, the algorithm can be rewritten considering the changes.
+**1) Recunstructing whole code:** The structure of the code is terrible:)) Owleye is made in 2021 and I have not dedicated so much of time to improve it since then. Therefore, a lot of things have changed. The structure of the code totally can be redesigned to reach a better performance. The code can be more object oriented. the libraries (mediapipe and tensorflow) have changed a lot. So, the algorithm can be rewritten considering the changes.
 
 **2) Changing the calibration algorithm:** The calibration duration time is really long. Using methods like image morphing makes it unnecessary to collect images in all positions and angles of the head and eyes.
 
