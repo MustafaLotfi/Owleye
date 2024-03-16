@@ -1,7 +1,6 @@
 # Owleye
 ## Intro
-Owleye gives you the posibiliy to transform your webcam to an eye tracker. Owleye is a subsection of my master thesis: "Driver's Hazard Perception Assessment in a Driving Simulator".
-At first, you should calibrate your camera, then the program tells you which point you are looking on your monitor. Indeed, this is a top-table eye tracker.
+Owleye gives you the posibiliy to transform your webcam to an eye tracker. At first, you should calibrate your camera, then the program tells you which point you are looking on your monitor. Indeed, this is a top-table eye tracker.
 ___
 ## Installation
 
@@ -97,3 +96,11 @@ To customize two base models for each person, we considered a retraining process
 **5) Creating a python library:** It can be desired to create a package from the code. So, everybody could just install and import the library and use it as they want.
 
 **6) Providing real-time usage:** For now, it isn't possible to use the program in real-time. Because the FPS goes down in this way. the program's FPS for a camera that is 30 FPS reaches to 15. So, by optimizing some packages, we can get to a better result.
+
+## Contributing
+
+Feel free to improve the project. I'll appreciate your pull requests.
+
+## About project
+
+Owleye is a subsection of my master thesis: "Driver's Hazard Perception Assessment in a Driving Simulator".
