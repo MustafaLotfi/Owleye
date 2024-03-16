@@ -83,17 +83,20 @@ To customize two base models for each person, we considered a retraining process
 
 ### Fixations
 
-The IV-T method is used to extract user's fixations.
+The IV-T method is used to extract user's fixations. A fixation is a series of eye view points that are close together. So, first of all we removed the outliers using median filter. Then we merged close fixations and removed short ones. below image shows the fixations in a monitor during a certain time.
+
+![Screenshot 2024-03-16 195233](https://github.com/MustafaLotfi/Owleye/assets/53625380/57b9e984-5f54-48a0-984e-110c65b2cc20)
+
 
 ### Blinking
 
 Indeed, while the user is blinking, they aren't seeing anywhere. So, the data in that short time should be removed. We've calculated the blinking using Eye Aspect Ratio (EAR) method. In this way, when the user's EAR goes lower than a certain threshold, it is considered as a blink. So, the output (x, y) will be deleted in the next computations. Also in this periods, we can interpolate the outputs during time.
 
-![Screenshot 2024-03-16 193621](https://github.com/MustafaLotfi/Owleye/assets/53625380/0313304e-902d-45b5-b977-f81954b7f91d)
+![Screenshot 2024-03-16 201348](https://github.com/MustafaLotfi/Owleye/assets/53625380/9ba0751f-ac96-46cd-a878-053a7e55158c)
 
 
 ## Limitations and future works
-**1) Recunstructing whole code:** The structure of the code is terrible:)) Owleye is made in 2021. Therefore, a lot of things have changed since then. The structure of the code totally can be redesigned to reach a better performance. The code can be more object oriented. the libraries (mediapipe and tensorflow) have changed a lot. So, the algorithm can be rewritten considering the changes.
+**1) Recunstructing whole code:** The structure of the code is terrible:)) Owleye is made in 2021 and I have not dedicated so much time to improve it since then. Therefore, a lot of things have changed since then. The structure of the code totally can be redesigned to reach a better performance. The code can be more object oriented. the libraries (mediapipe and tensorflow) have changed a lot. So, the algorithm can be rewritten considering the changes.
 
 **2) Changing the calibration algorithm:** The calibration duration time is really long. Using methods like image morphing makes it unnecessary to collect images in all positions and angles of the head and eyes.
 
