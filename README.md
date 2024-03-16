@@ -61,7 +61,7 @@ Now, an input of one image (two eyes) and one vector (10 scalar) is ready to cal
 
 ### Output
 
-The output of Owleye is a vector of user's eye view points on screen during time.
+The output of Owleye is a vector of user's eye view points on screen (xp, yp) during time. They are normalized between 0 and 1.
 
 ### Calibration
 The calibration process consists of looking at a white point in a black screen for a certain time. Then, the point's position changes and the user must look at it again. This process is repeated until the calibration ends. During this procedure, Owleye collects data (input and output). It means each sample data entails one image, one vector and one location point.
@@ -77,12 +77,20 @@ Two Convolutional Neural Network (CNNs) models are used to predict the user's ey
 **Network architecture:**
 ![Screenshot 2024-03-16 163427](https://github.com/MustafaLotfi/Owleye/assets/53625380/02d196c2-c9c2-497d-b1e5-d3d7b2a29160)
 
-
-
-
 ### Fine-tuning
 
 To customize two base models for each person, we considered a retraining process. During this, data is collected from the person who we want to track their point of view. the amount of data collected is not as much as the main dataset. So, the last layer's weights change based on the new collected data. In this way, the network retains its original shape and just is calibrated a little for each person.
+
+### Fixations
+
+The IV-T method is used to extract user's fixations.
+
+### Blinking
+
+Indeed, while the user is blinking, they aren't seeing anywhere. So, the data in that short time should be removed. We've calculated the blinking using Eye Aspect Ratio (EAR) method. In this way, when the user's EAR goes lower than a certain threshold, it is considered as a blink. So, the output (x, y) will be deleted in the next computations. Also in this periods, we can interpolate the outputs during time.
+
+![Screenshot 2024-03-16 193621](https://github.com/MustafaLotfi/Owleye/assets/53625380/0313304e-902d-45b5-b977-f81954b7f91d)
+
 
 ## Limitations and future works
 **1) Recunstructing whole code:** The structure of the code is terrible:)) Owleye is made in 2021. Therefore, a lot of things have changed since then. The structure of the code totally can be redesigned to reach a better performance. The code can be more object oriented. the libraries (mediapipe and tensorflow) have changed a lot. So, the algorithm can be rewritten considering the changes.
