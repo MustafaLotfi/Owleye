@@ -287,7 +287,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Nasir Eye Tracker"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Owleye"))
         self.l_num.setText(_translate("MainWindow", "Subject Number :"))
         self.le_num.setText(_translate("MainWindow", "1"))
         self.l_cam.setText(_translate("MainWindow", "Camera ID :"))
@@ -301,7 +301,7 @@ class Ui_MainWindow(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Times New Roman\'; font-size:8.1pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\';\">+989368385420</span></p></body></html>"))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\';\">mostafalotfi1997@gmail.com</span></p></body></html>"))
         self.l_clg_grd.setText(_translate("MainWindow", "Calibration Grid :"))
         self.le_clb_grd.setText(_translate("MainWindow", "4, 200, 6, 100"))
         self.chb_smp.setText(_translate("MainWindow", "Sampling"))
