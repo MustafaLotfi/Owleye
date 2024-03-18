@@ -1,8 +1,11 @@
+"""This module is for calibration of the Owleye. The module includes the code to collect data from the user,
+while they are looking at the white point. The molude contains one class called Clb."""
+
+
 import numpy as np
 import cv2
 import time
 from codes.base import eyeing as ey
-import pickle
 import os
 from datetime import datetime
 if os.name == "nt":
@@ -13,17 +16,35 @@ from sklearn.utils import shuffle
 import math
 
 
-INFO = ("Mostafa Lotfi", "M", 25, "Phone Number: +989368385420")
-CALIBRATION_GRID = (4, 200, 6, 100)
+INFO = ("Mostafa Lotfi", "M", 25, "Email: mostafalotfi1997@gmail.com")      # The information that goes to information.txt
+CALIBRATION_GRID = (4, 200, 6, 100)         # Calibration grid
 
-
+# Class for calibration
 class Clb(object):
     running = True
 
     @staticmethod
     def create_grid(clb_grid):
+        """
+        This method creates the desired grid points.
+
+        Parameters:
+            clb_grid: A list, e.g. ()
+            
+        Returns:
+            points: A list that contains n lists
+        """
         point_ratio = 0.012
         if len(clb_grid) == 2:
+            """In this situation, a points appears and moves in rows.
+            For example, if the gird is (4, 50), it means a white point starts to move from left to right and
+            vice versa. It starts from top-left of the screen and moves towards right. Actually, its move includes the stops in 50 locations in the row.
+            Then the point goes quarter of the screen (from top) in the right, and starts the backward movement.
+            This process repeated until the point reaches the bottom of the screen.
+            
+            
+            """
+
             rows = clb_grid[0]
             points_in_row = clb_grid[1]
             points = []
@@ -145,7 +166,7 @@ class Clb(object):
     def et(self, num, camera_id=0, info=INFO, clb_grid=CALIBRATION_GRID):
         print("\nCalibration started!")
         name, descriptions = info
-        tx0 = [["Track WHITE point", (0.05, 0.25), 1.5, ey.RED, 3],
+        tx0 = [["Follow WHITE point", (0.05, 0.25), 1.5, ey.RED, 3],
         ["SPACE --> start", (0.05, 0.5), 1.5, ey.RED, 3],
         ["ESC --> Stop", (0.05, 0.75), 1.5, ey.RED, 3]]
         run_app = True
