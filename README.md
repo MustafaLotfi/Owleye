@@ -45,6 +45,9 @@ In the opened window, there are some parameters that you can change:
 
 ## Method
 
+![Screenshot 2024-03-25 024008](https://github.com/MustafaLotfi/Owleye/assets/53625380/c24f43f5-ed99-48e0-9a96-69b20536f240)
+
+
 While the camera is streaming, Owleye gets the images and extracts head and eyes features. Then it feeds this data to the neural networks models to calculate the user's eye view point.
 
 ### Input
