@@ -39,9 +39,11 @@ If you are using the source code, after activating the virtual environment, run 
 
 or if you have downloaded the Owleye.exe, run it.
 
-In the opened window, there are some parameters that you can change:
+This is the opened window:
 
 ![Screenshot 2024-03-13 013738](https://github.com/MustafaLotfi/Owleye/assets/53625380/9e0996ed-560b-4329-b101-1496e51ffb17)
+
+You can learn about the program's usage in [this tutorial](https://github.com/MustafaLotfi/Owleye/blob/main/docs/USE_APP.md).
 
 ## Method
 
