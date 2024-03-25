@@ -1,6 +1,6 @@
 # Owleye
 ## Intro
-Owleye gives you the posibiliy to transform your webcam to an eye tracker. At first, you should calibrate owleye to know you, then it tells you which point you are looking on your monitor. 
+Owleye gives you the posibiliy to transform your webcam to an eye tracker. At first, you should calibrate owleye to know you, then it detects which point you are looking on your monitor. 
 ___
 ## Installation
 
