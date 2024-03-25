@@ -54,9 +54,11 @@ While the camera is streaming, Owleye gets the images and extracts head and eyes
 ### Input
 
 As in the first block of the [Owleye's structure](https://private-user-images.githubusercontent.com/53625380/316467756-c24f43f5-ed99-48e0-9a96-69b20536f240.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MTEzNjM3MzksIm5iZiI6MTcxMTM2MzQzOSwicGF0aCI6Ii81MzYyNTM4MC8zMTY0Njc3NTYtYzI0ZjQzZjUtZWQ5OS00OGUwLTlhOTYtNjliMjA1MzZmMjQwLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDAzMjUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwMzI1VDEwNDM1OVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWMzYzZlNDg5YzU3N2YyMDZkYTQyYjJiODdhMWQ2OTU2Y2ZiZDlkZWRiZmM5Mjk3ODg5YTBhY2NmYzIzMDRkNjkmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.yaBCEz1DDeiMPQw_XU8gR4NbjKtGShJqZ7XiQ8AKrkk) is visible, it receives the user's images during time and after detecting thier face, in the second block it extracts their 478 landmarks/keypoints. It's done by canonical face model which is in the world coordinates. Owleye uses Mediapipe package to implement these steps. Then in the third block, Owleye compute the face rotation and position vectors by extracted landmarks. In the fourth block, Owleye extracts the eyes' images using landmarks and gives them to the fifth block to calculate iris positions. Finlaly, three type of inputs are ready to be fed to sixth block which is eye viewpoint predictive model:
-- **Head rotation and position vectors:** (r1, r2, r3), (x, y, z). Rotation and position
-- **Left and right eyes iris:** (xl, yl), (xr, yr). These are calculated respect to the eyes
+- **Head rotation and position vectors:** (r1, r2, r3), (x, y, z). Rotation and position, world coordinates.
+- **Left and right eyes iris:** (xl, yl), (xr, yr). These are calculated respect to the eyes (image coordinates).
 - **Eyes images:** Two images are concatenated together in rows.
+
+We will consider the first and the second inputs as the **face vector** which has a length of 10.
 
 ![Screenshot 2024-03-14 034920](https://github.com/MustafaLotfi/Owleye/assets/53625380/b1f44929-a867-45eb-b5be-211c5f41f08c)
 
@@ -65,11 +67,11 @@ As in the first block of the [Owleye's structure](https://private-user-images.gi
 The output of Owleye is a vector of user's eye view points on screen (xp, yp) per sample (an image and a vector). During time, this output will be a matrix. The matrix's shape is n by 2. The values are normalized between 0 and 1. For example, the program tracks the user for 10 seconds, with an FPS of 15, we have a matirx with a shape of 150 by 2. The first column is for the horizontal direction and the second is for the vertical direction.
 
 ### Calibration
-The calibration process consists of looking at a white point in a black screen for a certain time. Then, the point's position changes and the user must look at it again. This process is repeated until the calibration ends. During this procedure, Owleye collects data (input and output). It means each sample data entails one image, one vector and one location point. This is because we already have the first five blocks. The models and calculations have been prepared. Just the sixth block should be made.
+The calibration process consists of looking at a white point in a black screen for a certain time. Then, the point's position changes and the user must look at it again. This process is repeated until the calibration ends. During this procedure, Owleye collects data (input and output). It means each sample data entails one image, one face vector and one location point. This is because we already have the first five blocks, and the models and calculations have been prepared. Just the sixth block should be made.
 
 ### Dataset
 
-We implemented calibration on 20 male subjects and collected 221000 samples (eye images and vectors).
+We implemented calibration on 20 male subjects and collected 221000 samples (eyes images and face vectors as inputs and appeared point locations as outputs).
 
 ### Modeling
 
@@ -78,7 +80,7 @@ For the sixth block in [Owleye's structure](https://private-user-images.githubus
 **Network architecture:**
 ![Screenshot 2024-03-16 163427](https://github.com/MustafaLotfi/Owleye/assets/53625380/02d196c2-c9c2-497d-b1e5-d3d7b2a29160)
 
-In the right of the above picture, there are two branches. The left branch is for the image of the eyes, and the right branch is for a vector with a length of 10. six value for head's rotation and position and 4 value for iris position.
+Right side of the above picture illustrates the CNN model's structure. In this model there is two branches. The left branch is for the eyes image, and the right branch is for a vector with a length of 10. six value for head's rotation and position and 4 value for iris position.
 
 ### Fine-tuning
 
