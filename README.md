@@ -45,14 +45,15 @@ In the opened window, there are some parameters that you can change:
 
 ## Method
 
+**Owleye's structure:**
+
 ![Screenshot 2024-03-25 024008](https://github.com/MustafaLotfi/Owleye/assets/53625380/c24f43f5-ed99-48e0-9a96-69b20536f240)
 
-
-While the camera is streaming, Owleye gets the images and extracts head and eyes features. Then it feeds this data to the neural networks models to calculate the user's eye view point.
+While the camera is streaming, Owleye gets the images and extracts head and eyes features. Then it feeds this data to the neural networks models to calculate the user's eye viewpoint.
 
 ### Input
 
-Owleye receives the user's images during time and extracts their face 478 landmarks/keypoints using Mediapipe library. It's done by canonical face model which is in the world coordinates. Then Owleye extracts below data using the landmarks:
+As in [Owleye's structure](https://private-user-images.githubusercontent.com/53625380/316467756-c24f43f5-ed99-48e0-9a96-69b20536f240.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MTEzNjM3MzksIm5iZiI6MTcxMTM2MzQzOSwicGF0aCI6Ii81MzYyNTM4MC8zMTY0Njc3NTYtYzI0ZjQzZjUtZWQ5OS00OGUwLTlhOTYtNjliMjA1MzZmMjQwLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDAzMjUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwMzI1VDEwNDM1OVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWMzYzZlNDg5YzU3N2YyMDZkYTQyYjJiODdhMWQ2OTU2Y2ZiZDlkZWRiZmM5Mjk3ODg5YTBhY2NmYzIzMDRkNjkmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.yaBCEz1DDeiMPQw_XU8gR4NbjKtGShJqZ7XiQ8AKrkk) is visible, it first receives the user's images during time and after detecting thier face, it extracts their 478 landmarks/keypoints. It's done by canonical face model which is in the world coordinates. Then Owleye extracts below data using the landmarks:
 - **Head rotation and position vectors:** (r1, r2, r3), (x, y, z) are calculated using Opencv library
 - **Left and right eyes iris:** (xl, yl), (xr, yr). These are calculated respect to the eyes
 - **Eyes images:** Two images are concatenated together in rows.
