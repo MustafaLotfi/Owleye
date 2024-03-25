@@ -78,6 +78,8 @@ Two Convolutional Neural Network (CNNs) models are used to predict the user's ey
 **Network architecture:**
 ![Screenshot 2024-03-16 163427](https://github.com/MustafaLotfi/Owleye/assets/53625380/02d196c2-c9c2-497d-b1e5-d3d7b2a29160)
 
+In the right of the above picture, two branches are seen. The left branch is for the image of the eyes, the right branch is for a vector with a length of 10. six value for head rotation and position and 4 value for iris position.
+
 ### Fine-tuning
 
 To customize two base models for each person, we considered a retraining process. During this, data is collected from the person who we want to track their point of view. the amount of data collected is not as much as the main dataset. So, the last layer's weights change based on the new collected data. In this way, the network retains its original shape and just is calibrated a little for each person.
