@@ -18,7 +18,7 @@ Also, after running, a folder called "subjects" will be created. In this folder,
 - x1.pickle: Eyes images
 - x2.pickle: Face vecotrs
 - y.pickle: White point locations
-- er.pickle: Eye aspect ratio vector (Go to 11th section to know about this)
+- er.pickle: Eye aspect ratio vector (Go to [11th section](https://github.com/MustafaLotfi/Owleye/blob/main/docs/USE_APP.md#:~:text=from%20the%20default.-,11.%20Threshold,-%3A%20To%20detect) to know about this)
 
 **5. Subject name:** This item is arbitrary. you can enter the user's name.
 
