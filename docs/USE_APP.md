@@ -10,9 +10,9 @@ Also, after running, a folder called "subjects" will be created. In this folder,
 
 **2. Camera ID:** Usually it is 0, but you can try other numbers if you have several webcams on your system.
 
-**3. Camera:** by selecting this item, the webcam will be turned on. So you can see your picture and the landmarks that already are detected on your face.
+**3. Camera:** by activating this checkbox, after clicking on the "start" button, the webcam stream will be shown. So you can see yourself and the landmarks that already are detected on your face.
 
-Calibration: By selecting this item and clicking on the "start" button, the program will be ready to collect data (inputs and outputs of the models) from the user. So, a white point will be appeared on the screen. As soon as you press the "SPACE" key on keyboard, the program starts collecting data for a particlular time. While this, the background bacome black and the user should look at the white point during this time. If the data collection ends, the screen will become gray and the point goes to another location. The user can look everywhere and actually rest in this situation. Again, the "SPACE" key should be pressed for data collection and all of the explained process be repeated.
+**4. Calibration:** By activating this checkbox, after clicking on the "start" button, the program will be ready to collect data (inputs and outputs of the models of [the sixth block]()) from the user. So, a white point will be appeared on the screen. As soon as you press the "SPACE" key on keyboard, the program starts collecting data for a particlular time. While this, the background bacome black and the user should look at the white point during this time. If the data collection ends, the screen will become gray and the point goes to another location. The user can look everywhere and actually rest in this situation. Again, the "SPACE" key should be pressed for data collection and all of the explained process be repeated.
 
 Subject name: This item is arbitrary. you can enter the user's name.
 
