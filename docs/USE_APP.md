@@ -12,7 +12,13 @@ Also, after running, a folder called "subjects" will be created. In this folder,
 
 **3. Camera:** by activating this checkbox, after clicking on the "start" button, the webcam stream will be shown. So you can see yourself and the landmarks that already are detected on your face.
 
-**4. Calibration:** By activating this checkbox, after clicking on the "start" button, the program will be ready to collect data (inputs and outputs of the models of [the sixth block](https://private-user-images.githubusercontent.com/53625380/316467756-c24f43f5-ed99-48e0-9a96-69b20536f240.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MTEzNjM3MzksIm5iZiI6MTcxMTM2MzQzOSwicGF0aCI6Ii81MzYyNTM4MC8zMTY0Njc3NTYtYzI0ZjQzZjUtZWQ5OS00OGUwLTlhOTYtNjliMjA1MzZmMjQwLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDAzMjUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwMzI1VDEwNDM1OVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWMzYzZlNDg5YzU3N2YyMDZkYTQyYjJiODdhMWQ2OTU2Y2ZiZDlkZWRiZmM5Mjk3ODg5YTBhY2NmYzIzMDRkNjkmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.yaBCEz1DDeiMPQw_XU8gR4NbjKtGShJqZ7XiQ8AKrkk)) from the user. So, a white point will be appeared on the screen. As soon as you press the "SPACE" key on keyboard, the program starts collecting data for a particlular time. While this, the background bacomes black and the user should look at the white point during this time. If the data collection ends, the screen will become gray and the point will go to another location. The user can look everywhere and actually rest in this situation. Again, the "SPACE" key should be pressed for data collection and all of the explained process get repeated.
+**4. Calibration:** By activating this checkbox, after clicking on the "start" button, the program will be ready to collect data (inputs and outputs of the models of [the sixth block](https://private-user-images.githubusercontent.com/53625380/316467756-c24f43f5-ed99-48e0-9a96-69b20536f240.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MTEzNjM3MzksIm5iZiI6MTcxMTM2MzQzOSwicGF0aCI6Ii81MzYyNTM4MC8zMTY0Njc3NTYtYzI0ZjQzZjUtZWQ5OS00OGUwLTlhOTYtNjliMjA1MzZmMjQwLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDAzMjUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwMzI1VDEwNDM1OVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWMzYzZlNDg5YzU3N2YyMDZkYTQyYjJiODdhMWQ2OTU2Y2ZiZDlkZWRiZmM5Mjk3ODg5YTBhY2NmYzIzMDRkNjkmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.yaBCEz1DDeiMPQw_XU8gR4NbjKtGShJqZ7XiQ8AKrkk)) from the user. So, a white point will be appeared on the screen. As soon as you press the "SPACE" key on keyboard, the program starts collecting data for a particlular time. While this, the background bacomes black and the user should look at the white point during this time. If the data collection ends, the screen will become gray and the point will go to another location. The user can look everywhere and actually rest in this situation. Again, the "SPACE" key should be pressed for data collection and all of the explained process get repeated. Also, a folder called "clb" will be created in the user's folder. In this folder, 5 ".pickle" files will be created which were collected:
+
+- t.pickle: Time
+- x1.pickle: Eyes images
+- x2.pickle: Face vecotrs
+- y.pickle: White point locations
+- er.pickle: Eye aspect ratio vector (Go to 11th section to know about this)
 
 **5. Subject name:** This item is arbitrary. you can enter the user's name.
 
@@ -26,11 +32,13 @@ Also, after running, a folder called "subjects" will be created. In this folder,
 
 **8. Sampling:** If you activate this checkbox, after starting the program, It will start collecting data from you while you are looking in the screen. So, this item is for using the program for your goal.
 
-**9. Testing:** This checkbox is for seeing how well Owleye works. If you activate this checkbox, after starting the program, It will start showing you a white point that you must look at that. Actually, the user is looking in the white point. So, it is clear that what should be the best possible prediction of Owleye (The position of white points). Also, you can see Mean Squared Error (MSE).
+**9. Testing:** This checkbox is for seeing how well Owleye works. If you activate this checkbox, after starting the program, It will start showing you a white point that you must look at that. Actually, the user is looking in the white point. So, it is clear that what should be the best possible prediction of Owleye (The position of white points). Also, you can see mean squared error (MSE).
 
-**10. Tune blinking threshold:** 
+**10. Tune blinking threshold:** By activating this checkbox, you can change the blinking threshold (11) from the default.
 
+**11. Threshold:** To detect the blinks, The eyes aspect ratio (EAR) method is used. In the samples that are collected during sampling, EAR will be calculated. It is a vector during time. Then using that vector, the velocity of EAR will be calculated as a vector. So, the values above the determined threshold are considered as a blink. The default value for threshold is gained using try and error with my face. every face can have a different threshold.
 
+**12. Tune eye tracking model:** By activating this 
 
 
 
