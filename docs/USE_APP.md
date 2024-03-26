@@ -24,5 +24,13 @@ Also, after running, a folder called "subjects" will be created. In this folder,
 - 3 numbers (n, m , c): The white point does not move. just in a grid by size of n x m (like a matrix) remains fixed in each location.
 - 4 numbers (n, c, m, d): The white point moves both horizontally and vertically, in n rows with c locations and m columns with d locations.
 
+**8. Sampling:** If you activate this checkbox, after starting the program, It will start collecting data from you while you are looking in the screen. So, this item is for using the program for your goal.
+
+**9. Testing:** This checkbox is for seeing how well Owleye works. If you activate this checkbox, after starting the program, It will start showing you a white point that you must look at that. Actually, the user is looking in the white point. So, it is clear that what should be the best possible prediction of Owleye (The position of white points). Also, you can see Mean Squared Error (MSE).
+
+**10. Tune blinking threshold:** 
+
+
+
 
 
