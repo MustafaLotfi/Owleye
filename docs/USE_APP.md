@@ -12,13 +12,13 @@ Also, after running, a folder called "subjects" will be created. In this folder,
 
 **3. Camera:** by activating this checkbox, after clicking on the "start" button, the webcam stream will be shown. So you can see yourself and the landmarks that already are detected on your face.
 
-**4. Calibration:** By activating this checkbox, after clicking on the "start" button, the program will be ready to collect data (inputs and outputs of the models of [the sixth block]()) from the user. So, a white point will be appeared on the screen. As soon as you press the "SPACE" key on keyboard, the program starts collecting data for a particlular time. While this, the background bacome black and the user should look at the white point during this time. If the data collection ends, the screen will become gray and the point goes to another location. The user can look everywhere and actually rest in this situation. Again, the "SPACE" key should be pressed for data collection and all of the explained process be repeated.
+**4. Calibration:** By activating this checkbox, after clicking on the "start" button, the program will be ready to collect data (inputs and outputs of the models of [the sixth block](https://private-user-images.githubusercontent.com/53625380/316467756-c24f43f5-ed99-48e0-9a96-69b20536f240.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MTEzNjM3MzksIm5iZiI6MTcxMTM2MzQzOSwicGF0aCI6Ii81MzYyNTM4MC8zMTY0Njc3NTYtYzI0ZjQzZjUtZWQ5OS00OGUwLTlhOTYtNjliMjA1MzZmMjQwLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDAzMjUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwMzI1VDEwNDM1OVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWMzYzZlNDg5YzU3N2YyMDZkYTQyYjJiODdhMWQ2OTU2Y2ZiZDlkZWRiZmM5Mjk3ODg5YTBhY2NmYzIzMDRkNjkmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.yaBCEz1DDeiMPQw_XU8gR4NbjKtGShJqZ7XiQ8AKrkk)) from the user. So, a white point will be appeared on the screen. As soon as you press the "SPACE" key on keyboard, the program starts collecting data for a particlular time. While this, the background bacomes black and the user should look at the white point during this time. If the data collection ends, the screen will become gray and the point will go to another location. The user can look everywhere and actually rest in this situation. Again, the "SPACE" key should be pressed for data collection and all of the explained process get repeated.
 
-Subject name: This item is arbitrary. you can enter the user's name.
+**5. Subject name:** This item is arbitrary. you can enter the user's name.
 
-Describtion: This section is arbitrary too. you can enter any information that your user has.
+**6. Describtion:** This section is arbitrary too. you can enter any information that your user has.
 
-Calibration grid: This item can have three types of integer numbers.
+**7. Calibration grid:** This item can have three types of integer numbers.
 
 - 2 numbers (n, c): The white point starts to move just horizontally in the screen in n rows. Each row contains c locations that the point goes through.
 - 3 numbers (n, m , c): The white point does not move. just in a grid by size of n x m (like a matrix) remains fixed in each location.
