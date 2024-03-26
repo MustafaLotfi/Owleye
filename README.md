@@ -49,7 +49,8 @@ You can learn about the program's usage in [this tutorial](https://github.com/Mu
 
 **Owleye's structure:**
 
-![Screenshot 2024-03-25 024008](https://github.com/MustafaLotfi/Owleye/assets/53625380/c24f43f5-ed99-48e0-9a96-69b20536f240)
+![Owleye structure](https://github.com/MustafaLotfi/Owleye/blob/main/docs/images/Owleye%20structure.png)
+
 
 While the camera is streaming, Owleye gets the images and extracts head and eyes features. Then it feeds this data to the neural networks (NN) models to calculate the user's eye viewpoint.
 
