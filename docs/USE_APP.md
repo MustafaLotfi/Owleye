@@ -30,7 +30,12 @@ Also, after running, a folder called "subjects" will be created. In this folder,
 - 3 numbers (n, m , c): The white point does not move. just in a grid by size of n x m (like a matrix) remains fixed in each location.
 - 4 numbers (n, c, m, d): The white point moves both horizontally and vertically, in n rows with c locations and m columns with d locations.
 
-**8. Sampling:** If you activate this checkbox, after starting the program, It will start collecting data from you while you are looking in the screen. So, this item is for using the program for your goal.
+**8. Sampling:** If you activate this checkbox, the program will start collecting data from you while you are looking in the screen. So, this item is for using the program for your goal. Also a folder called smp will be created in the user's folder. In this folder these files will be made:
+- t.pickle
+- sys_time.pickle
+- x1.pickle
+- x2.pickle
+- er.pickle
 
 **9. Testing:** This checkbox is for seeing how well Owleye works. If you activate this checkbox, after starting the program, It will start showing you a white point that you must look at that. Actually, the user is looking in the white point. So, it is clear that what should be the best possible prediction of Owleye (The position of white points). Also, you can see mean squared error (MSE).
 
@@ -49,7 +54,11 @@ Also, after running, a folder called "subjects" will be created. In this folder,
 
 **15. Test data:** It means the later calculations are for the testing data, not sampling data.
 
-**16. Use IO model:** 
+**16. Use IO model:** If the user activates this checkbox, after the program predicted the sampling data, it will remove the samples that are out of the screens range.
+
+**17. Get pixels:** If the user activates this checkbox, the program will predict the sampling or testing data.
+
+**18. See pixels:** If the user activates this checkbox, the program will show the points that the user has looked.
 
 
 
