@@ -12,7 +12,7 @@ Also, after running, a folder called "subjects" will be created. In this folder,
 
 **3. Camera:** by activating this checkbox, after clicking on the "start" button, the webcam stream will be shown. So you can see yourself and the landmarks that already are detected on your face.
 
-**4. Calibration:** By activating this checkbox, after clicking on the "start" button, the program will be ready to collect data (inputs and outputs of the models of [the sixth block](https://github.com/MustafaLotfi/Owleye/blob/main/docs/images/Owleye%20structure.png)) from the user. So, a white point will be appeared on the screen. As soon as you press the "SPACE" key on keyboard, the program starts collecting data for a particlular time. While this, the background bacomes black and the user should look at the white point during this time. If the data collection ends, the screen will become gray and the point will go to another location. The user can look everywhere and actually rest in this situation. Again, the "SPACE" key should be pressed for data collection and all of the explained process get repeated. Also, a folder called "clb" will be created in the user's folder. In this folder, 5 ".pickle" files will be created which were collected:
+**4. Calibration:** By activating this checkbox, after clicking on the "start" button, the program will be ready to collect data (inputs and outputs of the models of [the sixth block in owleye's structure](https://github.com/MustafaLotfi/Owleye/blob/main/docs/images/Owleye%20structure.png)) from the user. So, a white point will be appeared on the screen. As soon as you press the "SPACE" key on keyboard, the program starts collecting data for a particlular time. While this, the background bacomes black and the user should look at the white point during this time. If the data collection ends, the screen will become gray and the point will go to another location. The user can look everywhere and actually rest in this situation. Again, the "SPACE" key should be pressed for data collection and all of the explained process get repeated. Also, a folder called "clb" will be created in the user's folder. In this folder, 5 ".pickle" files will be created which were collected:
 
 - t.pickle: Time
 - x1.pickle: Eyes images
@@ -38,7 +38,18 @@ Also, after running, a folder called "subjects" will be created. In this folder,
 
 **11. Threshold:** To detect the blinks, The eyes aspect ratio (EAR) method is used. In the samples that are collected during sampling, EAR will be calculated. It is a vector during time. Then using that vector, the velocity of EAR will be calculated as a vector. So, the values above the determined threshold are considered as a blink. The default value for threshold is gained using try and error with my face. every face can have a different threshold.
 
-**12. Tune eye tracking model:** By activating this 
+**12. Tune eye tracking model:** By activating this checkbox, after pressing "start" button, the program starts retraining the two horizontal and vertical models of [the sixth block in the Owleye's structure](https://github.com/MustafaLotfi/Owleye/blob/main/docs/images/Owleye%20structure.png). After this, a folder called "mdl" will be created in the subject's folder. In this folder, there are 3 files:
+- mdl1.pickle: scaler of the face vector
+- mdl1-hrz.pickle: model for predicting the horizontal direction
+- mdl1-vrt.pickle: model for predicting the vertical direction
+
+**13. SS:** Abreviation of shift samples. While the white point is moving during calibration, the inputs and outputs (point locations) are not exactly aligned. Because of processing problems, the images (inputs) are a little later than the outputs. For example, if this parameter is equal to 20, it means you want to shift inputs in 20 samples. So, the 21th input will be aligned with 1st output.
+
+**14. Sampling data:** It means the later calculations are for the sampling data, not testing data.
+
+**15. Test data:** It means the later calculations are for the testing data, not sampling data.
+
+**16. Use IO model:** 
 
 
 
