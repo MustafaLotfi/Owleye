@@ -118,7 +118,7 @@ A model called io is trained to see whether the user is looking into the screen 
 
 **3) Changing the fine-tuning method:** In the current method, to retrain the algorithm, we considered to just change the weights in the last layer of the network. This fine-tuning process can be improved by implementing better solutions.
 
-**4) Adding camera calibration:** The computed head angles and positions are meaningful since the camera is no calibrated. By calibrating and having angles and positions of the head, we can calculate the real eyes' angles and positions. So, using these parameters, implement better methods for reaching to the eyes view point. Maybe just with a simple linear regression model and real parameters of the head and eyes we could reach to the target.
+**4) Adding camera calibration:** The computed head angles and positions are meaningless when the camera is not calibrated. By calibrating and having angles and positions of the head, we can calculate the real eyes' angles and positions. So, using these parameters, we can implement better methods to reach to the eyes view point. Maybe just with a simple linear regression model and real parameters of the head and eyes we could get to the target.
 
 **5) Creating a python library:** It can be desired to create a package from the code. So, everybody could just install and import the library and use it as they want.
 
