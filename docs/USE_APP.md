@@ -48,7 +48,7 @@ Also, after running, a folder called "subjects" will be created. In this folder,
 - mdl1-hrz.pickle: model for predicting the horizontal direction
 - mdl1-vrt.pickle: model for predicting the vertical direction
 
-**13. SS:** Abreviation of shift samples. While the white point is moving during calibration, the inputs and outputs (point locations) are not exactly aligned. Because of processing problems, the images (inputs) are a little later than the outputs. For example, if this parameter is equal to 20, it means you want to shift inputs in 20 samples. So, the 21th input will be aligned with 1st output.
+**13. SS:** Abbreviation of shift samples. While the white point is moving during calibration, the inputs and outputs (point locations) are not exactly aligned. Because of processing problems, the images (inputs) are a little later than the outputs. For example, if this parameter is equal to 20, it means you want to shift inputs in 20 samples. So, the 21th input will be aligned with 1st output.
 
 **14. Sampling data:** It means the later calculations are for the sampling data, not testing data.
 
@@ -58,7 +58,16 @@ Also, after running, a folder called "subjects" will be created. In this folder,
 
 **17. Get pixels:** If the user activates this checkbox, the program will predict the sampling or testing data.
 
-**18. See pixels:** If the user activates this checkbox, the program will show the points that the user has looked.
+**18. See pixels:** If the user activates this checkbox, the program will show the locations that the user has looked.
 
+**19. Get fixations:** The program will calculate the fixations of the user by three parameters of 20, 21, and 23.
 
+**20. ST:** Abbreviation for saccade threshold. To separate fixations, it is needed to firstly calculate the velocity of eye movement. So, by putting a threshold on the velocity, it's possible to compute the moments that the user changed their viewpoint.
 
+**21. DFT:** Abbreviation for discard fixation time. Fixations that last less than this time, will be removed.
+
+**22. MFR:** Abbreviation for merged fixations ratio. Fixations that are close together, will be added. Two numbers are for two directions.
+
+**23. Start:** This button starts the program. If you activate one of the checkboxes, the program just do that specific one. If you select some of the checkboxes, the program goes for all of the selected ones, one after another.
+
+**24. Stop:** This button stops the program in every step that it's running.
