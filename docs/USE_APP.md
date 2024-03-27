@@ -49,10 +49,10 @@ Also, after running, a folder called "subjects" will be created. In this folder,
 
 **11. Threshold:** To detect the blinks, The eyes aspect ratio (EAR) method is used. In the samples that are collected during sampling, EAR will be calculated. It is a vector during time. Then using that vector, the velocity of EAR will be calculated as a vector. So, the values above the determined threshold are considered as a blink. The default value for threshold is gained using try and error with my face. every face can have a different threshold.
 
-**12. Tune eye tracking model:** By activating this checkbox, after pressing "start" button, the program starts retraining the two horizontal and vertical models of [the sixth block in the Owleye's structure](https://github.com/MustafaLotfi/Owleye/blob/main/docs/images/Owleye%20structure.png). After this, a folder called "mdl" (modeling) will be created in the subject's folder. In this folder, there are 3 files:
+**12. Tune eye tracking model:** By activating this checkbox, after pressing "start" button, the program starts retraining the two base models of [the sixth block in the Owleye's structure](https://github.com/MustafaLotfi/Owleye/blob/main/docs/images/Owleye%20structure.png) which already are in the models folder in root. After this, a folder called "mdl" (modeling) will be created in the subject's folder. In this folder, there are 3 files:
 - mdl1.pickle: scaler of the face vector
-- mdl1-hrz.pickle: model for predicting the horizontal direction
-- mdl1-vrt.pickle: model for predicting the vertical direction
+- mdl1-hrz.h5: model for predicting the horizontal direction
+- mdl1-vrt.h5: model for predicting the vertical direction
 
 **13. SS:** Abbreviation of shift samples. While the white point is moving during calibration, the inputs and outputs (point locations) are not exactly aligned. Because of processing problems, the images (inputs) are a little later than the outputs. For example, if this parameter is equal to 20, it means you want to shift inputs in 20 samples. So, the 21th input will be aligned with 1st output.
 
