@@ -147,6 +147,9 @@ class Modeling():
             n_epochs_patience: The number of epochs and patience to intrupt training
             save_scaler: To save the scaler
             show_model: To show the model
+        
+        Returns:
+            None
         """
         print("Starting to train in_out model...")
         x1_load = []
@@ -251,6 +254,24 @@ class Modeling():
         save_scaler=False,
         show_model=False
         ):
+        """
+        Training the et (base) models. This method uses the dataset in the et folder of subject's number folder. The parameters should be lists.
+        So, you can train each model with several parameters and hyper parameters to see which one works better.
+
+        Parameters:
+            subjects: a list of subject numbers that you want to train the model with them.
+            models_list: You can train several models at a same time. So, you can enter a list of model numbers
+            min_max_brightness_ratio: To make the models robust to the brightness, the eyes images are multiplies into a number between two considered numbers
+            r_train_list: The ratio for train dataset
+            n_epochs_patience: The number of epochs and patience to intrupt training
+            shift_samples: To shift sample if there is a high delay
+            blinking_threshold: It can have three types --> d: default, ao: app offered, uo: user offered
+            save_scaler: To save the scaler
+            show_model: To show the model
+        
+        Returns:
+            None
+        """
         print("Starting to train eye_tracking models...")
         x1_load = []
         x2_load = []
@@ -387,6 +408,17 @@ class Modeling():
 
     @staticmethod
     def get_models_information(io=True, raw=True, show_model=False):
+        """
+        To write the models information in an excel file. It gets the information from attached pickle file for each model
+
+        Parameters:
+            io: If it's io or et
+            raw: If the model is trained or not
+            show_model: If you want to show the model
+
+        Returns:
+            None
+        """
         wb = Workbook()
         ws = wb.active
         ws['A1'] = "# of model"

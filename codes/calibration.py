@@ -1,5 +1,6 @@
 """This module is for calibration of the Owleye. The module includes the code to collect data from the user,
-while they are looking at the white point. The molude contains one class called Clb."""
+while they are looking at the white point. The molude contains one class called Clb. To understand this module, you should know
+about Mediapipe landmark detection."""
 
 
 import numpy as np
@@ -318,7 +319,14 @@ class Clb(object):
     @staticmethod
     def make_io(num, data_out):
         """
-        Mixing the data of calibration and out looking, to create a dataset of in-out"""
+        Mixing the data of calibration and out looking, to create a dataset of in-out
+        
+        Parameters:
+            data_out: data of user's looking at outside of the screen
+        
+        Returns:
+            None
+        """
         sbj_dir = ey.create_dir([ey.subjects_dir, f"{num}"])
         et_dir = ey.create_dir([sbj_dir, ey.CLB])
 

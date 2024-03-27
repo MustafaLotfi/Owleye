@@ -1,3 +1,5 @@
+"""This module is for seeing the camera stream. This module includes Camera class."""
+
 import cv2
 import time
 from codes.base import eyeing as ey
@@ -9,6 +11,15 @@ monitors = get_monitors()
 class Camera(object):
     running = True
     def raw(self, camera_id):
+        """
+        See camera stream
+        
+        Parameters:
+            camera_id: Camera ID
+        
+        Returns:
+            None
+        """
         frame_size, _, _, _ = ey.get_camera_properties(camera_id)
         cap = ey.get_camera(camera_id, frame_size)
         ey.pass_frames(cap, 100)
@@ -37,7 +48,15 @@ class Camera(object):
 
 
     def features(self, camera_id):
-        # Seeing features
+        """
+        See camera stream with landmarks and features
+        
+        Parameters:
+            camera_id: Camera ID
+        
+        Returns:
+            None
+        """
         some_landmarks_ids = ey.get_some_landmarks_ids()
 
         (

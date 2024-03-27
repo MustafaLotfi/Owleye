@@ -34,8 +34,9 @@ Download the release file. It is tested on Windows 10.
 
 ## Usage
 
-If you are using the source code, after activating the virtual environment, run main.py or main_gui.py. main_gui.py is a simplified version of main.py. There are some methods in main.py that are not in main_gui.py. Also, main_gui.py has GUI. Usage of main_gui.py is much easier. :
-`python main.py` or `python main_gui.py`
+If you are using the source code, after activating the virtual environment, run main.py or main_gui.py: `python main.py` or `python main_gui.py`
+
+main_gui.py is a simplified version of main.py. There are some methods in main.py that are not in main_gui.py. Also, main_gui.py has GUI. Usage of main_gui.py is much easier.
 
 If you have downloaded the Owleye.exe, run it. This file is exactly main_gui.py with the needed libraries.
 

@@ -1,3 +1,6 @@
+"""This module contains Smp class to collect inputs from the user. To understand this module you should know about Mediapipe library."""
+
+
 import numpy as np
 import cv2
 import time
@@ -14,6 +17,18 @@ class Smp(object):
     running = True
 
     def sampling(self, num, camera_id=0, gui=True):
+        """
+        Collecting inputs (eyes images and face vectors) from the user as the main sampling data.
+
+        Parameters:
+            num: subject number
+            camera_id: Camera ID
+            gui: If it's False, for having the ability to stop the program, a little window will be appeared. So, you can press "q" to stop it. If it's True, you can stop program using GUI.
+        
+        Returns:
+            None
+        """
+
         face_saving_time = 80
         return_face1 = True
         win_name = "Sampling"
@@ -73,7 +88,9 @@ class Smp(object):
                         if ((time.perf_counter() - t0) < face_saving_time) and return_face1:
                             return_face = True
 
-                        results = face_mesh.process(frame_rgb)
+                        results = face_mesh.process(frame_rgb) # Get inputs of the models
+                        
+                        # Get inputs of the models
                         (
                             features_success,
                             _,
@@ -134,6 +151,20 @@ class Smp(object):
 
 
     def accuracy(self, num, camera_id=0, clb_grid=(2, 2, 10)):
+        """
+        Collecting inputs (eyes images and face vectors) from the user to assess the accuracy of the models. It shows a point in a grid
+        and the user must look at that. So, with the true outputs (locations of the point) and the predicted outputs, it's possible to
+        evaluate the models. The evaulation part is in the eye_track.py module.
+
+        Parameters:
+            num: subject number
+            camera_id: Camera ID
+            clb_grid: The grid that you want to use for comparison
+
+        Returns:
+            None
+        """
+
         # Collecting data for testing
         tx0 = [["Track WHITE point", (0.05, 0.25), 1.5, ey.RED, 3],
         ["SPACE --> start", (0.05, 0.5), 1.5, ey.RED, 3],
@@ -255,7 +286,15 @@ class Smp(object):
 
 
     def latency(self, num, camera_id=0):
-        # Collecting data to assessing latency
+        """ Collecting data to assessing latency. The user should look at the left and right side of the screen when they see red or blue colors.
+
+        Parameters:
+            num: Subject number
+            camera_id: Camera ID
+        
+        Returns:
+            None
+        """
         tx1 = [["SPACE --> start", (0.05, 0.2), 1.3, ey.BLACK, 2],
             [f"ESC --> stop", (0.05, 0.4), 1.3, ey.BLACK, 2],
             ["RED --> Left", (0.05, 0.6), 1.3, ey.RED, 2],
