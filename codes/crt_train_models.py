@@ -1,3 +1,7 @@
+"""This file is for creating and training the neural network models for eye movement prediction. Also, this is for creating and training
+The in-out model which is for predicting whether the subject is looking inside of the screen or outside of the screen. To understand this
+module, you should know about how to build neural network models with keras and tensorflow"""
+
 from tensorflow.keras.layers import (Input, Conv2D, Flatten, MaxPooling2D,
                                      Dense, Dropout, Concatenate)
 from tensorflow.keras.models import Model
@@ -19,6 +23,16 @@ from openpyxl import Workbook
 class Modeling():
     @staticmethod
     def create_io():
+        """
+        creating in-out model
+        
+        Parameters:
+            None
+        
+        Returns:
+            None
+        """
+        
         print("Starting to create an empty in_out model...")
         inp1_shape = (ey.EYE_SIZE[0], ey.EYE_SIZE[1]*2, 1)
         x2_chosen_features = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -61,6 +75,16 @@ class Modeling():
 
     @staticmethod
     def create_et():
+        """
+        Creating eye tracking model. You can change the structure in following, as you want.
+        
+        Parameters:
+            None
+        
+        Returns:
+            None
+        """
+        
         print("Starting to create empty eye_tracking models...")
         inp1_shape = (ey.EYE_SIZE[0], ey.EYE_SIZE[1]*2, 1)
         x2_chosen_features = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -111,6 +135,19 @@ class Modeling():
         save_scaler=False,
         show_model=False
         ):
+        """
+        Training the io models. This method uses the dataset in the io folder of subject's number folder. The parameters should be lists.
+        So, you can train each model with several parameters and hyper parameters to see which one works better.
+
+        Parameters:
+            subjects: a list of subject numbers that you want to train the model with them.
+            models_list: You can train several models at a same time. So, you can enter a list of model numbers
+            min_max_brightness_ratio: To make the models robust to the brightness, the eyes images are multiplies into a number between two considered numbers
+            r_train_list: The ratio for train dataset
+            n_epochs_patience: The number of epochs and patience to intrupt training
+            save_scaler: To save the scaler
+            show_model: To show the model
+        """
         print("Starting to train in_out model...")
         x1_load = []
         x2_load = []

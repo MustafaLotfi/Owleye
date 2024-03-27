@@ -29,22 +29,14 @@ class Clb(object):
         This method creates the desired grid points.
 
         Parameters:
-            clb_grid: A list, e.g. ()
+            clb_grid: A list
             
         Returns:
             points: A list that contains n lists
         """
         point_ratio = 0.012
         if len(clb_grid) == 2:
-            """In this situation, a points appears and moves in rows.
-            For example, if the gird is (4, 50), it means a white point starts to move from left to right and
-            vice versa. It starts from top-left of the screen and moves towards right. Actually, its move includes the stops in 50 locations in the row.
-            Then the point goes quarter of the screen (from top) in the right, and starts the backward movement.
-            This process repeated until the point reaches the bottom of the screen.
-            
-            
-            """
-
+            # For going through just rows
             rows = clb_grid[0]
             points_in_row = clb_grid[1]
             points = []
@@ -74,6 +66,7 @@ class Clb(object):
                     points.append(smp_in_p)
 
         elif len(clb_grid) == 3:
+            # For appearing stationary (not moving)
             rows = clb_grid[0]
             cols = clb_grid[1]
             smp_in_pnt = clb_grid[2]
@@ -101,6 +94,7 @@ class Clb(object):
                     points.append(smp_in_p)
 
         elif len(clb_grid) == 4:
+            # For going through rows and columns. It is suggested
             rows = clb_grid[0]
             points_in_row = clb_grid[1]
             cols = clb_grid[2]
@@ -164,6 +158,19 @@ class Clb(object):
 
 
     def et(self, num, camera_id=0, info=INFO, clb_grid=CALIBRATION_GRID):
+        """
+        Collecting the data (inputs and outputs of the models)
+        
+        Parameters:
+            num: Subject's number
+            camera_id: Camera ID
+            info: Subject's information
+            clb_grid: Calibration grid
+        
+        Retruns:
+            None
+        
+        """
         print("\nCalibration started!")
         name, descriptions = info
         tx0 = [["Follow WHITE point", (0.05, 0.25), 1.5, ey.RED, 3],
@@ -244,9 +251,11 @@ class Clb(object):
                             if button == 27:
                                 break
                             while True:
-                                frame_success, frame, frame_rgb = ey.get_frame(cap)
+                                frame_success, frame, frame_rgb = ey.get_frame(cap)     # Get image
                                 if frame_success:
-                                    results = face_mesh.process(frame_rgb)
+                                    results = face_mesh.process(frame_rgb) # Get the landmarks using image
+                                    
+                                    # Get inputs of the models
                                     (
                                         features_success,
                                         _,
@@ -265,6 +274,7 @@ class Clb(object):
                                         some_landmarks_ids
                                     )
                                     if features_success:
+                                        # Putting the inputs of the models into lists
                                         t_vec.append(round(time.perf_counter() - t1, 3))
                                         eyes_vec.append(eyes_frame_gray)
                                         inp_scalars_vec.append(features_vector)
@@ -307,6 +317,8 @@ class Clb(object):
 
     @staticmethod
     def make_io(num, data_out):
+        """
+        Mixing the data of calibration and out looking, to create a dataset of in-out"""
         sbj_dir = ey.create_dir([ey.subjects_dir, f"{num}"])
         et_dir = ey.create_dir([sbj_dir, ey.CLB])
 
@@ -337,6 +349,17 @@ class Clb(object):
 
 
     def out(self, num, camera_id=0, n_smp_in_cls=300):
+        """
+        Collecting data while the user is looking out of the screen
+        
+        Parameters:
+            num: Subject number
+            camera_id: Camera ID
+            n_smp_in_cls: The number of samples for each class
+        
+        Returns:
+            None
+        """
         print("Getting out data...")
         out_class_num = 1
 

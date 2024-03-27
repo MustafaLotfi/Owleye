@@ -1,3 +1,14 @@
+"""The project "Owleye" turns your webcam to an eye tracker. You can use it to know which point in the screen you are looking.
+The project has several parts that you can get familiar with, using the documentations that I've provided in README.md and docs/USE_APP.md files.
+Before using this project, make sure that you have read these documentations.
+This file contains the code for a GUI. There are some points that you should know about a GUI of PyQt5 to understand the following code.
+Also, unfortunately I didn't add proper comments in this file and now it's a little hard to understand it (Now I am really embarrassed for this :)). But, totally, the GUI is connected
+To the modules in the codes folder, using a worker. the worker gives the ability for multithreading. For understanding the code of eye tracker,
+I suggest you to just visit the modules in the codes folder and see how I used them in main.py
+
+Programmer: Mostafa Lotfi"""
+
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QThread
 from codes.work import Worker
@@ -340,6 +351,7 @@ class Ui_MainWindow(object):
         self.chb_fix.clicked.connect(self.fix_uncheck)
         
     def b_start_action(self):
+        # # After it's activated, the algorithm receives user's data and start to do all the needed actions
         self.num = int(self.le_num.text())
         self.cam_id = int(self.le_cam.text())
         self.name = self.le_name.text()
@@ -370,7 +382,9 @@ class Ui_MainWindow(object):
         self.mfr = float(mfr[:i]), float(mfr[i+1:])
 
         self.worker = Worker()
+        """ Worker is created for gaining the ability of multithreading. Unless, you couldn't stop the program" while it is running """
 
+        # # Giving the data that the user entered, to the program.
         self.worker.num = self.num
         self.worker.camera_id = self.cam_id
         self.worker.info = (self.name, self.dcp)

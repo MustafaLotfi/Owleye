@@ -34,10 +34,10 @@ Download the release file. It is tested on Windows 10.
 
 ## Usage
 
-If you are using the source code, after activating the virtual environment, run main.py:
-`python main.py`
+If you are using the source code, after activating the virtual environment, run main.py or main_gui.py. main_gui.py is a simplified version of main.py. There are some methods in main.py that are not in main_gui.py. Also, main_gui.py has GUI. Usage of main_gui.py is much easier. :
+`python main.py` or `python main_gui.py`
 
-or if you have downloaded the Owleye.exe, run it.
+If you have downloaded the Owleye.exe, run it. This file is exactly main_gui.py with the needed libraries.
 
 This is the opened window:
 
@@ -83,7 +83,7 @@ We implemented calibration on 20 male subjects and collected 221000 samples (eye
 
 ### Modeling
 
-For the sixth block in [Owleye's structure](https://github.com/MustafaLotfi/Owleye/blob/main/README.md#:~:text=Method-,Owleye%27s%20structure%3A,-While%20the%20camera), Two Convolutional Neural Network (CNN) models are used to predict the user's eye view point in the [horizonal](https://github.com/MustafaLotfi/Owleye/blob/main/models/et/trained/mdl1-hrz.h5) and [vertical](https://github.com/MustafaLotfi/Owleye/blob/main/models/et/trained/mdl1-vrt.h5) directions on the monitor. These models are trained using the aforementioned [dataset](https://github.com/MustafaLotfi/Owleye/tree/main#:~:text=should%20be%20made.-,Dataset,-We%20implemented%20calibration). We called them "base models". They are located in the models folder.
+For the sixth block in [Owleye's structure](https://github.com/MustafaLotfi/Owleye/blob/main/README.md#:~:text=Method-,Owleye%27s%20structure%3A,-While%20the%20camera), Two Convolutional Neural Network (CNN) models are used to predict the user's eye view point in the [horizonal](https://github.com/MustafaLotfi/Owleye/blob/main/models/et/trained/mdl1-hrz.h5) and [vertical](https://github.com/MustafaLotfi/Owleye/blob/main/models/et/trained/mdl1-vrt.h5) directions on the monitor. These models are trained using the aforementioned [dataset](https://github.com/MustafaLotfi/Owleye/tree/main#:~:text=should%20be%20made.-,Dataset,-We%20implemented%20calibration). We called them "base models" or "et models" (Abbreviation of eye tracking). They are located in the models folder.
 
 **Network architecture:**
 ![Screenshot 2024-03-16 163427](https://github.com/MustafaLotfi/Owleye/assets/53625380/02d196c2-c9c2-497d-b1e5-d3d7b2a29160)
@@ -107,9 +107,9 @@ Indeed, while the user is blinking, they aren't seeing anywhere. So, the data in
 
 ![Screenshot 2024-03-16 201348](https://github.com/MustafaLotfi/Owleye/assets/53625380/9ba0751f-ac96-46cd-a878-053a7e55158c)
 
-### Input-output model
+### In-out model
 
-A model called io is trained to see whether the user is looking into the screen or not. This model is in the "models" folder.
+A model called io is trained to see whether the user is looking into the screen or not. This is because the et model always predict a point, no matter the user is looking inside of the screen or outside of it. So, because the et (base models) are trained using the data of inside of the screen, the et models can't extrapolate when the user is looking outside of the screen. This model is in the "models/io" folder.
 
 ## Limitations and future works
 **1) Recunstructing whole code:** The structure of the code is terrible:)) Owleye is made in 2021 and I have not dedicated so much of time to improve it since then. Therefore, a lot of things have changed. The structure of the code totally can be redesigned to reach a better performance. The code can be more object oriented. the libraries (mediapipe and tensorflow) have changed a lot. So, the algorithm can be rewritten considering the changes.
