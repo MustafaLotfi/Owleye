@@ -1,3 +1,5 @@
+"""This module is for seeing the inputs and the outputs."""
+
 import cv2
 import pickle
 from codes.base import eyeing as ey
@@ -14,6 +16,16 @@ class See(object):
 
     @staticmethod
     def data_features(num, target_fol=ey.CLB):
+        """
+        Seeing the inputs in each one of the folders
+        
+        Parameters:
+            num: subject number
+            target_fol: targeted folder
+        
+        Returns:
+            None
+        """
         sbj_dir = ey.create_dir([ey.subjects_dir, f"{num}"])
         if target_fol == ey.CLB:
             target_dir = ey.create_dir([sbj_dir, ey.CLB])
@@ -67,6 +79,19 @@ class See(object):
 
 
     def pixels_smp(self, num, n_monitors_data=len(ey.monitors), show_in_all_monitors=False, win_size=(1280,720), show_fixations=False):
+        """
+        See the eye viewpoint of the user during sampling.
+
+        Parameters:
+            num: subject number
+            n_monitors_data: The number of monitors while the data was collecting.
+            show_in_all_monitors: Just for the moment that we have more than one monitor. So we tune the parameters to show the data in all of them
+            win_size: size of the appeared window
+            show_fixations: It shows the fixations
+        
+        Returns:
+            None
+        """
         little_win = False
         smp_dir = ey.create_dir([ey.subjects_dir, f"{num}", ey.SMP])
         try:
@@ -158,6 +183,17 @@ class See(object):
 
 
     def pixels_acc(self, num, n_monitors_data=len(ey.monitors), show_in_all_monitors=False):
+        """
+        See the eye viewpoint of the user during testing.
+
+        Parameters:
+            num: subject number
+            n_monitors_data: The number of monitors while the data was collecting.
+            show_in_all_monitors: Just for the moment that we have more than one monitor. So we tune the parameters to show the data in all of them
+        
+        Returns:
+            None
+        """
         acc_dir = ey.create_dir([ey.subjects_dir, f"{num}", ey.ACC])
         if ey.file_existing(acc_dir, 'y_mdf.pickle'):
             [y, y_prd] = ey.load(acc_dir, ['y_mdf', 'y_prd_mdf'])
@@ -200,6 +236,17 @@ class See(object):
 
     @staticmethod
     def blinks_plot(num, threshold=ey.DEFAULT_BLINKING_THRESHOLD, target_fol="er"):
+        """
+        Plotting the eyes aspect ratio (EAR) vector to tune threshold
+        
+        Parameters:
+            num: subject number
+            threshold: the threshold of ear velocity
+            target_fol: targeted folder
+        
+        Returns:
+            None
+        """
         sbj_dir = ey.create_dir([ey.subjects_dir, f"{num}"])
         if target_fol == ey.ER:
             target_dir = ey.create_dir([sbj_dir, ey.ER])
@@ -251,6 +298,17 @@ class See(object):
 
 
     def user_face(self, num, threshold="d", save_threshold=False):
+        """
+        Show the user's face to tune blinking threshold.
+
+        Parameters:
+            num: subject number
+            threshold: the blinking threshold
+            save_threshold: save the tuned threshold
+        
+        Returns:
+            None
+        """
         scaling_frame = 5
         sbj_dir = ey.create_dir([ey.subjects_dir, f"{num}"])
         smp_dir = ey.create_dir([sbj_dir, ey.SMP])

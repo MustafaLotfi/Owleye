@@ -1,3 +1,5 @@
+"""This module is for retraining the base (et) models. It contains the Tuning class."""
+
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.models import load_model
 from tensorflow.keras.utils import to_categorical
@@ -27,6 +29,24 @@ class Tuning(object):
         show_model=False,
         delete_files=False
         ):
+        """
+        You can retrain the base (et) models using this method. You have the possibility to retrain the models with various hyper parameters
+        to see which one has better performance. So you can enter lists as inputs.
+
+        Parameters:
+            subjects: list of subjects
+            models_list: a list of models' number
+            r_train_list: the ratio of the data that you want for training
+            n_epochs_patience: number of epochs and patience
+            trainable_layers: The number of trainable layer's (ending layers of the network)
+            shift_samples: shift the inputs to align with outputs. This is because of the delay.
+            blinking_threshold: Blinking threshold for removing the samples that are during blink
+            show_model: Show the structure of the model
+            delete_files: delete the dataset after retraining
+        
+        Returns:
+            None
+        """
         print("\nStarting to retrain eye_tracking model...")
         x1_scaler, x2_scaler, y_scaler = j_load(ey.scalers_dir + f"scalers_et_main.bin")
         kk = 0

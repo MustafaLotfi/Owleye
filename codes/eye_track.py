@@ -1,3 +1,6 @@
+"""This module contains the EyeTrack method. In this method, the eye movements will be predicted using the inputs and retrained models.
+Also the fixations will be calculated."""
+
 import pickle
 from tensorflow.keras.models import load_model
 import numpy as np
@@ -19,6 +22,21 @@ class EyeTrack(object):
         use_io=False,
         delete_files=False
         ):
+        """
+        Predicting the eye movements using the inputs (eyes images and face vectors). This can be done on sampling (smp) data,
+        tsting (acc) data or latency (ltn) data. You can predict outputs for several subjects and with several models, to exactly know
+        which one is working better. In this method, the samples that are during blinking, will be deleted. The values for eye movements
+        are between 0 and 1. It means it is independant to the size of screen.
+
+        Parameters:
+            subjects: list of subjects that we want to predict their eye viewpoints
+            models_list: list of models that we want to use them to predict the eye viewpoints
+            target_fol: the targeted folder that we want to predict its data. smp, acc, or ltn
+            shift_smaples: whether or not shift the inputs
+            blinking_threshold: blinking threshold. It can takes "d" as default, "uo" as user offered and "ao" as app offered.
+            use_io: whether or not use the io model
+            delete_files: whethere or not remove the inputs after prediction. Because of size of the saved images
+        """
         tfn = 1
         if target_fol == ey.ACC:
             tfn = 2
@@ -251,18 +269,33 @@ class EyeTrack(object):
 
     @staticmethod
     def get_fixations(
-            subjects,
-            n_monitors_data=1,
-            t_discard=0.1,
-            x_merge=0.2/2,
-            y_merge=0.25/2,
-            vx_thr=2.5,
-            vy_thr=2.5
-    ):
-          # pxr  --> pixel ratio (pixel/screen_width)
-          # pxr
-          # pxr/sec
-          # pxr/sec
+        subjects,
+        n_monitors_data=1,
+        t_discard=0.1,
+        x_merge=0.2/2,
+        y_merge=0.25/2,
+        vx_thr=2.5,
+        vy_thr=2.5
+        ):
+        """
+        Compute the fixations using eye movements. IV-T method is implemented for this. You can do this for all the subjets once.
+
+        Parameters:
+            subjects: subjects list
+            n_monitors_data: The number of monitors while the data is collected.
+            t_discard: fixations lower than this will be removed.
+            x_merge: fixations closer than this value (horizontal direction) will be added together.
+            y_merge: fixations closer than this value (vertical direction) will be added together.
+            vx_thr: This is the threshold for detecting saccades in the x direction.
+            vy_thr: This is the threshold for detecting saccades in the y direction.
+        
+        Returns:
+            None
+        """
+        # pxr  --> pixel ratio (pixel/screen_width)
+        # pxr
+        # pxr/sec
+        # pxr/sec
 
         for num in subjects:
             smp_dir = ey.create_dir([ey.subjects_dir, f"{num}", ey.SMP])
