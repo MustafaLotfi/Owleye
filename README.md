@@ -107,6 +107,9 @@ Indeed, while the user is blinking, they aren't seeing anywhere. So, the data in
 
 ![Screenshot 2024-03-16 201348](https://github.com/MustafaLotfi/Owleye/assets/53625380/9ba0751f-ac96-46cd-a878-053a7e55158c)
 
+### Input-output model
+
+A model called io is trained to see whether the user is looking into the screen or not. This model is in the "models" folder.
 
 ## Limitations and future works
 **1) Recunstructing whole code:** The structure of the code is terrible:)) Owleye is made in 2021 and I have not dedicated so much of time to improve it since then. Therefore, a lot of things have changed. The structure of the code totally can be redesigned to reach a better performance. The code can be more object oriented. the libraries (mediapipe and tensorflow) have changed a lot. So, the algorithm can be rewritten considering the changes.
