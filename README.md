@@ -83,7 +83,7 @@ We implemented calibration on 20 male subjects and collected 221000 samples (eye
 
 ### Modeling
 
-For the sixth block in [Owleye's structure](https://github.com/MustafaLotfi/Owleye/blob/main/README.md#:~:text=Method-,Owleye%27s%20structure%3A,-While%20the%20camera), Two Convolutional Neural Network (CNN) models are used to predict the user's eye view point in the [horizonal](https://github.com/MustafaLotfi/Owleye/blob/main/models/et/trained/mdl1-hrz.h5) and [vertical](https://github.com/MustafaLotfi/Owleye/blob/main/models/et/trained/mdl1-vrt.h5) directions on the monitor. These models are trained using the [dataset](https://github.com/MustafaLotfi/Owleye/tree/main#:~:text=should%20be%20made.-,Dataset,-We%20implemented%20calibration). We called them "base models". They are located in the models folder.
+For the sixth block in [Owleye's structure](https://github.com/MustafaLotfi/Owleye/blob/main/README.md#:~:text=Method-,Owleye%27s%20structure%3A,-While%20the%20camera), Two Convolutional Neural Network (CNN) models are used to predict the user's eye view point in the [horizonal](https://github.com/MustafaLotfi/Owleye/blob/main/models/et/trained/mdl1-hrz.h5) and [vertical](https://github.com/MustafaLotfi/Owleye/blob/main/models/et/trained/mdl1-vrt.h5) directions on the monitor. These models are trained using the aforementioned [dataset](https://github.com/MustafaLotfi/Owleye/tree/main#:~:text=should%20be%20made.-,Dataset,-We%20implemented%20calibration). We called them "base models". They are located in the models folder.
 
 **Network architecture:**
 ![Screenshot 2024-03-16 163427](https://github.com/MustafaLotfi/Owleye/assets/53625380/02d196c2-c9c2-497d-b1e5-d3d7b2a29160)
