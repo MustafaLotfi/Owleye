@@ -52,11 +52,16 @@ You can learn about the program's usage in [this tutorial](https://github.com/Mu
 ![Owleye structure](https://github.com/MustafaLotfi/Owleye/blob/main/docs/images/Owleye%20structure.png)
 
 
-While the camera is streaming, Owleye gets the images and extracts head and eyes features. Then it feeds this data to the neural networks (NN) models to calculate the user's eye viewpoint.
+While the camera is streaming, Owleye gets the images and extracts head and eyes features (blocks 1-5 in above image). Then it feeds this data to the neural networks (NN) models to calculate the user's eye viewpoint (block 6 in above image).
 
-### Input
+### Calculating the sixth block's inputs
 
-As in the first block of the [Owleye's structure](https://github.com/MustafaLotfi/Owleye/blob/main/README.md#:~:text=Method-,Owleye%27s%20structure%3A,-While%20the%20camera) is visible, it receives the user's images during time and after detecting thier face, in the second block it extracts their 478 landmarks/keypoints. It's done by canonical face model which is in the world coordinates. Owleye uses Mediapipe package to implement these steps. Then in the third block, Owleye compute the face rotation and position vectors by extracted landmarks. In the fourth block, Owleye extracts the eyes' images using landmarks and gives them to the fifth block to calculate iris positions. Finlaly, three type of inputs are ready to be fed to sixth block which is eye viewpoint predictive model:
+As in the first block of the [Owleye's structure](https://github.com/MustafaLotfi/Owleye/blob/main/README.md#:~:text=Method-,Owleye%27s%20structure%3A,-While%20the%20camera) is visible, it receives the user's images during time and after detecting thier face, in the second block it extracts their 478 landmarks/keypoints. It's done by canonical face model which is in the world coordinates. Owleye uses Mediapipe package to implement these steps. Then in the third block, Owleye computes the face rotation and position vectors by extracted landmarks. In the fourth block, Owleye extracts the eyes' images using landmarks and gives them to the fifth block to calculate iris positions. The image below shows the landmarks and the rotaion vector on face:
+
+![Screenshot 2024-03-27 035946](https://github.com/MustafaLotfi/Owleye/assets/53625380/cc31d4c2-b359-41aa-824f-03f4ec075714)
+
+
+Finlaly, three type of inputs are ready to be fed to sixth block which is eye viewpoint predictive model:
 - **Head rotation and position vectors:** (r1, r2, r3), (x, y, z). Rotation and position, world coordinates.
 - **Left and right eyes iris:** (xl, yl), (xr, yr). These are calculated respect to the eyes (image coordinates).
 - **Eyes images:** Two images are concatenated together in rows.
@@ -65,7 +70,7 @@ We will consider the first and the second inputs as the **face vector** which ha
 
 ![Screenshot 2024-03-14 034920](https://github.com/MustafaLotfi/Owleye/assets/53625380/b1f44929-a867-45eb-b5be-211c5f41f08c)
 
-### Output
+### Sixth block's output
 
 The output of Owleye is a vector of user's eye view points on screen (xp, yp) per sample (an image and a vector). During time, this output will be a matrix. The matrix's shape is n by 2. The values are normalized between 0 and 1. For example, the program tracks the user for 10 seconds, with an FPS of 15, we have a matirx with a shape of 150 by 2. The first column is for the horizontal direction and the second is for the vertical direction.
 
