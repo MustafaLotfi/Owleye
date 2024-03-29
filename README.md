@@ -97,7 +97,7 @@ To customize Owleye for each person, we considered the approach of retraining th
 
 ### Fixations
 
-The [IV-T method](https://tobii.23video.com/the-tobii-pro-fixation-filters-eye-movement) is used to extract user's fixations. A [fixation](https://en.wikipedia.org/wiki/Fixation_(visual)) is a series of eye view points that are close together. So, first of all we removed the outliers using median filter. Then we merged close fixations and removed short ones. below image shows the fixations in a monitor during a certain time. In [this file](https://github.com/MustafaLotfi/Owleye/blob/main/codes/jupyter_notebook/fixations_in_AOIs.ipynb) you can see the way of detecting the fixations.
+The [IV-T method](https://tobii.23video.com/the-tobii-pro-fixation-filters-eye-movement) is used to extract user's fixations. A [fixation](https://en.wikipedia.org/wiki/Fixation_(visual)) is a series of eye view points that are close together. So, first of all we removed the outliers using median filter. Then we merged close fixations and removed short ones. below image shows the fixations in a monitor during a certain time. In [this file](https://github.com/MustafaLotfi/Owleye/blob/main/codes/jupyter_notebook/fixations_in_AOIs.ipynb) you can see the way of calculating the fixations.
 
 ![Screenshot 2024-03-16 195233](https://github.com/MustafaLotfi/Owleye/assets/53625380/57b9e984-5f54-48a0-984e-110c65b2cc20)
 
