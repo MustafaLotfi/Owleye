@@ -48,7 +48,9 @@ class Tuning(object):
             None
         """
         print("\nStarting to retrain eye_tracking model...")
-        x1_scaler, x2_scaler, y_scaler = j_load(ey.scalers_dir + f"scalers_et_main.bin")
+        x1_scaler, x2_scaler, y_scaler = j_load(ey.scalers_dir + f"scalers_et_main.bin")    # Loading the scaler
+
+        # Going through each subject's folder
         kk = 0
         for num in subjects:
             print(f"Subject number {num} in process...")
@@ -81,6 +83,7 @@ class Tuning(object):
 
                 blinking = ey.get_blinking(t_mat, eyes_ratio, blinking_threshold)[1]
 
+                # Removing the samples that are during blink
                 x1_load = []
                 x2_load = []
                 y_load = []
@@ -95,8 +98,6 @@ class Tuning(object):
                             x2_load.append(x20)
                             y_load.append(y0)
 
-                
-
                 print(f"All samples of subjects: {k2}, Not blinking: {k1}")
                 x1_load = np.array(x1_load)
                 x2_load = np.array(x2_load)
@@ -106,8 +107,7 @@ class Tuning(object):
 
                 # Displaying data
 
-                # ### Preparing modified calibration data to feeding in eye_tracking model
-
+                # ### Preparing modified calibration data to feeding in eye_tracking model. Going through each model to predict the output
                 print("Normalizing modified calibration data to feeding in eye_tracking model...")
                 for mdl_num in models_list:
                     print("Loading public eye_tracking models...")
@@ -122,6 +122,7 @@ class Tuning(object):
                     # Shuffling and splitting data to train and val
                     x1_shf, x2_shf, y_hrz_shf, y_vrt_shf = shuffle(x1, x2, y_load[:, 0], y_load[:, 1])
 
+                    # Going through each training ratio in the ratio list
                     for rt in r_train_list:
                         n_train = int(rt * n_smp)
                         x1_train, x2_train = x1_shf[:n_train], x2_shf[:n_train]
@@ -135,11 +136,13 @@ class Tuning(object):
                         print(x1_train.shape, x1_val.shape, y_hrz_train.shape, y_hrz_val.shape,
                               x2_train.shape, x2_val.shape, y_vrt_train.shape, y_vrt_val.shape)
 
-                        # Callback for training
-                        
+                        # Callback for training. Going through each epoch and patience in epochs list
                         for nep in n_epochs_patience:
                             cb = EarlyStopping(patience=nep[1], verbose=1, restore_best_weights=True)
+
+                            # Going through each nubmer for trainable_layers list
                             for tl in trainable_layers:
+                                # Retraining the models and saving them
                                 model_hrz = load_model(ey.et_trained_dir + mdl_name + "-hrz.h5")
                                 model_vrt = load_model(ey.et_trained_dir + mdl_name + "-vrt.h5")
                                 info["trained_mdl_num"] = mdl_num

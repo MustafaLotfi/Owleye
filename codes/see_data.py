@@ -1,7 +1,6 @@
 """This module is for seeing the inputs and the outputs."""
 
 import cv2
-import pickle
 from codes.base import eyeing as ey
 import time
 import matplotlib.pyplot as plt
@@ -128,9 +127,9 @@ class See(object):
                 t0 = prd1[0]
                 fxn_exist = False
                 if show_fixations:
-                    time_comparision = t0 - fixations[:, 0]
-                    time_comparision[time_comparision<0] = 1000
-                    matched_t_fxn_arg = time_comparision.argmin()
+                    time_comparison = t0 - fixations[:, 0]
+                    time_comparison[time_comparison<0] = 1000
+                    matched_t_fxn_arg = time_comparison.argmin()
                     if (t0 > fixations[matched_t_fxn_arg, 0]) and (t0 < (fixations[matched_t_fxn_arg, 0]+fixations[matched_t_fxn_arg, 1])):
                         fxn_exist = True
                 prd0 = prd1[1:]
@@ -257,7 +256,6 @@ class See(object):
         elif target_fol == ey.ACC:
             target_dir = ey.create_dir([sbj_dir, ey.ACC])
         else:
-            data = None
             print("The folder isn't valid!!")
             quit()
         er_dir = ey.create_dir([sbj_dir, ey.ER])
@@ -282,7 +280,7 @@ class See(object):
             eyes_ratio_v_blink_vec = eyes_ratio_v_blink_mat[0]
 
         # print(eyes_ratio_v_vec)
-        fig = plt.figure()
+        plt.figure()
         plt.plot(eyes_ratio_v_vec)
         plt.plot(eyes_ratio_v_blink_vec)
         plt.title(f"Velocity of Eyes Ratio ({target_fol})")

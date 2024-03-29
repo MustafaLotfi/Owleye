@@ -16,6 +16,24 @@ PATH2ROOT_ABS = os.path.dirname(__file__) + "/../../"
 def from_landmarks_to_depth(
     frame_rgb, eye_landmarks, image_size, is_right_eye=False, focal_length=None
 ):
+    """
+    Predicting the iris position using eyes landmarks
+
+    Parameters:
+        frame_rgb: the frame (RGB)
+        eye_landmarks: the landmarks of the eyes
+        image_size: the image size
+        is_right_eye: whether or not it's the right eye
+        focal_length: the focal length of the camera
+
+    Returns:
+        success: whether or not the iris is detected
+        depth: distance to the camera
+        iris_size: the size of the iris
+        iris_landmarks: iris landmarks
+        eye_contours: eye contours
+        iris_landmarks_respect: iris landmarks respect to the eyes
+    """
     if focal_length is None:
         focal_length = frame_rgb.shape[1]
 

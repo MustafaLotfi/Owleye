@@ -172,7 +172,10 @@ class Clb(object):
             None
         
         """
+        
         print("\nCalibration started!")
+        
+        # Some interactions with user
         name, descriptions = info
         tx0 = [["Follow WHITE point", (0.05, 0.25), 1.5, ey.RED, 3],
         ["SPACE --> start", (0.05, 0.5), 1.5, ey.RED, 3],
@@ -198,6 +201,7 @@ class Clb(object):
             sbj_dir = ey.create_dir([sbj_dir])
             clb_points = self.create_grid(clb_grid)
 
+            # Some landmarks needed for calculation of face vectors
             some_landmarks_ids = ey.get_some_landmarks_ids()
 
             (
@@ -225,9 +229,12 @@ class Clb(object):
             ey.show_clb_win(win_name, texts=tx0, win_color=ey.WHITE)
             cv2.waitKey(10000)
             cv2.destroyWindow(win_name)
+
+            # Going through monitors
             for (i_m, m) in enumerate(ey.monitors):
                 win_name = f"Calibration-{i_m}"
                 ey.big_win(win_name, i_m * m.width)
+                # Going to each series of points (for example, one row of points)
                 for item in clb_points:
                     if not self.running and (i_m != 0):
                         break
@@ -246,6 +253,8 @@ class Clb(object):
                         ey.pass_frames(cap)
                         t1 = time.perf_counter()
                         s = len(item)
+
+                        # Going through each point in each series
                         for pnt in item:
                             ey.show_clb_win(win_name, pnt)
                             button = cv2.waitKey(1)
@@ -254,9 +263,9 @@ class Clb(object):
                             while True:
                                 frame_success, frame, frame_rgb = ey.get_frame(cap)     # Get image
                                 if frame_success:
-                                    results = face_mesh.process(frame_rgb) # Get the landmarks using image
+                                    results = face_mesh.process(frame_rgb) # Predicting the landmarks using image
                                     
-                                    # Get inputs of the models
+                                    # Getting the inputs of the models
                                     (
                                         features_success,
                                         _,
@@ -403,11 +412,15 @@ class Clb(object):
         i = 0
         ey.pass_frames(cap)
         t1 = time.perf_counter()
+
+        # Going through frames
         while True:
             frame_success, frame, frame_rgb = ey.get_frame(cap)
             if frame_success:
+                # Predicting the face landmarks
                 results = face_mesh.process(frame_rgb)
 
+                # Calculating the face features
                 (
                     features_success,
                     _,
@@ -452,6 +465,19 @@ class Clb(object):
         self.make_io(num, [x1, x2, y])
 
     def calculate_threshold(self, num, camera_id=0):
+        """
+        Calculating the blinking threshold automatically. Here we collect data and tell the user to blink during a certain time.
+        Then we gain the maximum value for thier eye movement velocity and it's considered as a blink. So, we tune the threshold
+        base don that.
+
+        Parameters:
+            num: subject number
+            camera_id: Camera ID
+        
+        Returns:
+            None
+        """
+
         print("\nGetting eyes ratio...")
         tx0 = [["Look somewhere", (0.02, 0.3), 1.1, ey.RED, 2],
         ["SPACE --> start/pause", (0.02, 0.6), 1.1, ey.RED, 2]]
@@ -467,13 +493,13 @@ class Clb(object):
 
         face_mesh = ey.get_mesh()
 
-        fps_vec = []
         eyes_ratio_mat = []
         t_mat = []
         t0 = time.perf_counter()
         cap = ey.get_camera(camera_id, frame_size)
         ey.pass_frames(cap, 100)
 
+        # Going through frames, if the user pressed 'SPACE', the program will be paused, if they press 'q', the program will be stopped.
         i = 0
         while self.running:
             win_name = f"Calibration-{i}"
@@ -496,7 +522,10 @@ class Clb(object):
                         break
                     frame_success, frame, frame_rgb = ey.get_frame(cap)
                     if frame_success:
+                        # Predicting the face landmarks
                         results = face_mesh.process(frame_rgb)
+
+                        # Calculating the face features
                         (
                             features_success,
                             _,

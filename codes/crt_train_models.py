@@ -3,14 +3,12 @@ The in-out model which is for predicting whether the subject is looking inside o
 module, you should know about how to build neural network models with keras and tensorflow"""
 
 from tensorflow.keras.layers import (Input, Conv2D, Flatten, MaxPooling2D,
-                                     Dense, Dropout, Concatenate)
+                                     Dense, Concatenate)
 from tensorflow.keras.models import Model
 import numpy as np
 import os
-import pickle
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.models import load_model
-from tensorflow.keras.utils import to_categorical
 from sklearn.preprocessing import StandardScaler
 from sklearn.utils import shuffle
 from joblib import dump as j_dump
@@ -24,7 +22,7 @@ class Modeling():
     @staticmethod
     def create_io():
         """
-        creating in-out model
+        creating in-out model (a CNN model) using tensorflow and keras
         
         Parameters:
             None
@@ -76,7 +74,7 @@ class Modeling():
     @staticmethod
     def create_et():
         """
-        Creating eye tracking model. You can change the structure in following, as you want.
+        Creating eye tracking model (CNN model) using tensorflow and keras. You can change the structure in following, as you want.
         
         Parameters:
             None
@@ -85,6 +83,7 @@ class Modeling():
             None
         """
         
+
         print("Starting to create empty eye_tracking models...")
         inp1_shape = (ey.EYE_SIZE[0], ey.EYE_SIZE[1]*2, 1)
         x2_chosen_features = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -152,6 +151,7 @@ class Modeling():
             None
         """
         print("Starting to train in_out model...")
+        # Loading all subjects
         x1_load = []
         x2_load = []
         y_load = []
@@ -170,7 +170,7 @@ class Modeling():
         n_smp = x1_load.shape[0]
         print(f"\nNumber of samples : {n_smp}")
 
-        # changing brightness
+        # Going through each brightness in min_max_brightness_ratio list
         j = 1
         for mbr in min_max_brightness_ratio:
             x1_new = x1_load.copy()
@@ -178,6 +178,7 @@ class Modeling():
                 r = random.uniform(mbr[0], mbr[1])
                 x1_new[i] = (x1_new[i] * r).astype(np.uint8)
 
+            # Going through each model
             for raw_mdl_num in models_list:
                 info = ey.load(ey.io_raw_dir, [ey.MDL + f"{raw_mdl_num}"])[0]
                 x2_chosen_features = info["x2_chosen_features"]
@@ -195,6 +196,7 @@ class Modeling():
                 if save_scaler:
                     j_dump(scalers, ey.scalers_dir + f"scl_io_{len(x2_chosen_features)}.bin")
 
+                # Going through each training ratio in r_train_list
                 for rt in r_train_list:
                     n_train = int(rt * n_smp)
                     x1_train, x2_train = x1[:n_train], x2[:n_train]
@@ -209,7 +211,9 @@ class Modeling():
                     x_train = [x1_train, x2_train]
                     x_val = [x1_val, x2_val]
 
+                    # Going throught each epoch and patience in n_epochs_patience
                     for nep in n_epochs_patience:
+                        # Training the models
                         info["min_max_brightness_ratio"] = mbr
                         info["r_train"] = rt
                         info["n_epochs_patience"] = nep
@@ -273,6 +277,8 @@ class Modeling():
             None
         """
         print("Starting to train eye_tracking models...")
+        
+        # Loading all subjects
         x1_load = []
         x2_load = []
         y_load = []
@@ -289,6 +295,7 @@ class Modeling():
                 sbj_eyes_ratio
             ) = ey.load(sbj_clb_dir, [ey.X1, ey.X2, ey.Y, ey.T, ey.ER])
 
+            # If there is any shifting samples, doing that
             if shift_samples:
                 if shift_samples[kk]:
                     ii = 0
@@ -302,6 +309,8 @@ class Modeling():
 
             kk += 1
             sbj_er_dir = ey.create_dir([sbj_dir, ey.ER])
+
+            # Removing the samples that are during blinking
             sbj_blinking_threshold = ey.get_threshold(sbj_er_dir, blinking_threshold)
 
             sbj_blinking = ey.get_blinking(sbj_t_mat, sbj_eyes_ratio, sbj_blinking_threshold)[1]
@@ -317,6 +326,8 @@ class Modeling():
         y_load = np.array(y_load)
         n_smp = x1_load.shape[0]
         print(f"\nNumber of samples : {n_smp}")
+
+        # Going through each brightness in min_max_brightness_ratio list
         j = 1
         for mbr in min_max_brightness_ratio:
             x1_new = x1_load.copy()
@@ -324,6 +335,7 @@ class Modeling():
                 r = random.uniform(mbr[0], mbr[1])
                 x1_new[i] = (x1_new[i] * r).astype(np.uint8)
 
+            # Going through each model
             for raw_mdl_num in models_list:
                 info = ey.load(ey.et_raw_dir, [ey.MDL + f"{raw_mdl_num}"])[0]
                 x2_chosen_features = info["x2_chosen_features"]
@@ -343,6 +355,7 @@ class Modeling():
                 if save_scaler:
                     j_dump(scalers, ey.scalers_dir + f"scl_et_{len(x2_chosen_features)}.bin")
 
+                # Going through each training ratio in r_train_list
                 for rt in r_train_list:
                     n_train = int(rt * n_smp)
                     x1_train, x2_train = x1[:n_train], x2[:n_train]
@@ -357,7 +370,9 @@ class Modeling():
                     x_train = [x1_train, x2_train]
                     x_val = [x1_val, x2_val]
 
+                    # Going throught each epoch and patience in n_epochs_patience
                     for nep in n_epochs_patience:
+                        # Training the models
                         info["min_max_brightness_ratio"] = mbr
                         info["r_train"] = rt
                         info["n_epochs_patience"] = nep
@@ -409,7 +424,8 @@ class Modeling():
     @staticmethod
     def get_models_information(io=True, raw=True, show_model=False):
         """
-        To write the models information in an excel file. It gets the information from attached pickle file for each model
+        To write the models information in an excel file. It gets the information from attached pickle file for each model.
+        There are raw models and trained models in the io and the et.
 
         Parameters:
             io: If it's io or et

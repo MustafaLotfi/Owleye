@@ -1,7 +1,6 @@
 """This module contains the EyeTrack method. In this method, the eye movements will be predicted using the inputs and retrained models.
 Also the fixations will be calculated."""
 
-import pickle
 from tensorflow.keras.models import load_model
 import numpy as np
 from joblib import load as j_load
@@ -37,11 +36,11 @@ class EyeTrack(object):
             use_io: whether or not use the io model
             delete_files: whethere or not remove the inputs after prediction. Because of size of the saved images
         """
-        tfn = 1
+        tfn = 1         # For sampling data
         if target_fol == ey.ACC:
-            tfn = 2
+            tfn = 2     # For testing data
         elif target_fol == ey.LTN:
-            tfn = 3
+            tfn = 3     # For latency data
 
         out_threshold_min = 0.005
         out_threshold_max = 0.995
@@ -53,12 +52,15 @@ class EyeTrack(object):
             x1_scaler_io, x2_scaler_io = j_load(ey.scalers_dir + "scalers_io_main.bin")
             mdl_io = load_model(ey.io_trained_dir + ey.MDL + "1.h5")
 
+        # Going through each subject's folder to predict their eye movement
         kk = 0
         for num in subjects:
             print(f"<<<<<<<<<<<<<<<<<<<<< Subject {num} >>>>>>>>>>>>>>>>>>>>>>>")
             sbj_dir = ey.create_dir([ey.subjects_dir, f"{num}"])
             sbj_models_dir = ey.create_dir([sbj_dir, ey.MDL])
             target_dir = ey.create_dir([sbj_dir, target_fol])
+
+            # Loading the data and shifting the inputs if it's needed
             if ey.file_existing(target_dir, ey.X1+".pickle"):
                 if tfn == 1:
                     t_load, sys_time_load, x1_load, x2_load, eyes_ratio = ey.load(target_dir, [ey.T, "sys_time", ey.X1, ey.X2, ey.ER])
@@ -95,6 +97,8 @@ class EyeTrack(object):
                                 x2_load[ii] = x21[shift_samples[kk]:]
                                 ii += 1
                 kk += 1
+
+                # Going through each model to predict the output
                 for mdl_num in models_list:
                     mdl_et_name = ey.MDL + f"{mdl_num}"
                     mdl_et_hrz_dir = sbj_models_dir + mdl_et_name + "-hrz.h5"
@@ -105,6 +109,7 @@ class EyeTrack(object):
                         mdl_et_hrz = load_model(mdl_et_hrz_dir)
                         mdl_et_vrt = load_model(mdl_et_vrt_dir)
 
+                        # x1_load and x2_load are lists of lists. So, we should predict each list
                         y_prd = []
                         for (x11, x21) in zip(x1_load, x2_load):
                             n_smp_vec = x11.shape[0]
@@ -118,6 +123,7 @@ class EyeTrack(object):
 
                             y_prd.append(np.concatenate([y_hrz_prd, y_vrt_prd], 1))
 
+                        # For calculation of latency, it's just needed to see if the subject is looking in left or right, not exact location
                         if tfn == 3:
                             t_delay = []
                             j = 0
@@ -137,7 +143,7 @@ class EyeTrack(object):
                             ey.save([t_delay], target_dir, ["t_delay"])
 
                         else:
-                            # get out data
+                            # predict the samples that are looking outside of the screen
                             y_in = y_prd.copy()
                             if (tfn == 1) and use_io:
                                 for (x11, x21, yi1) in zip(x1_load, x2_load, y_in):
@@ -151,6 +157,8 @@ class EyeTrack(object):
                                             et0[1] = -1
 
                             er_dir = ey.create_dir([sbj_dir, ey.ER])
+
+                            # Removing the samples that are during blinking
                             blinking_threshold = ey.get_threshold(er_dir, blinking_threshold)
                             blinking = ey.get_blinking(t_load, eyes_ratio, blinking_threshold)[1]
                             for (yi1, bl1) in zip(y_in, blinking):
@@ -159,6 +167,8 @@ class EyeTrack(object):
                                         yi0[0] = -1
                                         yi0[1] = -1
 
+                            """Putting the values that are consecuitive and are looking inside the screen and they are not blink,
+                            into one list"""
                             y_prd_mat = []
                             for yi1 in y_in:
                                 blinking_out = (yi1[:, 0] == -1)
@@ -188,6 +198,7 @@ class EyeTrack(object):
                                         y_prd_mat.append(np.array(in_vec))
                                     i += j
 
+                            # Implementing median filter to the predicted values
                             for y_prd_vec in y_prd_mat:
                                 if y_prd_vec[0, 0] != -1:
                                     if 3 < y_prd_vec.shape[0] < (median_filter_window_size+2):
@@ -197,13 +208,14 @@ class EyeTrack(object):
                                         y_prd_vec[:, 0] = signal.medfilt(y_prd_vec[:, 0], median_filter_window_size)
                                         y_prd_vec[:, 1] = signal.medfilt(y_prd_vec[:, 1], median_filter_window_size)
 
-                            # # Concatenating y
+                            # Concatenating y
                             y_prd_fnl = y_prd_mat[0]
                             for (i, y_prd_vec) in enumerate(y_prd_mat):
                                 if i == 0:
                                     continue
                                 y_prd_fnl = np.concatenate([y_prd_fnl, y_prd_vec], 0)
 
+                            # Saving the data
                             if tfn == 1:
                                 t = []
                                 sys_time = []
@@ -278,7 +290,8 @@ class EyeTrack(object):
         vy_thr=2.5
         ):
         """
-        Compute the fixations using eye movements. IV-T method is implemented for this. You can do this for all the subjets once.
+        Compute the fixations using eye movements. IV-T method is implemented for this. Visit README.md for more details.
+        You can do this for all the subjets once.
 
         Parameters:
             subjects: subjects list
@@ -292,11 +305,8 @@ class EyeTrack(object):
         Returns:
             None
         """
-        # pxr  --> pixel ratio (pixel/screen_width)
-        # pxr
-        # pxr/sec
-        # pxr/sec
 
+        # Going through each subject's folder to compute their fixations
         for num in subjects:
             smp_dir = ey.create_dir([ey.subjects_dir, f"{num}", ey.SMP])
 
@@ -315,6 +325,10 @@ class EyeTrack(object):
                         )
                 n_smp_all = len(et_xl)
 
+                """There is some tims that you don't want to calculate the fixations. you can simply put 'start' and 'stop'
+                in the last column in the eye_track.xlsx file to determine the moments that you want be calculated. So, each
+                series of values that are between 'start' and 'stop' is considered as a vector and in this way, these vectors
+                go to matrices (each matrix contains several vectors). for example, t_mat_seq"""
                 i = 0
                 t_mat_seq = []
                 t_sys_mat_seq = []
@@ -338,6 +352,7 @@ class EyeTrack(object):
                         i += j
                     i += 1
 
+                # Creating the the vectors for time and eye track
                 t = t_mat_seq[0]
                 t_sys = t_sys_mat_seq[0]
                 et = et_mat_seq[0]
@@ -348,6 +363,7 @@ class EyeTrack(object):
                     t_sys += t_sys_mat_seq[i]
                     et = np.concatenate([et, et_mat_seq[i]])
 
+                # Removing the samples that are during blinking or are looking outside of the screen
                 t_mat = []
                 t_sys_mat = []
                 et_mat = []
@@ -391,6 +407,7 @@ class EyeTrack(object):
                     t_sys_mat.append(ts_mat1)
                     et_mat.append(et_mat1)
 
+                # Calculating the saccades
                 saccades = []
                 vet_mat = []
                 for (t2, et2) in zip(t_mat, et_mat):
@@ -417,7 +434,7 @@ class EyeTrack(object):
                     saccades.append(saccades1)
                     vet_mat.append(vet_mat1)
 
-
+                # Creating a vector of eye movement velocity
                 vet4 = []
                 for vet3 in vet_mat:
                     vet2 = vet3[0].copy()
@@ -426,14 +443,14 @@ class EyeTrack(object):
                             continue
                         vet2 = np.concatenate([vet2, vet1], 0)
                     vet4.append(np.array(vet2))
-
                 vet = vet4[0]
                 for (i, vet1) in enumerate(vet4):
                     if i == 0:
                         continue
                     vet = np.concatenate([vet, vet1])
 
-
+                """Separating the time and eye movements based on the saccades. It means we are considering a vector for
+                each series of values that we think they are one fixation."""
                 sac_mat_new = []
                 t_mat_new = []
                 t_sys_mat_new = []
@@ -479,7 +496,8 @@ class EyeTrack(object):
                     t_sys_mat_new.append(t_sys_mat_new1)
                     et_mat_new.append(et_mat_new1)
 
-
+                """We are turing each vector of fixations to a list of some information, like the number of values that it contains,
+                The start time, mean of the eye movements, and sys mean time."""
                 fix = []
                 k = 0
                 for (sac_mat_new1, t_mat_new1, t_sys_mat_new1, et_mat_new1) in zip(sac_mat_new, t_mat_new, t_sys_mat_new, et_mat_new):
@@ -498,6 +516,7 @@ class EyeTrack(object):
                         k += sac_shp[0]
                     fix.append(fix1)
 
+                # Merging the fixations that are near together
                 fix_mrg_one = []
                 for fix1 in fix:
                     fix_mrg1 = []
@@ -531,7 +550,7 @@ class EyeTrack(object):
                         
                     fix_mrg_one.append(fix_mrg1)
 
-
+                # Removing the fixations that are short
                 fix_dcd = []
                 for fix_mrg1 in fix_mrg_one:
                     fix_dcd1 = []
@@ -540,7 +559,7 @@ class EyeTrack(object):
                             fix_dcd1.append(f)
                     fix_dcd.append(fix_dcd1)
 
-
+                # Merging the fixations that are near together
                 fix_mrg_two = []
                 for fix1 in fix_dcd:
                     fix_mrg1 = []
@@ -576,6 +595,7 @@ class EyeTrack(object):
                         
                     fix_mrg_two.append(fix_mrg1)
 
+                # Saving the fixations into the fixations.xlsx
                 wb = Workbook()
                 ws = wb.active
                 ws['A1'] = "FixationTime"
@@ -600,6 +620,15 @@ class EyeTrack(object):
 
     @staticmethod
     def get_models_information(show_model=False):
+        """Writing the NN models' information in the xlsx files.
+        
+        Parameters:
+            show_model: Whether or not show the model
+        
+        Returns:
+            None
+        """
+        
         wb = Workbook()
         ws = wb.active
         ws['A1'] = "subject"

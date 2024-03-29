@@ -4,7 +4,9 @@ Before using this project, make sure that you have read these documentations.
 This file contains the code for a GUI. There are some points that you should know about a GUI of PyQt5 to understand the following code.
 Also, unfortunately I didn't add proper comments in this file and now it's a little hard to understand it (Now I am really embarrassed for this :)). But, totally, the GUI is connected
 To the modules in the codes folder, using a worker. the worker gives the ability for multithreading. For understanding the code of eye tracker,
-I suggest you to just visit the modules in the codes folder and see how I used them in main.py
+I suggest you to just visit the modules in the codes folder and see how I used them in main.py.
+Also, for a faster understanding of the code, it is recommended to print the varibales shape. There are a lot of lists and lists of lists
+that may confuse you.
 
 Programmer: Mostafa Lotfi"""
 

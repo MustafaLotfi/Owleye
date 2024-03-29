@@ -5,8 +5,6 @@ import numpy as np
 import cv2
 import time
 from codes.base import eyeing as ey
-import pickle
-import os
 from codes.calibration import Clb
 import math
 import random

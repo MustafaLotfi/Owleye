@@ -6,6 +6,8 @@ Also, you can do predictions for all subjects together. You can train the models
 the models. In addition, you can test the latency of Owleye by main.py. To sum up, use main_gui.py to collect calibration data and sampling data
 or for seeing data, but use main.py for training, retraining, and predictions for a group of subjects that you already have their data.
 In the following, you can uncomment each section (between star signs **) to do your work.
+Also, for a faster understanding of the code, it is recommended to print the varibales shape. There are a lot of lists and lists of lists
+that may confuse you.
 
 Programmer: Mostafa Lotfi"""
 
