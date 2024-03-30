@@ -2,7 +2,7 @@
 ## Intro
 Owleye gives you the posibiliy to transform your webcam to an eye tracker. At first, you should calibrate owleye to know you, then it detects which point you are looking on your monitor.
 
-**Demo:**
+**Demo: Click on the image below and see the video explanation.**
 
 [![IMAGE ALT TEXT HERE](https://github.com/MustafaLotfi/Owleye/assets/53625380/bcddb7a9-fe92-48a5-8b21-de40e7f99efa)](https://www.youtube.com/watch?v=E6OmzGhSAgI)
 ___
