@@ -80,7 +80,10 @@ The calibration process consists of looking at a white point in a black screen f
 
 ### Dataset
 
-We implemented calibration on 20 male subjects and collected 221000 samples (eyes images and face vectors as inputs and appeared point locations as outputs).
+We implemented the calibration on 20 male subjects and collected 221000 samples (eyes images and face vectors as inputs and the appeared point's locations as outputs). The dataset is collected in an environment like the image below. The subjects were seated in a driving simulator. The camera in front of them is Microsoft Lifecam VX-6000. The distance between the camera and the participants was near 80 cm. There were three monitors that were located 170 cm further the user.
+
+![20220628_144415crop](https://github.com/MustafaLotfi/Owleye/assets/53625380/65ccd86f-18d4-43d7-b833-d498bccb60da)
+
 
 ### Modeling
 
@@ -93,7 +96,7 @@ Right side of the above picture illustrates the CNN model's structure. In this m
 
 ### Fine-tuning
 
-To customize Owleye for each person, we considered the approach of retraining the models of [the sixth block](https://github.com/MustafaLotfi/Owleye/blob/main/README.md#:~:text=Method-,Owleye%27s%20structure%3A,-While%20the%20camera) for each person. During this, data is collected from the person who we want to get their eye movements. the amount of data collected is not as much as the main dataset that we explained above. So, the last layer's weights of the base models in the sixth block change based on the new collected data. In this way, the network maintains its original shape and just is calibrated a little for each person.
+Owleye and its base models are built using the dataset that aleardy we explained. The light condition, camera position, and monitors position are stationary. They are specific to the environment. A rich dataset is the one that is robust to all of the mentioned situations. It should be collected in various light conditions, with different positions for camera, user and monitors. But, due to the possible costs, it was not appropriate for us. So we decided to provide a calibration step. In thes way, we can collect a little amount of data from the person that we want detect their eye movement. Then we can retrain the [base models in the sixth block](https://github.com/MustafaLotfi/Owleye/blob/main/README.md#:~:text=Method-,Owleye%27s%20structure%3A,-While%20the%20camera) using the new data. Actually we are customizing Owleye for each person. So, the last layer's weights of the base models change based on the new collected data. In this way, the network maintains its original shape and just is calibrated a little for each person. Finally, Owleye gets familiar with the new light condition and the devices positions.
 
 ### Fixations
 
