@@ -4,7 +4,7 @@ Owleye gives you the posibiliy to transform your webcam to an eye tracker. At fi
 
 **Demo:**
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/E6OmzGhSAgI/0.jpg)](https://www.youtube.com/watch?v=E6OmzGhSAgI)
+[![IMAGE ALT TEXT HERE](https://github.com/MustafaLotfi/Owleye/assets/53625380/bcddb7a9-fe92-48a5-8b21-de40e7f99efa)](https://www.youtube.com/watch?v=E6OmzGhSAgI)
 ___
 ## Installation
 
