@@ -45,7 +45,7 @@ protobuf==5.29.6
 Pillow==10.3.0
 protobuf==4.25.8
 >>>>>>> 11ffe57fb07f3dd6f2f1fbab419b9e9dde052bdf
-pyasn1==0.5.0
+pyasn1==0.6.3
 pyasn1-modules==0.3.0
 pycparser==2.21
 pyinstaller==6.5.0
