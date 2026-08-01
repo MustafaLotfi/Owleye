@@ -39,7 +39,7 @@ opt-einsum==3.3.0
 packaging==23.2
 pefile==2023.2.7
 <<<<<<< HEAD
-Pillow==12.2.0
+Pillow==12.3.0
 protobuf==5.29.6
 =======
 Pillow==12.2.0
