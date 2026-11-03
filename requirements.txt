@@ -42,7 +42,7 @@ pefile==2023.2.7
 Pillow==12.3.0
 protobuf==5.29.6
 =======
-Pillow==12.2.0
+Pillow==13.0.0
 protobuf==4.25.8
 >>>>>>> 11ffe57fb07f3dd6f2f1fbab419b9e9dde052bdf
 pyasn1==0.6.4
